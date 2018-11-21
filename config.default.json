@@ -1,0 +1,16 @@
+{
+  "mode":"debug",
+  "password": "0925e15d0ae6af196e6295923d76af02b4a3420f",
+  "database":{
+    "username":"root",
+    "password":"",
+    "dbname":"gopanel",
+    "address":"127.0.0.1",
+    "port":"3306"
+  },
+  "smtp":{
+    "username":"",
+    "password": "",
+    "host": ""
+  }
+}
