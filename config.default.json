@@ -1,6 +1,8 @@
 {
   "mode":"debug",
   "password": "0925e15d0ae6af196e6295923d76af02b4a3420f",
+  "caddyConf": "/etc/caddy/caddy.conf.d",
+  "caddyData": "/var/lib/caddy",
   "database":{
     "username":"root",
     "password":"",
