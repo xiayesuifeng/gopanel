@@ -6,6 +6,7 @@ import (
 	"gitlab.com/xiayesuifeng/gopanel/core"
 	"log"
 	"os"
+	"strconv"
 )
 
 var (
@@ -16,7 +17,7 @@ var (
 func main() {
 	router := gin.Default()
 
-	if err := router.Run(); err != nil {
+	if err := router.Run(":" + strconv.FormatInt(int64(*port), 10)); err != nil {
 		log.Panicln(err)
 	}
 }
