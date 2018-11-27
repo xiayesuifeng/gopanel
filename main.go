@@ -17,6 +17,17 @@ var (
 func main() {
 	router := gin.Default()
 
+	apiRouter := router.Group("/api")
+
+	siteRouter := apiRouter.Group("/site")
+	{
+		siteRouter.GET("")
+		siteRouter.GET("/:id")
+		siteRouter.POST("/:id")
+		siteRouter.PUT("/:id")
+		siteRouter.DELETE("/:id")
+	}
+
 	if err := router.Run(":" + strconv.FormatInt(int64(*port), 10)); err != nil {
 		log.Panicln(err)
 	}
