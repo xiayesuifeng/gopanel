@@ -17,7 +17,7 @@ type Config struct {
 }
 
 type Caddy struct {
-	AdminAddress string `json:"admin_address"`
+	AdminAddress string `json:"adminAddress"`
 	Conf         string `json:"conf"`
 	Data         string `json:"data"`
 }
