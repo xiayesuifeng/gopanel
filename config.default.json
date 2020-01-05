@@ -1,8 +1,11 @@
 {
   "mode":"debug",
   "password": "0925e15d0ae6af196e6295923d76af02b4a3420f",
-  "caddyConf": "/etc/caddy/caddy.conf.d",
-  "caddyData": "/var/lib/caddy",
+  "caddy": {
+    "adminAddress": "localhost:2019",
+    "conf": "/etc/caddy/caddy.conf.d",
+    "data": "/var/lib/caddy"
+  },
   "database":{
     "username":"root",
     "password":"",

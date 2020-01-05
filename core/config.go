@@ -8,12 +8,17 @@ import (
 var Conf *Config
 
 type Config struct {
-	Mode      string   `json:"mode"`
-	Password  string   `json:"password"`
-	CaddyConf string   `json:"caddyConf"`
-	CaddyData string   `json:"caddyData"`
-	Db        Database `json:"database"`
-	Smtp      Smtp     `json:"smtp"`
+	Mode     string   `json:"mode"`
+	Password string   `json:"password"`
+	Caddy    Caddy    `json:"caddy"`
+	Db       Database `json:"database"`
+	Smtp     Smtp     `json:"smtp"`
+}
+
+type Caddy struct {
+	AdminAddress string `json:"admin_address"`
+	Conf         string `json:"conf"`
+	Data         string `json:"data"`
 }
 
 type Database struct {
