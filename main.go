@@ -25,7 +25,7 @@ func main() {
 		appC := &controller.App{}
 		appRouter.GET("", appC.Gets)
 		appRouter.GET("/:name", appC.Get)
-		appRouter.POST("/:name", appC.Post)
+		appRouter.POST("", appC.Post)
 		appRouter.PUT("/:name", appC.Put)
 		appRouter.DELETE("/:name", appC.Delete)
 	}
