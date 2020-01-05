@@ -10,6 +10,7 @@ var Conf *Config
 type Config struct {
 	Mode     string   `json:"mode"`
 	Password string   `json:"password"`
+	AppConf  string   `json:"appConf"`
 	Caddy    Caddy    `json:"caddy"`
 	Db       Database `json:"database"`
 	Smtp     Smtp     `json:"smtp"`
