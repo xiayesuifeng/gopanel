@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"github.com/gin-gonic/gin"
+	"gitlab.com/xiayesuifeng/gopanel/controller"
 	"gitlab.com/xiayesuifeng/gopanel/core"
 	"log"
 	"os"
@@ -19,13 +20,14 @@ func main() {
 
 	apiRouter := router.Group("/api")
 
-	siteRouter := apiRouter.Group("/site")
+	appRouter := apiRouter.Group("/app")
 	{
-		siteRouter.GET("")
-		siteRouter.GET("/:id")
-		siteRouter.POST("/:id")
-		siteRouter.PUT("/:id")
-		siteRouter.DELETE("/:id")
+		appC := &controller.App{}
+		appRouter.GET("", appC.Gets)
+		appRouter.GET("/:name", appC.Get)
+		appRouter.POST("/:name", appC.Post)
+		appRouter.PUT("/:name", appC.Put)
+		appRouter.DELETE("/:name", appC.Delete)
 	}
 
 	if err := router.Run(":" + strconv.FormatInt(int64(*port), 10)); err != nil {
