@@ -48,4 +48,12 @@ func init() {
 		}
 		log.Panicln(err)
 	}
+
+	if _, err := os.Stat(core.Conf.AppConf); err != nil {
+		if os.IsNotExist(err) {
+			os.MkdirAll(core.Conf.AppConf, 0755)
+		} else {
+			log.Panicln("app.conf.d dir create failure")
+		}
+	}
 }
