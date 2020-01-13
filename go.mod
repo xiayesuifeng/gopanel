@@ -4,6 +4,7 @@ require (
 	github.com/gin-gonic/gin v1.5.0
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-resty/resty/v2 v2.1.0
+	github.com/gorilla/websocket v1.4.1
 	github.com/jinzhu/gorm v1.9.11
 	github.com/json-iterator/go v1.1.9 // indirect
 	github.com/kr/pretty v0.2.0 // indirect
