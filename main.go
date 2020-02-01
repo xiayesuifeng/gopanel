@@ -30,6 +30,12 @@ func main() {
 		appRouter.DELETE("/:name", appC.Delete)
 	}
 
+	backendRouter := apiRouter.Group("/backend")
+	{
+		backendC := &controller.Backend{}
+		backendRouter.GET("/:name/ws", backendC.GetWS)
+	}
+
 	if err := router.Run(":" + strconv.FormatInt(int64(*port), 10)); err != nil {
 		log.Panicln(err)
 	}
