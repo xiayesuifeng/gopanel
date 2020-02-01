@@ -33,6 +33,7 @@ func main() {
 	backendRouter := apiRouter.Group("/backend")
 	{
 		backendC := &controller.Backend{}
+		backendRouter.GET("/:name", backendC.Get)
 		backendRouter.GET("/:name/ws", backendC.GetWS)
 	}
 

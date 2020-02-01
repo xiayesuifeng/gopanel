@@ -15,6 +15,16 @@ var wsupgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
+func (b *Backend) Get(ctx *gin.Context) {
+	{
+		b := backend.GetBackend(ctx.Param("name"))
+		ctx.JSON(200, gin.H{
+			"status": b.Status,
+			"log":    b.Log.String(),
+		})
+	}
+}
+
 func (b *Backend) GetWS(ctx *gin.Context) {
 	conn, err := wsupgrader.Upgrade(ctx.Writer, ctx.Request, nil)
 	if err != nil {
