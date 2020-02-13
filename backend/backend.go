@@ -19,7 +19,7 @@ func StartNewBackend(name, path string, arg ...string) {
 	cmd := exec.Command(path, arg...)
 	cmd.Dir = filepath.Dir(path)
 	b := &Backend{Cmd: cmd}
-	b.Notify = make(chan bool, 1)
+	b.Notify = make(chan bool)
 
 	cmd.Stderr = cmd.Stdout
 
@@ -41,9 +41,16 @@ func StartNewBackend(name, path string, arg ...string) {
 			}
 			n, _ := stdout.Read(tmp)
 			b.Log.Write(tmp[:n])
-			b.Notify <- true
+			b.seedNotify()
 		}
 	}()
+}
+
+func (b *Backend) seedNotify() {
+	select {
+	case b.Notify <- true:
+	default:
+	}
 }
 
 func GetBackend(name string) *Backend {
@@ -52,5 +59,5 @@ func GetBackend(name string) *Backend {
 
 func (b *Backend) SetStatus(status string) {
 	b.Status = status
-	b.Notify <- true
+	b.seedNotify()
 }
