@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"github.com/gin-gonic/gin"
+	"gitlab.com/xiayesuifeng/gopanel/app"
 	"gitlab.com/xiayesuifeng/gopanel/controller"
 	"gitlab.com/xiayesuifeng/gopanel/core"
 	"log"
@@ -65,4 +66,6 @@ func init() {
 			log.Panicln("app.conf.d dir create failure")
 		}
 	}
+
+	app.ReloadAppConfig()
 }
