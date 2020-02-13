@@ -51,6 +51,22 @@ func AddServer(name string, config json.RawMessage) error {
 	}
 }
 
+func EditServer(name string, config json.RawMessage) error {
+	resp, err := resty.New().R().
+		SetHeader("Content-Type", "application/json").
+		SetBody(config).
+		Post(core.Conf.Caddy.AdminAddress + serversApi + "/" + name)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode() != 200 {
+		return errors.New("caddy admin api return message: " + string(resp.Body()))
+	} else {
+		return nil
+	}
+}
+
 func DeleteServer(name string) error {
 	resp, err := resty.New().R().Delete(core.Conf.Caddy.AdminAddress + serversApi + "/" + name)
 	if err != nil {
