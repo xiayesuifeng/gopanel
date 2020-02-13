@@ -79,3 +79,16 @@ func DeleteServer(name string) error {
 		return nil
 	}
 }
+
+func CheckServerExist(name string) bool {
+	resp, err := resty.New().R().Get(core.Conf.Caddy.AdminAddress + serversApi + "/" + name)
+	if err != nil {
+		return false
+	}
+
+	if resp.StatusCode() != 200 {
+		return false
+	} else {
+		return string(resp.Body()) != "null"
+	}
+}
