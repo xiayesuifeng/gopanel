@@ -19,6 +19,7 @@ type App struct {
 	CaddyConfig  json.RawMessage `json:"caddyConfig" binding:"required"`
 	Type         int             `json:"type" binding:"required"`
 	Path         string          `json:"path"`
+	AutoReboot   bool            `json:"autoReboot"`
 	BootArgument string          `json:"bootArgument"`
 }
 
@@ -36,7 +37,7 @@ func AddApp(app App) error {
 	}
 
 	if app.Type == GO_TYPE {
-		backend.StartNewBackend(app.Name, app.Path, strings.Split(app.BootArgument, " ")...)
+		backend.StartNewBackend(app.Name, app.Path, app.AutoReboot, strings.Split(app.BootArgument, " ")...)
 	}
 
 	return nil

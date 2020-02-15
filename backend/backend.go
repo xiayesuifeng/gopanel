@@ -2,6 +2,7 @@ package backend
 
 import (
 	"bytes"
+	"io"
 	"os/exec"
 	"path/filepath"
 )
@@ -15,35 +16,48 @@ type Backend struct {
 	Notify chan bool
 }
 
-func StartNewBackend(name, path string, arg ...string) {
+func StartNewBackend(name, path string, autoReboot bool, arg ...string) {
+	b := &Backend{}
+	b.Notify = make(chan bool)
+
+	backendList[name] = b
+
+	go func() {
+		for autoReboot {
+			cmd, stdout := b.getCmd(path, arg...)
+			b.Cmd = cmd
+
+			b.Log.WriteString("start " + name + "\n")
+			go b.readLog(stdout)
+			b.SetStatus("Run")
+			err := cmd.Run()
+			b.Log.WriteString(err.Error() + "\n")
+			b.SetStatus("Stop")
+			b.Log.WriteString(name + " is dead\n")
+		}
+	}()
+}
+
+func (b *Backend) getCmd(path string, arg ...string) (*exec.Cmd, io.ReadCloser) {
 	cmd := exec.Command(path, arg...)
 	cmd.Dir = filepath.Dir(path)
-	b := &Backend{Cmd: cmd}
-	b.Notify = make(chan bool)
 
 	cmd.Stderr = cmd.Stdout
 
 	stdout, _ := cmd.StdoutPipe()
 
-	backendList[name] = b
-
-	go func() {
-		b.SetStatus("Run")
-		cmd.Run()
-		b.SetStatus("Stop")
-	}()
-
-	go func() {
-		tmp := make([]byte, 1024)
-		for {
-			if b.Status != "Run" {
-				continue
-			}
-			n, _ := stdout.Read(tmp)
-			b.Log.Write(tmp[:n])
-			b.seedNotify()
+	return cmd, stdout
+}
+func (b *Backend) readLog(stdout io.ReadCloser) {
+	tmp := make([]byte, 1024)
+	for {
+		n, err := stdout.Read(tmp)
+		b.Log.Write(tmp[:n])
+		b.seedNotify()
+		if err != nil {
+			break
 		}
-	}()
+	}
 }
 
 func (b *Backend) seedNotify() {

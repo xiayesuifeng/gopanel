@@ -57,7 +57,7 @@ func ReloadAppConfig() {
 				if err != nil {
 					log.Println(err)
 				}
-				backend.StartNewBackend(app.Name, app.Path, strings.Split(app.BootArgument, " ")...)
+				backend.StartNewBackend(app.Name, app.Path, app.AutoReboot, strings.Split(app.BootArgument, " ")...)
 			}
 		}
 	}
