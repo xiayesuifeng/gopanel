@@ -4,6 +4,7 @@ import (
 	"flag"
 	"github.com/gin-gonic/gin"
 	"gitlab.com/xiayesuifeng/gopanel/app"
+	"gitlab.com/xiayesuifeng/gopanel/auth"
 	"gitlab.com/xiayesuifeng/gopanel/controller"
 	"gitlab.com/xiayesuifeng/gopanel/core"
 	"log"
@@ -19,7 +20,7 @@ var (
 func main() {
 	router := gin.Default()
 
-	apiRouter := router.Group("/api")
+	apiRouter := router.Group("/api", auth.AuthMiddleware)
 
 	appRouter := apiRouter.Group("/app")
 	{
