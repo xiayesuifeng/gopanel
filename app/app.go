@@ -65,3 +65,11 @@ func GetApps() []App {
 
 	return apps
 }
+
+func GetApp(name string) (App, error) {
+	if CheckAppExist(name) {
+		return LoadAppConfig(name + ".json")
+	} else {
+		return App{}, errors.New("app not found")
+	}
+}

@@ -9,7 +9,24 @@ type App struct {
 }
 
 func (a *App) Get(ctx *gin.Context) {
+	name := ctx.Param("name")
 
+	if app, err := app.GetApp(name); err == nil {
+		ctx.JSON(200, gin.H{
+			"code": 200,
+			"app":  app,
+		})
+	} else if err.Error() == "app not found" {
+		ctx.JSON(200, gin.H{
+			"code":    404,
+			"message": "app not found",
+		})
+	} else {
+		ctx.JSON(200, gin.H{
+			"code":    500,
+			"message": err.Error(),
+		})
+	}
 }
 
 func (a *App) Gets(ctx *gin.Context) {
