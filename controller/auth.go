@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"gitlab.com/xiayesuifeng/gopanel/auth"
+	"gitlab.com/xiayesuifeng/gopanel/core"
 )
 
 type Auth struct {
@@ -10,14 +11,22 @@ type Auth struct {
 
 func (a *Auth) Login(ctx *gin.Context) {
 	type data struct {
-		password string `json:"password" binding:"required"`
+		Password string `json:"password" binding:"required"`
 	}
 
 	d := &data{}
-	if err := ctx.Bind(d); err != nil {
+	if err := ctx.ShouldBind(d); err != nil {
 		ctx.JSON(200, gin.H{
 			"code":    400,
 			"message": err.Error(),
+		})
+		return
+	}
+
+	if core.EncryptionPassword(d.Password) != core.Conf.Password {
+		ctx.JSON(200, gin.H{
+			"code":    400,
+			"message": "password error",
 		})
 		return
 	}
