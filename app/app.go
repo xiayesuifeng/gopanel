@@ -5,6 +5,9 @@ import (
 	"errors"
 	"gitlab.com/xiayesuifeng/gopanel/backend"
 	"gitlab.com/xiayesuifeng/gopanel/caddy"
+	"gitlab.com/xiayesuifeng/gopanel/core"
+	"io/ioutil"
+	"log"
 	"strings"
 )
 
@@ -41,4 +44,24 @@ func AddApp(app App) error {
 	}
 
 	return nil
+}
+
+func GetApps() []App {
+	apps := make([]App, 0)
+	infos, err := ioutil.ReadDir(core.Conf.AppConf)
+	if err != nil {
+		return apps
+	}
+
+	for _, info := range infos {
+		if strings.HasSuffix(info.Name(), ".json") {
+			if app, err := LoadAppConfig(info.Name()); err != nil {
+				log.Println("Failed to load ", info.Name(), ", error: ", err.Error())
+			} else {
+				apps = append(apps, app)
+			}
+		}
+	}
+
+	return apps
 }

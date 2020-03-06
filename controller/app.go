@@ -13,7 +13,10 @@ func (a *App) Get(ctx *gin.Context) {
 }
 
 func (a *App) Gets(ctx *gin.Context) {
-
+	ctx.JSON(200, gin.H{
+		"code": 200,
+		"apps": app.GetApps(),
+	})
 }
 
 func (a *App) Post(ctx *gin.Context) {
