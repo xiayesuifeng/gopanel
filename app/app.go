@@ -8,6 +8,7 @@ import (
 	"gitlab.com/xiayesuifeng/gopanel/core"
 	"io/ioutil"
 	"log"
+	"os"
 	"strings"
 )
 
@@ -71,5 +72,17 @@ func GetApp(name string) (App, error) {
 		return LoadAppConfig(name + ".json")
 	} else {
 		return App{}, errors.New("app not found")
+	}
+}
+
+func DeleteApp(name string) error {
+	if CheckAppExist(name) {
+		if err := caddy.DeleteServer(name); err != nil {
+			return err
+		} else {
+			return os.Remove(core.Conf.AppConf + "/" + name + ".json")
+		}
+	} else {
+		return errors.New("app not found")
 	}
 }

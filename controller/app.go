@@ -61,5 +61,21 @@ func (a *App) Put(ctx *gin.Context) {
 }
 
 func (a *App) Delete(ctx *gin.Context) {
+	name := ctx.Param("name")
 
+	if err := app.DeleteApp(name); err == nil {
+		ctx.JSON(200, gin.H{
+			"code": 200,
+		})
+	} else if err.Error() == "app not found" {
+		ctx.JSON(200, gin.H{
+			"code":    404,
+			"message": "app not found",
+		})
+	} else {
+		ctx.JSON(200, gin.H{
+			"code":    500,
+			"message": err.Error(),
+		})
+	}
 }
