@@ -14,6 +14,8 @@ type Backend struct {
 	Cmd    *exec.Cmd
 	Log    bytes.Buffer
 	Notify chan bool
+
+	forceStop bool
 }
 
 func StartNewBackend(name, path string, autoReboot bool, arg ...string) {
@@ -23,7 +25,7 @@ func StartNewBackend(name, path string, autoReboot bool, arg ...string) {
 	backendList[name] = b
 
 	go func() {
-		for {
+		for !b.forceStop {
 			cmd, stdout := b.getCmd(path, arg...)
 			b.Cmd = cmd
 
@@ -78,4 +80,13 @@ func GetBackend(name string) *Backend {
 func (b *Backend) SetStatus(status string) {
 	b.Status = status
 	b.seedNotify()
+}
+
+func (b *Backend) Stop() error {
+	if b.Status == "Run" {
+		b.forceStop = true
+		return b.Cmd.Process.Kill()
+	}
+
+	return nil
 }
