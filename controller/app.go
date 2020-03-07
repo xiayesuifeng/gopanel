@@ -46,6 +46,14 @@ func (a *App) Post(ctx *gin.Context) {
 		return
 	}
 
+	if data.Name == "" {
+		ctx.JSON(200, gin.H{
+			"code":    400,
+			"message": "name must exist",
+		})
+		return
+	}
+
 	if err := app.AddApp(data); err != nil {
 		ctx.JSON(200, gin.H{
 			"code":    400,
@@ -57,7 +65,27 @@ func (a *App) Post(ctx *gin.Context) {
 }
 
 func (a *App) Put(ctx *gin.Context) {
+	name := ctx.Param("name")
 
+	data := app.App{}
+	if err := ctx.ShouldBind(&data); err != nil {
+		ctx.JSON(200, gin.H{
+			"code":    400,
+			"message": err.Error(),
+		})
+		return
+	}
+
+	data.Name = name
+
+	if err := app.EditApp(data); err != nil {
+		ctx.JSON(200, gin.H{
+			"code":    500,
+			"message": err.Error(),
+		})
+	} else {
+		ctx.JSON(200, gin.H{"code": 200})
+	}
 }
 
 func (a *App) Delete(ctx *gin.Context) {

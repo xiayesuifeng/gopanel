@@ -19,7 +19,7 @@ const (
 )
 
 type App struct {
-	Name         string          `json:"name" binding:"required"`
+	Name         string          `json:"name"`
 	CaddyConfig  json.RawMessage `json:"caddyConfig" binding:"required"`
 	Type         int             `json:"type" binding:"required"`
 	Path         string          `json:"path"`
@@ -73,6 +73,31 @@ func GetApp(name string) (App, error) {
 	} else {
 		return App{}, errors.New("app not found")
 	}
+}
+
+func EditApp(app App) error {
+	if !CheckAppExist(app.Name) {
+		return errors.New("app not found")
+	}
+
+	if err := SaveAppConfig(app); err != nil {
+		return err
+	}
+
+	if err := caddy.EditServer(app.Name, app.CaddyConfig); err != nil {
+		return err
+	}
+
+	if app.Type == GO_TYPE {
+		b := backend.GetBackend(app.Name)
+		if err := b.Stop(); err != nil {
+			return err
+		}
+
+		backend.StartNewBackend(app.Name, app.Path, app.AutoReboot, strings.Split(app.BootArgument, " ")...)
+	}
+
+	return nil
 }
 
 func DeleteApp(name string) error {
