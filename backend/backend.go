@@ -23,7 +23,7 @@ func StartNewBackend(name, path string, autoReboot bool, arg ...string) {
 	backendList[name] = b
 
 	go func() {
-		for autoReboot {
+		for {
 			cmd, stdout := b.getCmd(path, arg...)
 			b.Cmd = cmd
 
@@ -34,6 +34,10 @@ func StartNewBackend(name, path string, autoReboot bool, arg ...string) {
 			b.Log.WriteString(err.Error() + "\n")
 			b.SetStatus("Stop")
 			b.Log.WriteString(name + " is dead\n")
+
+			if !autoReboot {
+				break
+			}
 		}
 	}()
 }
