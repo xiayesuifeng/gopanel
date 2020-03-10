@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"gitlab.com/xiayesuifeng/gopanel/app"
 	"gitlab.com/xiayesuifeng/gopanel/auth"
@@ -10,6 +11,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 )
 
 var (
@@ -45,6 +47,21 @@ func main() {
 		backendRouter.GET("/:name", backendC.Get)
 		backendRouter.GET("/:name/ws", backendC.GetWS)
 	}
+
+	webPath := os.Getenv("GOPANEL_WEB_PATH")
+	if webPath == "" {
+		webPath = "web"
+	}
+	router.Use(static.Serve("/", static.LocalFile(webPath, false)))
+	router.NoRoute(func(c *gin.Context) {
+		if !strings.Contains(c.Request.RequestURI, "/api") {
+			path := strings.Split(c.Request.URL.Path, "/")
+			if len(path) > 1 {
+				c.File(webPath + "/index.html")
+				return
+			}
+		}
+	})
 
 	if err := router.Run(":" + strconv.FormatInt(int64(*port), 10)); err != nil {
 		log.Panicln(err)
