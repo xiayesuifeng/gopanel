@@ -46,6 +46,8 @@ func LoadPanelConfig(port string) (err error) {
 	conf = strings.ReplaceAll(conf, "{domain}", "\""+core.Conf.Panel.Domain+"\"")
 	if core.Conf.Panel.Port != 0 {
 		conf = strings.ReplaceAll(conf, "{listenPort}", "\"listen\": [\":"+strconv.Itoa(core.Conf.Panel.Port)+"\"],")
+	} else {
+		conf = strings.ReplaceAll(conf, "{listenPort}", "")
 	}
 
 	if CheckServerExist("gopanel") {
