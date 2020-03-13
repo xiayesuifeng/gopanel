@@ -17,18 +17,9 @@ const panelCaddyJson = `{
             "routes": [
               {
                 "handle": [
-                  {
-                    "handler": "subroute",
-                    "routes": [
-                      {
-                        "handle": [
-                          {
-                            "handler": "reverse_proxy",
-                            "upstreams": [{"dial": "127.0.0.1:{port}"}]
-                          }
-                        ]
-                      }
-                    ]
+				  {
+				    "handler": "reverse_proxy",
+                    "upstreams": [{"dial": "127.0.0.1:{port}"}]
                   }
                 ]
               }
