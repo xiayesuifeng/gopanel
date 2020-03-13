@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gitlab.com/xiayesuifeng/gopanel/app"
 	"gitlab.com/xiayesuifeng/gopanel/auth"
+	"gitlab.com/xiayesuifeng/gopanel/caddy"
 	"gitlab.com/xiayesuifeng/gopanel/controller"
 	"gitlab.com/xiayesuifeng/gopanel/core"
 	"log"
@@ -90,6 +91,10 @@ func init() {
 		} else {
 			log.Panicln("app.conf.d dir create failure")
 		}
+	}
+
+	if err := caddy.LoadPanelConfig(strconv.Itoa(*port)); err != nil {
+		log.Fatalln(err)
 	}
 
 	app.ReloadAppConfig()

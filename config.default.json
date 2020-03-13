@@ -2,6 +2,9 @@
   "mode":"debug",
   "password": "0925e15d0ae6af196e6295923d76af02b4a3420f",
   "appConf": "app.conf.d",
+  "panel": {
+    "domain": "example.com"
+  },
   "caddy": {
     "adminAddress": "localhost:2019",
     "conf": "/etc/caddy/caddy.conf.d",

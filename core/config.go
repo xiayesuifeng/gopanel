@@ -11,10 +11,16 @@ type Config struct {
 	Mode     string   `json:"mode"`
 	Password string   `json:"password"`
 	AppConf  string   `json:"appConf"`
+	Panel    Panel    `json:"panel"`
 	Caddy    Caddy    `json:"caddy"`
 	Db       Database `json:"database"`
 	Smtp     Smtp     `json:"smtp"`
 	Netdata  Netdata  `json:"netdata"`
+}
+
+type Panel struct {
+	Domain string `json:"domain"`
+	Port   int    `json:"port,omitempty"`
 }
 
 type Caddy struct {
