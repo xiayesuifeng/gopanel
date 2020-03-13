@@ -14,6 +14,7 @@ type Config struct {
 	Caddy    Caddy    `json:"caddy"`
 	Db       Database `json:"database"`
 	Smtp     Smtp     `json:"smtp"`
+	Netdata  Netdata  `json:"netdata"`
 }
 
 type Caddy struct {
@@ -35,6 +36,11 @@ type Smtp struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Host     string `json:"host"`
+}
+
+type Netdata struct {
+	Enable bool   `json:"enable"`
+	Host   string `json:"host"`
 }
 
 func ParseConf(config string) error {

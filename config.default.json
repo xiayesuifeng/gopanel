@@ -18,5 +18,9 @@
     "username":"",
     "password": "",
     "host": ""
+  },
+  "netdata":{
+    "enable": false,
+    "host": "http://localhost:19999"
   }
 }
