@@ -85,6 +85,10 @@ func init() {
 		log.Panicln(err)
 	}
 
+	appConf := os.Getenv("GOPANEL_APP_CONF_PATH")
+	if appConf != "" {
+		core.Conf.AppConf = appConf
+	}
 	if _, err := os.Stat(core.Conf.AppConf); err != nil {
 		if os.IsNotExist(err) {
 			os.MkdirAll(core.Conf.AppConf, 0755)
