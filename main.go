@@ -16,8 +16,9 @@ import (
 )
 
 var (
-	port = flag.Int("p", 8080, "port")
-	help = flag.Bool("h", false, "help")
+	config = flag.String("c", "config.json", "config file path")
+	port   = flag.Int("p", 8080, "port")
+	help   = flag.Bool("h", false, "help")
 )
 
 func main() {
@@ -76,7 +77,7 @@ func init() {
 		os.Exit(0)
 	}
 
-	err := core.ParseConf("config.json")
+	err := core.ParseConf(*config)
 	if err != nil {
 		if os.IsNotExist(err) {
 			log.Println("please config config.json")
