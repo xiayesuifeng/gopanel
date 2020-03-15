@@ -24,6 +24,6 @@
   },
   "netdata":{
     "enable": false,
-    "host": "http://localhost:19999"
+    "host": "localhost:19999"
   }
 }
