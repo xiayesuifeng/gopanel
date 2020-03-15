@@ -56,7 +56,7 @@ func main() {
 	}
 	router.Use(static.Serve("/", static.LocalFile(webPath, false)))
 	router.NoRoute(func(c *gin.Context) {
-		if !strings.Contains(c.Request.RequestURI, "/api") {
+		if !strings.Contains(c.Request.RequestURI, "/api") && !strings.Contains(c.Request.RequestURI, "/netdata") {
 			path := strings.Split(c.Request.URL.Path, "/")
 			if len(path) > 1 {
 				c.File(webPath + "/index.html")
