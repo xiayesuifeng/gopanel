@@ -47,6 +47,7 @@ type Smtp struct {
 type Netdata struct {
 	Enable bool   `json:"enable"`
 	Host   string `json:"host"`
+	Path   string `json:"path,omitempty"`
 }
 
 func ParseConf(config string) error {
