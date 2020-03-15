@@ -1,0 +1,22 @@
+image: archlinux/base
+
+before_script:
+  - pacman -Sy --noconfirm base-devel go wget
+
+stages:
+  - build
+
+build-gopanel:
+  stage: build
+  script:
+    - go build
+    - mkdir -p $CI_PROJECT_DIR/gopanel
+    - cp gopanel $CI_PROJECT_DIR/gopanel
+    - cp config.default.json $CI_PROJECT_DIR/gopanel
+    - wget https://gitlab.com/xiayesuifeng/gopanel-web/builds/artifacts/master/download?job=build-web -O web.zip
+    - unzip web.zip
+    - mv build $CI_PROJECT_DIR/gopanel/web
+
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/gopanel
