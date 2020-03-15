@@ -16,6 +16,7 @@ const (
 	GO_TYPE = iota + 1
 	JAVA_TYPE
 	PHP_TYPE
+	OTHER_TYPE
 )
 
 type App struct {
