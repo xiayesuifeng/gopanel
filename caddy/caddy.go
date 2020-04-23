@@ -29,6 +29,7 @@ const panelCaddyJson = `{
 		{domain}
       }
     ]
+	{automaticHttps}
   }`
 
 const netdataPathCaddyJson = `{
@@ -81,6 +82,12 @@ func LoadPanelConfig(port string) (err error) {
 		conf = strings.ReplaceAll(conf, "{listenPort}", "\"listen\": [\":"+strconv.Itoa(core.Conf.Panel.Port)+"\"],")
 	} else {
 		conf = strings.ReplaceAll(conf, "{listenPort}", "")
+	}
+
+	if !core.Conf.Panel.AutomaticHttps {
+		conf = strings.ReplaceAll(conf, "{automaticHttps}", ",\"automatic_https\": {\"disable\": true}")
+	} else {
+		conf = strings.ReplaceAll(conf, "{automaticHttps}", "")
 	}
 
 	if core.Conf.Netdata.Enable {
