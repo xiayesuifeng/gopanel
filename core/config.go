@@ -19,7 +19,7 @@ type Config struct {
 }
 
 type Panel struct {
-	Domain string `json:"domain"`
+	Domain string `json:"domain,omitempty"`
 	Port   int    `json:"port,omitempty"`
 }
 

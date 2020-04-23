@@ -25,8 +25,8 @@ const panelCaddyJson = `{
               }
             ]
           }
-        ],
-        "match": [{"host": [{domain}]}]
+        ]
+		{domain}
       }
     ]
   }`
@@ -71,7 +71,12 @@ const netdataCaddyJson = `{
 func LoadPanelConfig(port string) (err error) {
 	conf := panelCaddyJson
 	conf = strings.ReplaceAll(conf, "{port}", port)
-	conf = strings.ReplaceAll(conf, "{domain}", "\""+core.Conf.Panel.Domain+"\"")
+	if core.Conf.Panel.Domain != "" {
+		conf = strings.ReplaceAll(conf, "{domain}", ",\"match\": [{\"host\": [\""+core.Conf.Panel.Domain+"\"]}]")
+	} else {
+		conf = strings.ReplaceAll(conf, "{domain}", "")
+	}
+
 	if core.Conf.Panel.Port != 0 {
 		conf = strings.ReplaceAll(conf, "{listenPort}", "\"listen\": [\":"+strconv.Itoa(core.Conf.Panel.Port)+"\"],")
 	} else {
