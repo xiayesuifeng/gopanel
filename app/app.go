@@ -33,11 +33,11 @@ func AddApp(app App) error {
 		return errors.New("app is exist")
 	}
 
-	if err := SaveAppConfig(app); err != nil {
+	if err := caddy.AddServer(app.Name, app.CaddyConfig); err != nil {
 		return err
 	}
 
-	if err := caddy.AddServer(app.Name, app.CaddyConfig); err != nil {
+	if err := SaveAppConfig(app); err != nil {
 		return err
 	}
 
