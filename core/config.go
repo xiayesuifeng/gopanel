@@ -11,6 +11,7 @@ type Config struct {
 	Mode     string   `json:"mode"`
 	Password string   `json:"password"`
 	AppConf  string   `json:"appConf"`
+	Secret   string   `json:"secret"`
 	Panel    Panel    `json:"panel"`
 	Caddy    Caddy    `json:"caddy"`
 	Db       Database `json:"database"`
