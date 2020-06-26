@@ -22,7 +22,7 @@ func GenerateToken() (string, error) {
 
 func ParseToken(token string) (claims *jwt.StandardClaims, err error) {
 	tokenClaims, err := jwt.ParseWithClaims(token, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte("gopanel-secret"), nil
+		return []byte(core.Conf.Secret), nil
 	})
 
 	if tokenClaims != nil {
