@@ -1,11 +1,33 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"gitlab.com/xiayesuifeng/gopanel/app"
+	"gitlab.com/xiayesuifeng/gopanel/core"
+	"strings"
 )
 
 type App struct {
+}
+
+func (a *App) GetValidate(ctx *gin.Context) bool {
+	validate := false
+	host := core.Conf.Panel.Domain
+	if host == "" {
+		if strings.HasSuffix(ctx.Request.Host, fmt.Sprintf(":%d", core.Conf.Panel.Port)) {
+			validate = true
+		}
+	} else if core.Conf.Panel.Port == 0 {
+		if strings.HasPrefix(ctx.Request.Host, host) {
+			validate = true
+		}
+	} else {
+		host += fmt.Sprintf(":%d", core.Conf.Panel.Port)
+		validate = ctx.Request.Host == host
+	}
+
+	return validate
 }
 
 func (a *App) Get(ctx *gin.Context) {
@@ -54,7 +76,7 @@ func (a *App) Post(ctx *gin.Context) {
 		return
 	}
 
-	if err := app.AddApp(data); err != nil {
+	if err := app.AddApp(data, a.GetValidate(ctx)); err != nil {
 		ctx.JSON(200, gin.H{
 			"code":    400,
 			"message": err.Error(),
@@ -78,7 +100,7 @@ func (a *App) Put(ctx *gin.Context) {
 
 	data.Name = name
 
-	if err := app.EditApp(data); err != nil {
+	if err := app.EditApp(data, a.GetValidate(ctx)); err != nil {
 		ctx.JSON(200, gin.H{
 			"code":    500,
 			"message": err.Error(),
@@ -91,7 +113,7 @@ func (a *App) Put(ctx *gin.Context) {
 func (a *App) Delete(ctx *gin.Context) {
 	name := ctx.Param("name")
 
-	if err := app.DeleteApp(name); err == nil {
+	if err := app.DeleteApp(name, a.GetValidate(ctx)); err == nil {
 		ctx.JSON(200, gin.H{
 			"code": 200,
 		})

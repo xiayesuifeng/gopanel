@@ -28,12 +28,18 @@ type App struct {
 	BootArgument string          `json:"bootArgument"`
 }
 
-func AddApp(app App) error {
+func AddApp(app App, validate bool) error {
 	if CheckAppExist(app.Name) {
 		return errors.New("app is exist")
 	}
 
-	if err := caddy.AddServer(app.Name, app.CaddyConfig); err != nil {
+	if validate {
+		if err := caddy.ValidateConfig(app.CaddyConfig); err != nil {
+			return err
+		}
+
+		go caddy.AddServer(app.Name, app.CaddyConfig)
+	} else if err := caddy.AddServer(app.Name, app.CaddyConfig); err != nil {
 		return err
 	}
 
@@ -76,7 +82,7 @@ func GetApp(name string) (App, error) {
 	}
 }
 
-func EditApp(app App) error {
+func EditApp(app App, validate bool) error {
 	if !CheckAppExist(app.Name) {
 		return errors.New("app not found")
 	}
@@ -85,7 +91,9 @@ func EditApp(app App) error {
 		return err
 	}
 
-	if err := caddy.EditServer(app.Name, app.CaddyConfig); err != nil {
+	if validate {
+		go caddy.EditServer(app.Name, app.CaddyConfig)
+	} else if err := caddy.EditServer(app.Name, app.CaddyConfig); err != nil {
 		return err
 	}
 
@@ -101,13 +109,15 @@ func EditApp(app App) error {
 	return nil
 }
 
-func DeleteApp(name string) error {
+func DeleteApp(name string, validate bool) error {
 	if CheckAppExist(name) {
-		if err := caddy.DeleteServer(name); err != nil {
+		if validate {
+			go caddy.DeleteServer(name)
+		} else if err := caddy.DeleteServer(name); err != nil {
 			return err
-		} else {
-			return os.Remove(core.Conf.AppConf + "/" + name + ".json")
 		}
+
+		return os.Remove(core.Conf.AppConf + "/" + name + ".json")
 	} else {
 		return errors.New("app not found")
 	}
