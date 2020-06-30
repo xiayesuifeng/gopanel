@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/websocket"
 	"gitlab.com/xiayesuifeng/gopanel/backend"
 	"log"
+	"net/http"
 )
 
 type Backend struct {
@@ -26,7 +27,10 @@ func (b *Backend) Get(ctx *gin.Context) {
 }
 
 func (b *Backend) GetWS(ctx *gin.Context) {
-	conn, err := wsupgrader.Upgrade(ctx.Writer, ctx.Request, nil)
+	headers := http.Header{}
+	headers.Add("Sec-WebSocket-Protocol", ctx.GetHeader("Sec-WebSocket-Protocol"))
+
+	conn, err := wsupgrader.Upgrade(ctx.Writer, ctx.Request, headers)
 	if err != nil {
 		log.Println("Failed to set websocket upgrade: %+v", err)
 		return

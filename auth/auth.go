@@ -14,6 +14,10 @@ func AuthMiddleware(ctx *gin.Context) {
 
 	token := ctx.GetHeader("Authorization")
 
+	if strings.HasPrefix(ctx.Request.RequestURI, "/api/backend") && strings.HasSuffix(ctx.Request.RequestURI, "/ws") {
+		token = ctx.GetHeader("Sec-WebSocket-Protocol")
+	}
+
 	claims, err := ParseToken(token)
 	if err != nil {
 		log.Println(err)
