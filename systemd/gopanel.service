@@ -11,6 +11,7 @@ PrivateDevices=true
 ProtectHome=true
 ProtectSystem=strict
 ReadWritePaths=/etc/gopanel/app.conf.d
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
