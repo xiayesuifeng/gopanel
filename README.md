@@ -30,11 +30,11 @@ unzip gopanel.zip
 cd gopanel
 sudo mkdir -p /etc/gopanel/app.conf.d
 sudo mkdir -p /usr/share/gopanel
-sudo install -D -m 0755 gopanel "$pkgdir/usr/bin/gopanel"
-sudo install -D -m 0644 systemd/gopanel.service "$pkgdir/usr/lib/systemd/system/gopanel.service"
-sudo install -D -m 0644 config.default.json "$pkgdir/etc/gopanel/config.json"
-sudo cp -rf web "${pkgdir}/usr/share/gopanel/web"
-sudo chmod -R 0644 "${pkgdir}/usr/share/gopanel/web"
+sudo install -D -m 0755 gopanel "/usr/bin/gopanel
+sudo install -D -m 0644 systemd/gopanel.service /usr/lib/systemd/system/gopanel.service
+sudo install -D -m 0644 config.default.json "/etc/gopanel/config.json
+sudo cp -rf web /usr/share/gopanel/web
+sudo chmod -R 0644 /usr/share/gopanel/web
 sudo systemctl daemon-reload
 ```
 
