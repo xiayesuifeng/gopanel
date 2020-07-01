@@ -1,0 +1,16 @@
+[Unit]
+Description=GoPanel Service
+After=network.target caddy.service
+Requires=caddy.service
+
+[Service]
+Environment=GOPANEL_WEB_PATH=/usr/share/gopanel/web
+ExecStart=/usr/bin/gopanel -c /etc/gopanel/config.json -p 12020
+PrivateTmp=true
+PrivateDevices=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/etc/gopanel/app.conf.d
+
+[Install]
+WantedBy=multi-user.target
