@@ -6,7 +6,7 @@
     "domain": "example.com"
   },
   "caddy": {
-    "adminAddress": "localhost:2019",
+    "adminAddress": "http://localhost:2019",
     "conf": "/etc/caddy/caddy.conf.d",
     "data": "/var/lib/caddy"
   },
