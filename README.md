@@ -2,6 +2,7 @@
 
 A control panel that is written in Golang and is able to manage [Caddy 2](https://caddyserver.com/) and Guard Go web server.
 
+[![AUR package](https://repology.org/badge/version-for-repo/aur/gopanel.svg)](https://repology.org/project/gopanel/versions)
 [![pipeline status](https://gitlab.com/xiayesuifeng/gopanel/badges/master/pipeline.svg)](https://gitlab.com/xiayesuifeng/gopanel/commits/master)
 [![Go Report Card](https://goreportcard.com/badge/gitlab.com/xiayesuifeng/gopanel)](https://goreportcard.com/report/gitlab.com/xiayesuifeng/gopanel)
 [![GoDoc](https://godoc.org/gitlab.com/xiayesuifeng/gopanel?status.svg)](https://godoc.org/gitlab.com/xiayesuifeng/gopanel)
