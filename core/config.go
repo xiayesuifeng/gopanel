@@ -26,9 +26,9 @@ type Panel struct {
 }
 
 type Caddy struct {
-	AdminAddress string `json:"adminAddress"`
-	Conf         string `json:"conf"`
-	Data         string `json:"data"`
+	AdminAddress NetAddress `json:"adminAddress"`
+	Conf         string     `json:"conf"`
+	Data         string     `json:"data"`
 }
 
 type Database struct {

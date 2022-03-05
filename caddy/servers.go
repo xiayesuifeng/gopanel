@@ -1,16 +1,47 @@
 package caddy
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/go-resty/resty/v2"
 	"github.com/pkg/errors"
 	"gitlab.com/xiayesuifeng/gopanel/core"
+	"net"
+	"net/http"
+	"sync"
 )
 
 const serversApi = "/config/apps/http/servers"
 
+var (
+	once   = sync.Once{}
+	client *resty.Client
+)
+
+func getClient() *resty.Client {
+	once.Do(func() {
+		address := core.Conf.Caddy.AdminAddress
+
+		client = resty.New()
+
+		if address.IsUnixNetwork() {
+			transport := &http.Transport{
+				DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
+					return net.Dial(address.Network, address.Address)
+				},
+			}
+
+			client.SetTransport(transport).SetScheme("http")
+		} else {
+			client.SetHostURL(address.Address)
+		}
+	})
+
+	return client
+}
+
 func GetServers() (json.RawMessage, error) {
-	resp, err := resty.New().R().Get(core.Conf.Caddy.AdminAddress + serversApi)
+	resp, err := getClient().R().Get(serversApi)
 	if err != nil {
 		return nil, err
 	}
@@ -23,7 +54,7 @@ func GetServers() (json.RawMessage, error) {
 }
 
 func GetServer(name string) (json.RawMessage, error) {
-	resp, err := resty.New().R().Get(core.Conf.Caddy.AdminAddress + serversApi + "/" + name)
+	resp, err := getClient().R().Get(serversApi + "/" + name)
 	if err != nil {
 		return nil, err
 	}
@@ -36,10 +67,10 @@ func GetServer(name string) (json.RawMessage, error) {
 }
 
 func AddServer(name string, config json.RawMessage) error {
-	resp, err := resty.New().R().
+	resp, err := getClient().R().
 		SetHeader("Content-Type", "application/json").
 		SetBody(config).
-		Put(core.Conf.Caddy.AdminAddress + serversApi + "/" + name)
+		Put(serversApi + "/" + name)
 	if err != nil {
 		return err
 	}
@@ -52,10 +83,10 @@ func AddServer(name string, config json.RawMessage) error {
 }
 
 func EditServer(name string, config json.RawMessage) error {
-	resp, err := resty.New().R().
+	resp, err := getClient().R().
 		SetHeader("Content-Type", "application/json").
 		SetBody(config).
-		Post(core.Conf.Caddy.AdminAddress + serversApi + "/" + name)
+		Post(serversApi + "/" + name)
 	if err != nil {
 		return err
 	}
@@ -68,7 +99,7 @@ func EditServer(name string, config json.RawMessage) error {
 }
 
 func DeleteServer(name string) error {
-	resp, err := resty.New().R().Delete(core.Conf.Caddy.AdminAddress + serversApi + "/" + name)
+	resp, err := getClient().R().Delete(serversApi + "/" + name)
 	if err != nil {
 		return err
 	}
@@ -81,7 +112,7 @@ func DeleteServer(name string) error {
 }
 
 func CheckServerExist(name string) bool {
-	resp, err := resty.New().R().Get(core.Conf.Caddy.AdminAddress + serversApi + "/" + name)
+	resp, err := getClient().R().Get(serversApi + "/" + name)
 	if err != nil {
 		return false
 	}
