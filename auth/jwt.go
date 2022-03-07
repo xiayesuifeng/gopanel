@@ -2,15 +2,15 @@ package auth
 
 import (
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v4"
 	"gitlab.com/xiayesuifeng/gopanel/core"
 	"math/rand"
 	"time"
 )
 
 func GenerateToken() (string, error) {
-	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-		ExpiresAt: time.Now().Add(time.Hour * 24 * 3).Unix(),
+	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 3)),
 	})
 
 	if core.Conf.Secret == "" {
@@ -20,13 +20,13 @@ func GenerateToken() (string, error) {
 	return tokenClaims.SignedString([]byte(core.Conf.Secret))
 }
 
-func ParseToken(token string) (claims *jwt.StandardClaims, err error) {
-	tokenClaims, err := jwt.ParseWithClaims(token, &jwt.StandardClaims{}, func(token *jwt.Token) (interface{}, error) {
+func ParseToken(token string) (claims *jwt.RegisteredClaims, err error) {
+	tokenClaims, err := jwt.ParseWithClaims(token, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(core.Conf.Secret), nil
 	})
 
 	if tokenClaims != nil {
-		if c, ok := tokenClaims.Claims.(*jwt.StandardClaims); ok {
+		if c, ok := tokenClaims.Claims.(*jwt.RegisteredClaims); ok {
 			claims = c
 		}
 	}
