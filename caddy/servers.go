@@ -1,44 +1,13 @@
 package caddy
 
 import (
-	"context"
 	"encoding/json"
-	"github.com/go-resty/resty/v2"
 	"github.com/pkg/errors"
-	"gitlab.com/xiayesuifeng/gopanel/core"
-	"net"
-	"net/http"
-	"sync"
+	"gitlab.com/xiayesuifeng/gopanel/caddy/config"
+	"strings"
 )
 
 const serversApi = "/config/apps/http/servers"
-
-var (
-	once   = sync.Once{}
-	client *resty.Client
-)
-
-func getClient() *resty.Client {
-	once.Do(func() {
-		address := core.Conf.Caddy.AdminAddress
-
-		client = resty.New()
-
-		if address.IsUnixNetwork() {
-			transport := &http.Transport{
-				DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
-					return net.Dial(address.Network, address.Address)
-				},
-			}
-
-			client.SetTransport(transport).SetScheme("http")
-		} else {
-			client.SetHostURL(address.Address)
-		}
-	})
-
-	return client
-}
 
 func GetServers() (json.RawMessage, error) {
 	resp, err := getClient().R().Get(serversApi)
@@ -66,10 +35,10 @@ func GetServer(name string) (json.RawMessage, error) {
 	}
 }
 
-func AddServer(name string, config json.RawMessage) error {
+func AddServer(name string, config config.ServerType) error {
 	resp, err := getClient().R().
 		SetHeader("Content-Type", "application/json").
-		SetBody(config).
+		SetBody(&config).
 		Put(serversApi + "/" + name)
 	if err != nil {
 		return err
@@ -82,10 +51,10 @@ func AddServer(name string, config json.RawMessage) error {
 	}
 }
 
-func EditServer(name string, config json.RawMessage) error {
+func EditServer(name string, config config.ServerType) error {
 	resp, err := getClient().R().
 		SetHeader("Content-Type", "application/json").
-		SetBody(config).
+		SetBody(&config).
 		Post(serversApi + "/" + name)
 	if err != nil {
 		return err
@@ -120,6 +89,39 @@ func CheckServerExist(name string) bool {
 	if resp.StatusCode() != 200 {
 		return false
 	} else {
-		return string(resp.Body()) != "null"
+		return strings.TrimSpace(string(resp.Body())) != "null"
 	}
+}
+
+// Deprecated: use AddRoute instead.
+func AddAdaptServerToRoute(name string, config config.ServerType) error {
+	routes := config.Routes
+	for i := 0; i < len(routes); i++ {
+		routes[i].Group = name
+
+		if err := AddRoute(routes[i]); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Deprecated: use EditRoute instead.
+func EditAdaptServerToRoute(name string, config config.ServerType) error {
+	routes := config.Routes
+	for i := 0; i < len(routes); i++ {
+		routes[i].Group = name
+
+		if err := EditRoute(routes[i]); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// Deprecated: use DeleteRoute instead.
+func DeleteAdaptServerToRoute(name string) error {
+	return DeleteRoute(name)
 }

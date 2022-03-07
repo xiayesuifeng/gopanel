@@ -5,6 +5,7 @@ import (
 	"errors"
 	"gitlab.com/xiayesuifeng/gopanel/backend"
 	"gitlab.com/xiayesuifeng/gopanel/caddy"
+	"gitlab.com/xiayesuifeng/gopanel/caddy/config"
 	"gitlab.com/xiayesuifeng/gopanel/core"
 	"io/ioutil"
 	"log"
@@ -20,12 +21,12 @@ const (
 )
 
 type App struct {
-	Name         string          `json:"name"`
-	CaddyConfig  json.RawMessage `json:"caddyConfig" binding:"required"`
-	Type         int             `json:"type" binding:"required"`
-	Path         string          `json:"path"`
-	AutoReboot   bool            `json:"autoReboot"`
-	BootArgument string          `json:"bootArgument"`
+	Name         string            `json:"name"`
+	CaddyConfig  config.ServerType `json:"caddyConfig" binding:"required"`
+	Type         int               `json:"type" binding:"required"`
+	Path         string            `json:"path"`
+	AutoReboot   bool              `json:"autoReboot"`
+	BootArgument string            `json:"bootArgument"`
 }
 
 func AddApp(app App, validate bool) error {
@@ -34,12 +35,17 @@ func AddApp(app App, validate bool) error {
 	}
 
 	if validate {
-		if err := caddy.ValidateConfig(app.CaddyConfig); err != nil {
+		bytes, err := json.Marshal(app.CaddyConfig)
+		if err != nil {
 			return err
 		}
 
-		go caddy.AddServer(app.Name, app.CaddyConfig)
-	} else if err := caddy.AddServer(app.Name, app.CaddyConfig); err != nil {
+		if err := caddy.ValidateConfig(bytes); err != nil {
+			return err
+		}
+
+		go caddy.AddAdaptServerToRoute(app.Name, app.CaddyConfig)
+	} else if err := caddy.AddAdaptServerToRoute(app.Name, app.CaddyConfig); err != nil {
 		return err
 	}
 
@@ -92,8 +98,8 @@ func EditApp(app App, validate bool) error {
 	}
 
 	if validate {
-		go caddy.EditServer(app.Name, app.CaddyConfig)
-	} else if err := caddy.EditServer(app.Name, app.CaddyConfig); err != nil {
+		go caddy.EditAdaptServerToRoute(app.Name, app.CaddyConfig)
+	} else if err := caddy.EditAdaptServerToRoute(app.Name, app.CaddyConfig); err != nil {
 		return err
 	}
 
@@ -112,7 +118,7 @@ func EditApp(app App, validate bool) error {
 func DeleteApp(name string, validate bool) error {
 	if CheckAppExist(name) {
 		if validate {
-			go caddy.DeleteServer(name)
+			go caddy.DeleteAdaptServerToRoute(name)
 		} else if err := caddy.DeleteServer(name); err != nil {
 			return err
 		}

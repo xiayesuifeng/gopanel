@@ -2,35 +2,26 @@ package caddy
 
 import (
 	"encoding/json"
+	"fmt"
+	"gitlab.com/xiayesuifeng/gopanel/caddy/config"
 	"gitlab.com/xiayesuifeng/gopanel/core"
-	"strconv"
 	"strings"
 )
 
-const panelCaddyJson = `{
-    {listenPort}
-    "routes": [
-      {
-        "handle": [
-          {
-            "handler": "subroute",
-            "routes": [
-              {netdataJson}{
-                "handle": [
-				  {
-				    "handler": "reverse_proxy",
-                    "upstreams": [{"dial": "127.0.0.1:{port}"}]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-		{domain}
-      }
-    ]
-	{automaticHttps}
-  }`
+const panelRouteHandleCaddyJson = `[
+    {
+      "handler": "subroute",
+      "routes": [
+        {netdataJson}
+        {
+          "handle": [{
+			"handler": "reverse_proxy",
+            "upstreams": [{"dial": "127.0.0.1:{port}"}]
+          }]
+        }
+      ]
+    }
+  ]`
 
 const netdataPathCaddyJson = `{
 	"handler": "rewrite",
@@ -70,24 +61,16 @@ const netdataCaddyJson = `{
 	},`
 
 func LoadPanelConfig(port string) (err error) {
-	conf := panelCaddyJson
+	panelRoute := &config.RouteType{
+		Group: "gopanel",
+	}
+
+	conf := panelRouteHandleCaddyJson
 	conf = strings.ReplaceAll(conf, "{port}", port)
 	if core.Conf.Panel.Domain != "" {
-		conf = strings.ReplaceAll(conf, "{domain}", ",\"match\": [{\"host\": [\""+core.Conf.Panel.Domain+"\"]}]")
-	} else {
-		conf = strings.ReplaceAll(conf, "{domain}", "")
-	}
-
-	if core.Conf.Panel.Port != 0 {
-		conf = strings.ReplaceAll(conf, "{listenPort}", "\"listen\": [\":"+strconv.Itoa(core.Conf.Panel.Port)+"\"],")
-	} else {
-		conf = strings.ReplaceAll(conf, "{listenPort}", "")
-	}
-
-	if !core.Conf.Panel.AutomaticHttps {
-		conf = strings.ReplaceAll(conf, "{automaticHttps}", ",\"automatic_https\": {\"disable\": true}")
-	} else {
-		conf = strings.ReplaceAll(conf, "{automaticHttps}", "")
+		panelRoute.Match = append(panelRoute.Match, map[string]json.RawMessage{
+			"host": json.RawMessage("[\"" + core.Conf.Panel.Domain + "\"]"),
+		})
 	}
 
 	if core.Conf.Netdata.Enable {
@@ -107,10 +90,21 @@ func LoadPanelConfig(port string) (err error) {
 		conf = strings.ReplaceAll(conf, "{netdataJson}", "")
 	}
 
-	if CheckServerExist("gopanel") {
-		err = EditServer("gopanel", json.RawMessage(conf))
+	panelRoute.Handle = json.RawMessage(conf)
+
+	if CheckServerExist(DefaultHttpsServerName) {
+		if _, err = GetRouteIdx(panelRoute.Group); err == RouteNotFoundError {
+			err = AddRoute(panelRoute)
+		} else {
+			err = EditRoute(panelRoute)
+		}
 	} else {
-		err = AddServer("gopanel", json.RawMessage(conf))
+		err = AddServer(DefaultHttpsServerName, config.ServerType{
+			Listen: []string{
+				fmt.Sprintf(":%d", DefaultHttpsPort),
+			},
+			Routes: []*config.RouteType{panelRoute},
+		})
 	}
 
 	return err

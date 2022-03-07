@@ -98,6 +98,10 @@ func init() {
 		}
 	}
 
+	if err := caddy.ParseDefaultHTTPConfig(); err != nil {
+		log.Fatalln(err)
+	}
+
 	if err := caddy.LoadPanelConfig(strconv.Itoa(*port)); err != nil {
 		log.Fatalln(err)
 	}
