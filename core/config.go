@@ -27,8 +27,21 @@ type Panel struct {
 
 type Caddy struct {
 	AdminAddress NetAddress `json:"adminAddress"`
+	TLS          TLS        `json:"tls"`
 	Conf         string     `json:"conf"`
 	Data         string     `json:"data"`
+}
+
+type TLS struct {
+	// optional value: acme , internal , zerossl
+	Issuers []string `json:"issuers"`
+	// configure dns challenges, need to install the corresponding plugin
+	DNS *AcmeDNS `json:"dns"`
+}
+
+type AcmeDNS struct {
+	Provider  json.RawMessage `json:"provider"`
+	Resolvers []string        `json:"resolvers"`
 }
 
 type Database struct {
@@ -55,6 +68,10 @@ type Netdata struct {
 func ParseConf(config string) error {
 	var c Config
 	c.Panel.AutomaticHttps = true
+
+	if len(c.Caddy.TLS.Issuers) == 0 {
+		c.Caddy.TLS.Issuers = append(c.Caddy.TLS.Issuers, "acme", "internal", "zerossl")
+	}
 
 	conf, err := os.Open(config)
 	if err != nil {

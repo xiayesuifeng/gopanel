@@ -107,5 +107,5 @@ func LoadPanelConfig(port string) (err error) {
 		})
 	}
 
-	return err
+	return AddTLSPolicy([]string{core.Conf.Panel.Domain})
 }
