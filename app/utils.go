@@ -49,9 +49,9 @@ func ReloadAppConfig() {
 				log.Println(err)
 			} else {
 				if caddy.CheckServerExist(app.Name) {
-					err = caddy.EditServer(app.Name, app.CaddyConfig)
+					err = caddy.EditAdaptServerToRoute(app.Name, app.CaddyConfig)
 				} else {
-					err = caddy.AddServer(app.Name, app.CaddyConfig)
+					err = caddy.AddAdaptServerToRoute(app.Name, app.CaddyConfig)
 				}
 
 				if err != nil {
