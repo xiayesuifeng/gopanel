@@ -2,6 +2,7 @@
   "mode":"debug",
   "password": "0925e15d0ae6af196e6295923d76af02b4a3420f",
   "appConf": "/etc/gopanel/app.conf.d",
+  "data": "data",
   "panel": {
     "domain": "example.com"
   },

@@ -9,6 +9,7 @@ import (
 	"gitlab.com/xiayesuifeng/gopanel/caddy"
 	"gitlab.com/xiayesuifeng/gopanel/controller"
 	"gitlab.com/xiayesuifeng/gopanel/core"
+	"gitlab.com/xiayesuifeng/gopanel/core/storage"
 	"log"
 	"os"
 	"strconv"
@@ -96,6 +97,10 @@ func init() {
 		} else {
 			log.Panicln("app.conf.d dir create failure")
 		}
+	}
+
+	if err := storage.InitBaseStorage(core.Conf.Data); err != nil {
+		log.Fatalln(err)
 	}
 
 	if err := caddy.ParseDefaultHTTPConfig(); err != nil {
