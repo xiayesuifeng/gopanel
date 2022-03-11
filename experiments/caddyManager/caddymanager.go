@@ -4,12 +4,15 @@ import (
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"github.com/go-resty/resty/v2"
 	"gitlab.com/xiayesuifeng/gopanel/core"
+	"log"
 	"net"
 	"strconv"
+	"sync"
 )
 
 var (
 	manager *Manager
+	mutex   sync.Mutex
 )
 
 const (
@@ -30,6 +33,8 @@ type Manager struct {
 	HTTPSPort       int
 	HTTPSServerName string
 	app             map[string]*APPConfig
+	appChange       chan bool
+	onAppChange     func()
 }
 
 func InitManager(adminAddress core.NetAddress) (err error) {
@@ -38,6 +43,8 @@ func InitManager(adminAddress core.NetAddress) (err error) {
 		HTTPPort:        DefaultHttpPort,
 		HTTPSPort:       DefaultHttpsPort,
 		HTTPSServerName: DefaultHttpsServerName,
+		app:             map[string]*APPConfig{},
+		appChange:       make(chan bool),
 	}
 
 	appConfig, err := manager.getAppConfig()
@@ -61,6 +68,9 @@ func InitManager(adminAddress core.NetAddress) (err error) {
 		}
 	}
 
+	manager.onAppChange = manager.onAppChangeFunc
+	go manager.onAppChange()
+
 	return nil
 }
 
@@ -71,4 +81,33 @@ func GetManager() *Manager {
 func (m *Manager) IsAppExist(name string) bool {
 	_, exist := m.app[name]
 	return exist
+}
+
+func (m *Manager) AddOrUpdateApp(name string, config *APPConfig) error {
+	mutex.Lock()
+	defer mutex.Unlock()
+
+	log.Println("[caddy manager] add or update app:", name)
+
+	m.app[name] = config
+
+	m.appChange <- true
+
+	return nil
+}
+
+func (m *Manager) onAppChangeFunc() {
+	log.Println("[caddy manager] start listening for app change")
+
+	for <-m.appChange {
+		log.Println("[caddy manager] app changes detected, call caddy admin api to update routes json")
+
+		servers := m.convertToCaddyConfig()
+
+		if err := m.postCaddyObject("/config/apps/http/servers", servers); err != nil {
+			log.Println("[caddy manager] call caddy admin api fail: ", err)
+		}
+	}
+
+	log.Println("[caddy manager] stop listening for app change")
 }
