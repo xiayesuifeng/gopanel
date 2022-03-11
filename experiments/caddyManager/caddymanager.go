@@ -19,9 +19,9 @@ const (
 )
 
 type APPConfig struct {
-	ListenPort uint
-	Domain     string
-	routes     []*caddyhttp.Route
+	ListenPort int               `json:"listenPort,omitempty"`
+	Domain     []string          `json:"domain"`
+	Routes     []caddyhttp.Route `json:"routes"`
 }
 
 type Manager struct {
