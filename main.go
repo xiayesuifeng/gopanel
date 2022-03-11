@@ -10,6 +10,7 @@ import (
 	"gitlab.com/xiayesuifeng/gopanel/controller"
 	"gitlab.com/xiayesuifeng/gopanel/core"
 	"gitlab.com/xiayesuifeng/gopanel/core/storage"
+	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyManager"
 	"log"
 	"os"
 	"strconv"
@@ -100,6 +101,10 @@ func init() {
 	}
 
 	if err := storage.InitBaseStorage(core.Conf.Data); err != nil {
+		log.Fatalln(err)
+	}
+
+	if err := caddyManager.InitManager(core.Conf.Caddy.AdminAddress); err != nil {
 		log.Fatalln(err)
 	}
 
