@@ -67,3 +67,8 @@ func InitManager(adminAddress core.NetAddress) (err error) {
 func GetManager() *Manager {
 	return manager
 }
+
+func (m *Manager) IsAppExist(name string) bool {
+	_, exist := m.app[name]
+	return exist
+}
