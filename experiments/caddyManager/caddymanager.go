@@ -29,7 +29,7 @@ type Manager struct {
 	HTTPPort        int
 	HTTPSPort       int
 	HTTPSServerName string
-	App             map[string]*APPConfig
+	app             map[string]*APPConfig
 }
 
 func InitManager(adminAddress core.NetAddress) (err error) {
