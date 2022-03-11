@@ -96,6 +96,19 @@ func (m *Manager) AddOrUpdateApp(name string, config *APPConfig) error {
 	return nil
 }
 
+func (m *Manager) DeleteApp(name string) error {
+	mutex.Lock()
+	defer mutex.Unlock()
+
+	log.Println("[caddy manager] delete app:", name)
+
+	delete(m.app, name)
+
+	m.appChange <- true
+
+	return nil
+}
+
 func (m *Manager) onAppChangeFunc() {
 	log.Println("[caddy manager] start listening for app change")
 
