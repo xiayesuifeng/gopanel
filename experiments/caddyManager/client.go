@@ -6,6 +6,7 @@ import (
 	"gitlab.com/xiayesuifeng/gopanel/core"
 	"net"
 	"net/http"
+	"time"
 )
 
 func newClient(address core.NetAddress) *resty.Client {
@@ -22,6 +23,9 @@ func newClient(address core.NetAddress) *resty.Client {
 	} else {
 		client.SetHostURL(address.Address)
 	}
+
+	client.SetTimeout(time.Second * 10)
+	client.SetRetryCount(3)
 
 	return client
 }
