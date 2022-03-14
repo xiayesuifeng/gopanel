@@ -1,7 +1,10 @@
 package caddy
 
 import (
+	"encoding/json"
+	"github.com/caddyserver/caddy/v2/modules/caddytls"
 	"gitlab.com/xiayesuifeng/gopanel/core/settingStorage"
+	"log"
 	"strconv"
 )
 
@@ -11,11 +14,14 @@ const (
 	ExperimentalHttp3Key = "general/experimentalHttp3"
 	AllowH2CKey          = "general/allowH2C"
 
+	TLSKey = "tls"
+
 	module = "caddy"
 )
 
 type Configuration struct {
 	General General `json:"general"`
+	TLS     TLS     `json:"tls"`
 }
 
 type General struct {
@@ -24,6 +30,11 @@ type General struct {
 
 	ExperimentalHttp3 bool `json:"experimentalHttp3"`
 	AllowH2C          bool `json:"allowH2C"`
+}
+
+type TLS struct {
+	DNSChallenges   map[string]caddytls.DNSChallengeConfig `json:"dnsChallenges"`
+	WildcardDomains []string                               `json:"wildcardDomains"`
 }
 
 func InitDefaultPortConf(httpPort, httpsPort int) error {
@@ -49,6 +60,9 @@ func GetConfiguration() *Configuration {
 
 	caddy := &Configuration{
 		General: General{},
+		TLS: TLS{
+			DNSChallenges: map[string]caddytls.DNSChallengeConfig{},
+		},
 	}
 
 	httpPort, err := strconv.Atoi(string(storage.Get(module, HTTPPortKey, []byte("80"))))
@@ -69,6 +83,12 @@ func GetConfiguration() *Configuration {
 	allowH2C, err := strconv.ParseBool(string(storage.Get(module, AllowH2CKey, []byte("false"))))
 	if err == nil {
 		caddy.General.ExperimentalHttp3 = allowH2C
+	}
+
+	if tlsRaw := storage.Get(module, TLSKey, nil); tlsRaw != nil {
+		if err := json.Unmarshal(tlsRaw, &caddy.TLS); err != nil {
+			log.Println("[caddy configuration] unmarshal tls struct fail:", err)
+		}
 	}
 
 	return caddy
