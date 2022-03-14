@@ -24,8 +24,8 @@ func GetStorage() *SettingStorage {
 	return currentStorage
 }
 
-func (s SettingStorage) Get(key string, defaultValue []byte) []byte {
-	bytes, err := s.baseStorage.Get("setting", key)
+func (s SettingStorage) Get(module, key string, defaultValue []byte) []byte {
+	bytes, err := s.baseStorage.Get("setting/"+module, key)
 	if err != nil || bytes == nil {
 		return defaultValue
 	}
@@ -33,14 +33,14 @@ func (s SettingStorage) Get(key string, defaultValue []byte) []byte {
 	return bytes
 }
 
-func (s SettingStorage) Set(key string, value []byte) error {
-	return s.baseStorage.Set("setting", key, value)
+func (s SettingStorage) Set(module, key string, value []byte) error {
+	return s.baseStorage.Set("setting/"+module, key, value)
 }
 
-func (s SettingStorage) Has(key string) bool {
-	return s.baseStorage.Has("setting", key)
+func (s SettingStorage) Has(module, key string) bool {
+	return s.baseStorage.Has("setting/"+module, key)
 }
 
-func (s SettingStorage) Delete(key string) error {
-	return s.baseStorage.Delete("setting", key)
+func (s SettingStorage) Delete(module, key string) error {
+	return s.baseStorage.Delete("setting/"+module, key)
 }

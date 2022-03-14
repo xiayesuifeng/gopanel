@@ -10,6 +10,8 @@ const (
 	HTTPSPortKey         = "caddy/httpsPort"
 	ExperimentalHttp3Key = "caddy/experimentalHttp3"
 	AllowH2CKey          = "caddy/allowH2C"
+
+	module = "caddy"
 )
 
 type Configuration struct {
@@ -27,14 +29,14 @@ type General struct {
 func InitDefaultPortConf(httpPort, httpsPort int) error {
 	storage := settingStorage.GetStorage()
 
-	if !storage.Has(HTTPPortKey) {
-		if err := storage.Set(HTTPPortKey, []byte(strconv.Itoa(httpPort))); err != nil {
+	if !storage.Has(module, HTTPPortKey) {
+		if err := storage.Set(module, HTTPPortKey, []byte(strconv.Itoa(httpPort))); err != nil {
 			return err
 		}
 	}
 
-	if !storage.Has(HTTPSPortKey) {
-		if err := storage.Set(HTTPSPortKey, []byte(strconv.Itoa(httpsPort))); err != nil {
+	if !storage.Has(module, HTTPSPortKey) {
+		if err := storage.Set(module, HTTPSPortKey, []byte(strconv.Itoa(httpsPort))); err != nil {
 			return err
 		}
 	}
@@ -49,22 +51,22 @@ func GetConfiguration() *Configuration {
 		General: General{},
 	}
 
-	httpPort, err := strconv.Atoi(string(storage.Get(HTTPPortKey, []byte("80"))))
+	httpPort, err := strconv.Atoi(string(storage.Get(module, HTTPPortKey, []byte("80"))))
 	if err == nil {
 		caddy.General.HTTPPort = httpPort
 	}
 
-	httpsPort, err := strconv.Atoi(string(storage.Get(HTTPSPortKey, []byte("443"))))
+	httpsPort, err := strconv.Atoi(string(storage.Get(module, HTTPSPortKey, []byte("443"))))
 	if err == nil {
 		caddy.General.HTTPSPort = httpsPort
 	}
 
-	experimentalHttp3, err := strconv.ParseBool(string(storage.Get(ExperimentalHttp3Key, []byte("false"))))
+	experimentalHttp3, err := strconv.ParseBool(string(storage.Get(module, ExperimentalHttp3Key, []byte("false"))))
 	if err == nil {
 		caddy.General.ExperimentalHttp3 = experimentalHttp3
 	}
 
-	allowH2C, err := strconv.ParseBool(string(storage.Get(AllowH2CKey, []byte("false"))))
+	allowH2C, err := strconv.ParseBool(string(storage.Get(module, AllowH2CKey, []byte("false"))))
 	if err == nil {
 		caddy.General.ExperimentalHttp3 = allowH2C
 	}
