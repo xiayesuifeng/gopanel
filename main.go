@@ -52,10 +52,10 @@ func main() {
 		backendRouter.GET("/:name/ws", backendC.GetWS)
 	}
 
-	caddyConfRouter := apiRouter.Group("/configuration/caddy")
+	caddyRouter := apiRouter.Group("/caddy")
 	{
-		caddyConfC := &controller.CaddyConf{}
-		caddyConfRouter.GET("", caddyConfC.Get)
+		caddyC := &controller.Caddy{}
+		caddyRouter.GET("/configuration", caddyC.GetConfiguration)
 	}
 
 	webPath := os.Getenv("GOPANEL_WEB_PATH")

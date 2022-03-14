@@ -5,10 +5,10 @@ import (
 	"gitlab.com/xiayesuifeng/gopanel/configuration/caddy"
 )
 
-type CaddyConf struct {
+type Caddy struct {
 }
 
-func (c *CaddyConf) Get(ctx *gin.Context) {
+func (c *Caddy) GetConfiguration(ctx *gin.Context) {
 	conf := caddy.GetConfiguration()
 	ctx.JSON(200, gin.H{
 		"code":          200,
