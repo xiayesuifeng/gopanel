@@ -6,10 +6,10 @@ import (
 )
 
 const (
-	HTTPPortKey          = "caddy/httpPort"
-	HTTPSPortKey         = "caddy/httpsPort"
-	ExperimentalHttp3Key = "caddy/experimentalHttp3"
-	AllowH2CKey          = "caddy/allowH2C"
+	HTTPPortKey          = "general/httpPort"
+	HTTPSPortKey         = "general/httpsPort"
+	ExperimentalHttp3Key = "general/experimentalHttp3"
+	AllowH2CKey          = "general/allowH2C"
 
 	module = "caddy"
 )
