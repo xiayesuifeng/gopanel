@@ -52,6 +52,12 @@ func main() {
 		backendRouter.GET("/:name/ws", backendC.GetWS)
 	}
 
+	caddyConfRouter := apiRouter.Group("/configuration/caddy")
+	{
+		caddyConfC := &controller.CaddyConf{}
+		caddyConfRouter.GET("", caddyConfC.Get)
+	}
+
 	webPath := os.Getenv("GOPANEL_WEB_PATH")
 	if webPath == "" {
 		webPath = "web"
