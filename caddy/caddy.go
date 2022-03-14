@@ -2,14 +2,13 @@ package caddy
 
 import (
 	"encoding/json"
-	"fmt"
-	"gitlab.com/xiayesuifeng/gopanel/caddy/config"
+	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"gitlab.com/xiayesuifeng/gopanel/core"
+	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyManager"
 	"strings"
 )
 
-const panelRouteHandleCaddyJson = `[
-    {
+const panelRouteHandleCaddyJson = `{
       "handler": "subroute",
       "routes": [
         {netdataJson}
@@ -20,8 +19,7 @@ const panelRouteHandleCaddyJson = `[
           }]
         }
       ]
-    }
-  ]`
+    }`
 
 const netdataPathCaddyJson = `{
 	"handler": "rewrite",
@@ -61,17 +59,16 @@ const netdataCaddyJson = `{
 	},`
 
 func LoadPanelConfig(port string) (err error) {
-	panelRoute := &config.RouteType{
-		Group: "gopanel",
+	panelApp := &caddyManager.APPConfig{
+		Domain: []string{core.Conf.Panel.Domain},
+	}
+
+	if port := core.Conf.Panel.Port; port != 0 {
+		panelApp.ListenPort = port
 	}
 
 	conf := panelRouteHandleCaddyJson
 	conf = strings.ReplaceAll(conf, "{port}", port)
-	if core.Conf.Panel.Domain != "" {
-		panelRoute.Match = append(panelRoute.Match, map[string]json.RawMessage{
-			"host": json.RawMessage("[\"" + core.Conf.Panel.Domain + "\"]"),
-		})
-	}
 
 	if core.Conf.Netdata.Enable {
 		netdataConf := netdataCaddyJson
@@ -90,22 +87,11 @@ func LoadPanelConfig(port string) (err error) {
 		conf = strings.ReplaceAll(conf, "{netdataJson}", "")
 	}
 
-	panelRoute.Handle = json.RawMessage(conf)
+	panelApp.Routes = append(panelApp.Routes, caddyhttp.Route{
+		HandlersRaw: []json.RawMessage{
+			json.RawMessage(conf),
+		},
+	})
 
-	if CheckServerExist(DefaultHttpsServerName) {
-		if _, err = GetRouteIdx(panelRoute.Group); err == RouteNotFoundError {
-			err = AddRoute(panelRoute)
-		} else {
-			err = EditRoute(panelRoute)
-		}
-	} else {
-		err = AddServer(DefaultHttpsServerName, config.ServerType{
-			Listen: []string{
-				fmt.Sprintf(":%d", DefaultHttpsPort),
-			},
-			Routes: []*config.RouteType{panelRoute},
-		})
-	}
-
-	return err
+	return caddyManager.GetManager().AddOrUpdateApp("gopanel", panelApp)
 }

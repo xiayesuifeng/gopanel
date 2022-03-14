@@ -113,7 +113,7 @@ func (a *App) Put(ctx *gin.Context) {
 func (a *App) Delete(ctx *gin.Context) {
 	name := ctx.Param("name")
 
-	if err := app.DeleteApp(name, a.GetValidate(ctx)); err == nil {
+	if err := app.DeleteApp(name); err == nil {
 		ctx.JSON(200, gin.H{
 			"code": 200,
 		})

@@ -5,8 +5,8 @@ import (
 	"errors"
 	"gitlab.com/xiayesuifeng/gopanel/backend"
 	"gitlab.com/xiayesuifeng/gopanel/caddy"
-	"gitlab.com/xiayesuifeng/gopanel/caddy/config"
 	"gitlab.com/xiayesuifeng/gopanel/core"
+	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyManager"
 	"io/ioutil"
 	"log"
 	"os"
@@ -21,17 +21,22 @@ const (
 )
 
 type App struct {
-	Name         string            `json:"name"`
-	CaddyConfig  config.ServerType `json:"caddyConfig" binding:"required"`
-	Type         int               `json:"type" binding:"required"`
-	Path         string            `json:"path"`
-	AutoReboot   bool              `json:"autoReboot"`
-	BootArgument string            `json:"bootArgument"`
+	Name         string                 `json:"name"`
+	CaddyConfig  caddyManager.APPConfig `json:"caddyConfig" binding:"required"`
+	Type         int                    `json:"type" binding:"required"`
+	Path         string                 `json:"path"`
+	AutoReboot   bool                   `json:"autoReboot"`
+	BootArgument string                 `json:"bootArgument"`
+	Version      string                 `json:"version"`
 }
 
 func AddApp(app App, validate bool) error {
 	if CheckAppExist(app.Name) {
 		return errors.New("app is exist")
+	}
+
+	if app.Version == "" {
+		app.Version = "1.0.0"
 	}
 
 	if validate {
@@ -43,9 +48,9 @@ func AddApp(app App, validate bool) error {
 		if err := caddy.ValidateConfig(bytes); err != nil {
 			return err
 		}
+	}
 
-		go caddy.AddAdaptServerToRoute(app.Name, app.CaddyConfig)
-	} else if err := caddy.AddAdaptServerToRoute(app.Name, app.CaddyConfig); err != nil {
+	if err := caddyManager.GetManager().AddOrUpdateApp(app.Name, &app.CaddyConfig); err != nil {
 		return err
 	}
 
@@ -93,13 +98,26 @@ func EditApp(app App, validate bool) error {
 		return errors.New("app not found")
 	}
 
+	if app.Version == "" {
+		app.Version = "1.0.0"
+	}
+
+	if validate {
+		bytes, err := json.Marshal(app.CaddyConfig)
+		if err != nil {
+			return err
+		}
+
+		if err := caddy.ValidateConfig(bytes); err != nil {
+			return err
+		}
+	}
+
 	if err := SaveAppConfig(app); err != nil {
 		return err
 	}
 
-	if validate {
-		go caddy.EditAdaptServerToRoute(app.Name, app.CaddyConfig)
-	} else if err := caddy.EditAdaptServerToRoute(app.Name, app.CaddyConfig); err != nil {
+	if err := caddyManager.GetManager().AddOrUpdateApp(app.Name, &app.CaddyConfig); err != nil {
 		return err
 	}
 
@@ -115,11 +133,9 @@ func EditApp(app App, validate bool) error {
 	return nil
 }
 
-func DeleteApp(name string, validate bool) error {
+func DeleteApp(name string) error {
 	if CheckAppExist(name) {
-		if validate {
-			go caddy.DeleteAdaptServerToRoute(name)
-		} else if err := caddy.DeleteServer(name); err != nil {
+		if err := caddyManager.GetManager().DeleteApp(name); err != nil {
 			return err
 		}
 

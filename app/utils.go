@@ -2,9 +2,10 @@ package app
 
 import (
 	"encoding/json"
+	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"gitlab.com/xiayesuifeng/gopanel/backend"
-	"gitlab.com/xiayesuifeng/gopanel/caddy"
 	"gitlab.com/xiayesuifeng/gopanel/core"
+	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyManager"
 	"io/ioutil"
 	"log"
 	"os"
@@ -29,6 +30,56 @@ func LoadAppConfig(name string) (App, error) {
 		return app, err
 	}
 
+	// Convert old version app format to new format
+	if app.Version == "" {
+		app, err = adaptOldAppToNewVersion(app)
+		if err != nil {
+			return App{}, err
+		}
+
+		if err = SaveAppConfig(app); err != nil {
+			return App{}, err
+		}
+	}
+
+	return app, nil
+}
+
+// adaptOldAppToNewVersion Adapt old version App to 1.0.0 format
+func adaptOldAppToNewVersion(app App) (App, error) {
+	hosts := caddyhttp.MatchHost{}
+	routes := caddyhttp.RouteList{}
+
+	for _, route := range app.CaddyConfig.Routes {
+		for _, moduleMap := range route.MatcherSetsRaw {
+			oldHosts := caddyhttp.MatchHost{}
+
+			if hostsRaw, ok := moduleMap["host"]; ok {
+				if err := json.Unmarshal(hostsRaw, &oldHosts); err != nil {
+					return App{}, err
+				}
+
+				hosts = append(hosts, oldHosts...)
+			}
+		}
+
+		for _, handle := range route.HandlersRaw {
+			oldHandler := caddyManager.SubrouteHandle{}
+
+			if err := json.Unmarshal(handle, &oldHandler); err != nil {
+				return App{}, err
+			}
+
+			if oldHandler.Handler == "subroute" {
+				routes = append(routes, oldHandler.Routes...)
+			}
+		}
+	}
+
+	app.Version = "1.0.0"
+	app.CaddyConfig.Domain = hosts
+	app.CaddyConfig.Routes = routes
+
 	return app, nil
 }
 
@@ -48,15 +99,13 @@ func ReloadAppConfig() {
 			if err != nil {
 				log.Println(err)
 			} else {
-				if caddy.CheckServerExist(app.Name) {
-					err = caddy.EditAdaptServerToRoute(app.Name, app.CaddyConfig)
-				} else {
-					err = caddy.AddAdaptServerToRoute(app.Name, app.CaddyConfig)
-				}
+				manager := caddyManager.GetManager()
 
+				err := manager.AddOrUpdateApp(app.Name, &app.CaddyConfig)
 				if err != nil {
 					log.Println(err)
 				}
+
 				backend.StartNewBackend(app.Name, app.Path, app.AutoReboot, strings.Split(app.BootArgument, " ")...)
 			}
 		}
