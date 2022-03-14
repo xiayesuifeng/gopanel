@@ -11,14 +11,16 @@ import (
 func (m *Manager) convertToCaddyConfig() (servers map[string]*caddyhttp.Server) {
 	servers = make(map[string]*caddyhttp.Server)
 
-	serverIdx := 1
-	serverName := map[int]string{m.HTTPSPort: m.HTTPSServerName}
+	httpsPort := m.caddyConf.General.HTTPSPort
 
-	servers[m.HTTPSServerName] = newServer(fmt.Sprintf(":%d", m.HTTPSPort))
+	serverIdx := 1
+	serverName := map[int]string{httpsPort: m.HTTPSServerName}
+
+	servers[m.HTTPSServerName] = newServer(fmt.Sprintf(":%d", httpsPort))
 
 	for _, config := range m.app {
 		if config.ListenPort == 0 {
-			config.ListenPort = m.HTTPSPort
+			config.ListenPort = httpsPort
 		}
 
 		name, exist := serverName[config.ListenPort]

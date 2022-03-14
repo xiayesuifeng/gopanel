@@ -3,6 +3,7 @@ package caddyManager
 import (
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"github.com/go-resty/resty/v2"
+	"gitlab.com/xiayesuifeng/gopanel/configuration/caddy"
 	"gitlab.com/xiayesuifeng/gopanel/core"
 	"log"
 	"net"
@@ -29,8 +30,7 @@ type APPConfig struct {
 
 type Manager struct {
 	httpClient      *resty.Client
-	HTTPPort        int
-	HTTPSPort       int
+	caddyConf       *caddy.Configuration
 	HTTPSServerName string
 	app             map[string]*APPConfig
 	appChange       chan bool
@@ -40,8 +40,6 @@ type Manager struct {
 func InitManager(adminAddress core.NetAddress) (err error) {
 	manager = &Manager{
 		httpClient:      newClient(adminAddress),
-		HTTPPort:        DefaultHttpPort,
-		HTTPSPort:       DefaultHttpsPort,
 		HTTPSServerName: DefaultHttpsServerName,
 		app:             map[string]*APPConfig{},
 		appChange:       make(chan bool),
@@ -52,17 +50,26 @@ func InitManager(adminAddress core.NetAddress) (err error) {
 		return
 	}
 
+	httpPort := DefaultHttpPort
+	httpsPort := DefaultHttpsPort
+
 	if appConfig.HTTPPort != 0 {
-		manager.HTTPPort = appConfig.HTTPPort
+		httpPort = appConfig.HTTPPort
 	}
 
 	if appConfig.HTTPSPort != 0 {
-		manager.HTTPSPort = appConfig.HTTPSPort
+		httpsPort = appConfig.HTTPSPort
 	}
+
+	if err := caddy.InitDefaultPortConf(httpPort, httpsPort); err != nil {
+		return err
+	}
+
+	manager.caddyConf = caddy.GetConfiguration()
 
 	for name, server := range appConfig.Servers {
 		for _, listen := range server.Listen {
-			if _, port, err := net.SplitHostPort(listen); err == nil && strconv.Itoa(DefaultHttpsPort) == port {
+			if _, port, err := net.SplitHostPort(listen); err == nil && strconv.Itoa(manager.caddyConf.General.HTTPSPort) == port {
 				manager.HTTPSServerName = name
 			}
 		}
