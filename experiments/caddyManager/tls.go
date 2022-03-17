@@ -24,7 +24,7 @@ func newZeroSSLIssuer(challenges *caddytls.ChallengesConfig) interface{} {
 		Module string `json:"module"`
 		caddytls.ZeroSSLIssuer
 	}{
-		Module: "acme",
+		Module: "zerossl",
 		ZeroSSLIssuer: caddytls.ZeroSSLIssuer{
 			ACMEIssuer: &caddytls.ACMEIssuer{
 				Challenges: challenges,
