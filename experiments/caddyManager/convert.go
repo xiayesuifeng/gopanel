@@ -7,6 +7,7 @@ import (
 	"github.com/caddyserver/caddy/v2/caddyconfig"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"github.com/caddyserver/caddy/v2/modules/caddytls"
+	"strings"
 )
 
 type Config struct {
@@ -15,6 +16,8 @@ type Config struct {
 }
 
 func (m *Manager) convertToCaddyConfig() (config *Config) {
+	m.filterInvalidWildcardDomains()
+
 	config = newConfig()
 
 	app := config.Apps["http"].(*caddyhttp.App)
@@ -31,7 +34,43 @@ func (m *Manager) convertToCaddyConfig() (config *Config) {
 	servers[m.HTTPSServerName].ExperimentalHTTP3 = m.caddyConf.General.ExperimentalHttp3
 	servers[m.HTTPSServerName].AllowH2C = m.caddyConf.General.AllowH2C
 
-	for _, config := range m.app {
+	wildcardDomainsApp, normalApp := filterWildcardDomainsApp(m.caddyConf.TLS.WildcardDomains, m.app)
+
+	var tlsDomains []string
+
+	for wildcardDomain, configs := range wildcardDomainsApp {
+		routesMap := map[int][]caddyhttp.Route{}
+
+		for _, config := range configs {
+			if config.ListenPort == 0 {
+				config.ListenPort = app.HTTPSPort
+			}
+
+			route := newRoute(config.Domain, config.Routes)
+
+			routesMap[config.ListenPort] = append(routesMap[config.ListenPort], route)
+		}
+
+		for port, routes := range routesMap {
+			name, exist := serverName[port]
+
+			if !exist {
+				name = fmt.Sprintf("gopanel%d", serverIdx)
+				serverName[port] = name
+				servers[name] = newServer(fmt.Sprintf(":%d", port))
+
+				serverIdx++
+			}
+
+			route := newRoute([]string{wildcardDomain}, routes)
+
+			servers[name].Routes = append(servers[m.HTTPSServerName].Routes, route)
+		}
+
+		tlsDomains = append(tlsDomains, wildcardDomain)
+	}
+
+	for _, config := range normalApp {
 		if config.ListenPort == 0 {
 			config.ListenPort = app.HTTPSPort
 		}
@@ -46,22 +85,48 @@ func (m *Manager) convertToCaddyConfig() (config *Config) {
 			serverIdx++
 		}
 
-		match := caddy.ModuleMap{}
-
-		if len(config.Domain) != 0 {
-			match["host"] = caddyconfig.JSON(config.Domain, nil)
-		}
-
-		route := caddyhttp.Route{
-			MatcherSetsRaw: []caddy.ModuleMap{match},
-			HandlersRaw:    []json.RawMessage{caddyconfig.JSON(NewSubrouteHandle(config.Routes), nil)},
-			Terminal:       true,
-		}
+		route := newRoute(config.Domain, config.Routes)
 
 		servers[name].Routes = append(servers[m.HTTPSServerName].Routes, route)
+
+		tlsDomains = append(tlsDomains, config.Domain...)
 	}
 
+	config.Apps["tls"] = loadTLSConfig(tlsDomains, m.caddyConf.TLS.DNSChallenges)
+
 	return
+}
+
+func (m *Manager) filterInvalidWildcardDomains() {
+	var wildcardDomains []string
+
+	tls := m.caddyConf.TLS
+	for _, wildcardDomain := range tls.WildcardDomains {
+		for domain := range tls.DNSChallenges {
+			if strings.HasSuffix(wildcardDomain, domain) {
+				wildcardDomains = append(wildcardDomains, wildcardDomain)
+				break
+			}
+		}
+	}
+
+	m.caddyConf.TLS.WildcardDomains = wildcardDomains
+}
+
+func newRoute(domains []string, routes []caddyhttp.Route) caddyhttp.Route {
+	match := caddy.ModuleMap{}
+
+	if len(domains) != 0 {
+		match["host"] = caddyconfig.JSON(domains, nil)
+	}
+
+	route := caddyhttp.Route{
+		MatcherSetsRaw: []caddy.ModuleMap{match},
+		HandlersRaw:    []json.RawMessage{caddyconfig.JSON(NewSubrouteHandle(routes), nil)},
+		Terminal:       true,
+	}
+
+	return route
 }
 
 func newConfig() *Config {
@@ -79,4 +144,40 @@ func newServer(listen ...string) *caddyhttp.Server {
 	return &caddyhttp.Server{
 		Listen: listen,
 	}
+}
+
+func filterWildcardDomainsApp(wildcardDomains []string, apps map[string]*APPConfig) (wildcardDomainAPPConfig map[string][]*APPConfig, normalAPPConfig []*APPConfig) {
+	wildcardDomainAPPConfig = map[string][]*APPConfig{}
+
+	for _, c := range apps {
+		for _, domain := range c.Domain {
+			wildcardDomain := findWildcardDomain(domain, wildcardDomains)
+			if wildcardDomain != "" {
+				wildcardDomainAPPConfig[wildcardDomain] = append(wildcardDomainAPPConfig[wildcardDomain], c)
+			} else {
+				normalAPPConfig = append(normalAPPConfig, c)
+			}
+		}
+	}
+
+	return
+}
+
+func findWildcardDomain(domain string, wildcardDomains []string) string {
+	strs := strings.Split(domain, ".")
+
+	if len(strs) < 2 {
+		return ""
+	}
+
+	strs[0] = "*"
+	targetDomain := strings.Join(strs, ".")
+
+	for _, wildcardDomain := range wildcardDomains {
+		if wildcardDomain == targetDomain {
+			return wildcardDomain
+		}
+	}
+
+	return ""
 }
