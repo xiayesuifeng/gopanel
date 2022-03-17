@@ -83,7 +83,7 @@ func GetConfiguration() *Configuration {
 
 	allowH2C, err := strconv.ParseBool(string(storage.Get(module, AllowH2CKey, []byte("false"))))
 	if err == nil {
-		caddy.General.ExperimentalHttp3 = allowH2C
+		caddy.General.AllowH2C = allowH2C
 	}
 
 	if tlsRaw := storage.Get(module, TLSKey, nil); tlsRaw != nil {
