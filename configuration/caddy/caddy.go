@@ -94,3 +94,40 @@ func GetConfiguration() *Configuration {
 
 	return caddy
 }
+
+func SetConfiguration(configuration *Configuration) error {
+	storage := settingStorage.GetStorage()
+
+	if configuration.General.HTTPPort != 0 {
+		err := storage.Set(module, HTTPPortKey, []byte(strconv.Itoa(configuration.General.HTTPPort)))
+		if err != nil {
+			return err
+		}
+	}
+
+	if configuration.General.HTTPSPort != 0 {
+		err := storage.Set(module, HTTPSPortKey, []byte(strconv.Itoa(configuration.General.HTTPSPort)))
+		if err != nil {
+			return err
+		}
+	}
+
+	err := storage.Set(module, ExperimentalHttp3Key, []byte(strconv.FormatBool(configuration.General.ExperimentalHttp3)))
+	if err != nil {
+		return err
+	}
+
+	err = storage.Set(module, AllowH2CKey, []byte(strconv.FormatBool(configuration.General.AllowH2C)))
+	if err != nil {
+		return err
+	}
+
+	tlsRaw, err := json.Marshal(&configuration.TLS)
+	if err != nil {
+		return err
+	}
+
+	err = storage.Set(module, TLSKey, tlsRaw)
+
+	return err
+}

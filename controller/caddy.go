@@ -15,3 +15,25 @@ func (c *Caddy) GetConfiguration(ctx *gin.Context) {
 		"configuration": conf,
 	})
 }
+
+func (c *Caddy) PutConfiguration(ctx *gin.Context) {
+	configuration := caddy.Configuration{}
+
+	if err := ctx.ShouldBind(&configuration); err != nil {
+		ctx.JSON(200, gin.H{
+			"code":    400,
+			"message": err.Error(),
+		})
+
+		return
+	}
+
+	if err := caddy.SetConfiguration(&configuration); err != nil {
+		ctx.JSON(200, gin.H{
+			"code":    500,
+			"message": err.Error(),
+		})
+	} else {
+		ctx.JSON(200, gin.H{"code": 200})
+	}
+}

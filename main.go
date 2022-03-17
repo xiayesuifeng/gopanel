@@ -56,6 +56,7 @@ func main() {
 	{
 		caddyC := &controller.Caddy{}
 		caddyRouter.GET("/configuration", caddyC.GetConfiguration)
+		caddyRouter.PUT("/configuration", caddyC.PutConfiguration)
 	}
 
 	webPath := os.Getenv("GOPANEL_WEB_PATH")
