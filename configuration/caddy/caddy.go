@@ -61,7 +61,8 @@ func GetConfiguration() *Configuration {
 	caddy := &Configuration{
 		General: General{},
 		TLS: TLS{
-			DNSChallenges: map[string]caddytls.DNSChallengeConfig{},
+			DNSChallenges:   map[string]caddytls.DNSChallengeConfig{},
+			WildcardDomains: []string{},
 		},
 	}
 
