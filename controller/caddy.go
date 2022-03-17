@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"gitlab.com/xiayesuifeng/gopanel/configuration/caddy"
+	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyManager"
 )
 
 type Caddy struct {
@@ -34,6 +35,8 @@ func (c *Caddy) PutConfiguration(ctx *gin.Context) {
 			"message": err.Error(),
 		})
 	} else {
+		caddyManager.GetManager().NotifyCaddyConfigChange()
+
 		ctx.JSON(200, gin.H{"code": 200})
 	}
 }

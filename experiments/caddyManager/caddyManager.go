@@ -122,12 +122,26 @@ func (m *Manager) onAppChangeFunc() {
 	for <-m.appChange {
 		log.Println("[caddy manager] app changes detected, call caddy admin api to update routes json")
 
-		servers := m.convertToCaddyConfig()
+		config := m.convertToCaddyConfig()
 
-		if err := m.postCaddyObject("/config/apps/http/servers", servers); err != nil {
+		if err := m.postCaddyObject("/config/apps", config.Apps); err != nil {
 			log.Println("[caddy manager] call caddy admin api fail: ", err)
 		}
 	}
 
 	log.Println("[caddy manager] stop listening for app change")
+}
+
+func (m *Manager) NotifyCaddyConfigChange() {
+	oldHttpsPort := m.caddyConf.General.HTTPSPort
+
+	for name := range m.app {
+		if m.app[name].ListenPort == oldHttpsPort {
+			m.app[name].ListenPort = 0
+		}
+	}
+
+	m.caddyConf = caddy.GetConfiguration()
+
+	m.appChange <- true
 }

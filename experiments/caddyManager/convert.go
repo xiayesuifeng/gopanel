@@ -6,21 +6,34 @@ import (
 	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
+	"github.com/caddyserver/caddy/v2/modules/caddytls"
 )
 
-func (m *Manager) convertToCaddyConfig() (servers map[string]*caddyhttp.Server) {
-	servers = make(map[string]*caddyhttp.Server)
+type Config struct {
+	Apps    map[string]interface{} `json:"apps"`
+	Logging caddy.Logging          `json:"logging"`
+}
 
-	httpsPort := m.caddyConf.General.HTTPSPort
+func (m *Manager) convertToCaddyConfig() (config *Config) {
+	config = newConfig()
+
+	app := config.Apps["http"].(*caddyhttp.App)
+
+	app.HTTPPort = m.caddyConf.General.HTTPPort
+	app.HTTPSPort = m.caddyConf.General.HTTPSPort
+
+	servers := app.Servers
 
 	serverIdx := 1
-	serverName := map[int]string{httpsPort: m.HTTPSServerName}
+	serverName := map[int]string{app.HTTPSPort: m.HTTPSServerName}
 
-	servers[m.HTTPSServerName] = newServer(fmt.Sprintf(":%d", httpsPort))
+	servers[m.HTTPSServerName] = newServer(fmt.Sprintf(":%d", app.HTTPSPort))
+	servers[m.HTTPSServerName].ExperimentalHTTP3 = m.caddyConf.General.ExperimentalHttp3
+	servers[m.HTTPSServerName].AllowH2C = m.caddyConf.General.AllowH2C
 
 	for _, config := range m.app {
 		if config.ListenPort == 0 {
-			config.ListenPort = httpsPort
+			config.ListenPort = app.HTTPSPort
 		}
 
 		name, exist := serverName[config.ListenPort]
@@ -49,6 +62,17 @@ func (m *Manager) convertToCaddyConfig() (servers map[string]*caddyhttp.Server) 
 	}
 
 	return
+}
+
+func newConfig() *Config {
+	return &Config{
+		Apps: map[string]interface{}{
+			"http": &caddyhttp.App{
+				Servers: map[string]*caddyhttp.Server{},
+			},
+			"tls": &caddytls.TLS{},
+		},
+	}
 }
 
 func newServer(listen ...string) *caddyhttp.Server {
