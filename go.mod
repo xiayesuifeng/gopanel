@@ -1,7 +1,7 @@
 module gitlab.com/xiayesuifeng/gopanel
 
 require (
-	github.com/caddyserver/caddy/v2 v2.4.6
+	github.com/caddyserver/caddy/v2 v2.5.0-beta.1.0.20220315220919-4e9fbee1e2ef
 	github.com/gin-gonic/contrib v0.0.0-20201101042839-6a891bf89f19
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-playground/validator/v10 v10.10.1 // indirect
@@ -9,7 +9,6 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.3.0
 	github.com/gorilla/websocket v1.5.0
 	github.com/jinzhu/gorm v1.9.16
-	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/lib/pq v1.10.4 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/pkg/errors v0.9.1

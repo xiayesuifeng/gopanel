@@ -1,7 +1,7 @@
 image: archlinux/archlinux:base-devel
 
 before_script:
-  - pacman -Sy --noconfirm go wget unzip
+  - pacman -Sy --noconfirm git go wget unzip
 
 stages:
   - build
