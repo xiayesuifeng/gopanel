@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"gitlab.com/xiayesuifeng/gopanel/backend"
-	"gitlab.com/xiayesuifeng/gopanel/caddy"
 	"gitlab.com/xiayesuifeng/gopanel/core"
 	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyManager"
+	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyutil/caddyvalidate"
 	"io/ioutil"
 	"log"
 	"os"
@@ -65,7 +65,7 @@ func AddApp(app App, validate bool) error {
 			return err
 		}
 
-		if err := caddy.ValidateConfig(bytes); err != nil {
+		if err := caddyvalidate.Validate(bytes); err != nil {
 			return err
 		}
 	}
@@ -134,7 +134,7 @@ func EditApp(app App, validate bool) error {
 			return err
 		}
 
-		if err := caddy.ValidateConfig(bytes); err != nil {
+		if err := caddyvalidate.Validate(bytes); err != nil {
 			return err
 		}
 	}

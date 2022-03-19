@@ -1,4 +1,4 @@
-package caddy
+package caddyvalidate
 
 import (
 	"errors"
@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func ValidateConfig(config []byte) error {
+func Validate(config []byte) error {
 	path, err := exec.LookPath("caddy")
 	if err != nil {
 		return err
