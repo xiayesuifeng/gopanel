@@ -20,14 +20,34 @@ const (
 	OTHER_TYPE
 )
 
+type BackendType string
+
+const (
+	NoneBackend BackendType = "none"
+	ExecBackend BackendType = "exec"
+)
+
 type App struct {
-	Name         string                 `json:"name"`
-	CaddyConfig  caddyManager.APPConfig `json:"caddyConfig" binding:"required"`
-	Type         int                    `json:"type" binding:"required"`
-	Path         string                 `json:"path"`
-	AutoReboot   bool                   `json:"autoReboot"`
-	BootArgument string                 `json:"bootArgument"`
-	Version      string                 `json:"version"`
+	Name             string                 `json:"name"`
+	CaddyConfig      caddyManager.APPConfig `json:"caddyConfig" binding:"required"`
+	Type             int                    `json:"type" binding:"required"`
+	BackendType      BackendType            `json:"backendType"`
+	BackendConfigRaw json.RawMessage        `json:"backendConfig"`
+	Version          string                 `json:"version"`
+
+	// Deprecated: use ExecBackendConfig instead. To be removed in 1.0.0 release.
+	AutoReboot bool `json:"autoReboot,omitempty"`
+	// Deprecated: use ExecBackendConfig instead. To be removed in 1.0.0 release.
+	Path string `json:"path,omitempty"`
+	// Deprecated: use ExecBackendConfig instead. To be removed in 1.0.0 release.
+	BootArgument string `json:"bootArgument,omitempty"`
+}
+
+type ExecBackendConfig struct {
+	WorkingDirectory string `json:"workingDirectory"`
+	AutoReboot       bool   `json:"autoReboot"`
+	Path             string `json:"path"`
+	Argument         string `json:"argument"`
 }
 
 func AddApp(app App, validate bool) error {
@@ -58,8 +78,14 @@ func AddApp(app App, validate bool) error {
 		return err
 	}
 
-	if app.Type == GO_TYPE {
-		backend.StartNewBackend(app.Name, app.Path, app.AutoReboot, strings.Split(app.BootArgument, " ")...)
+	if app.BackendType == ExecBackend {
+		config := &ExecBackendConfig{}
+
+		if err := json.Unmarshal(app.BackendConfigRaw, config); err != nil {
+			return err
+		}
+
+		backend.StartNewBackend(app.Name, config.Path, config.AutoReboot, strings.Split(config.Argument, " ")...)
 	}
 
 	return nil
@@ -121,13 +147,19 @@ func EditApp(app App, validate bool) error {
 		return err
 	}
 
-	if app.Type == GO_TYPE {
+	if app.BackendType == ExecBackend {
 		b := backend.GetBackend(app.Name)
 		if err := b.Stop(); err != nil {
 			return err
 		}
 
-		backend.StartNewBackend(app.Name, app.Path, app.AutoReboot, strings.Split(app.BootArgument, " ")...)
+		config := &ExecBackendConfig{}
+
+		if err := json.Unmarshal(app.BackendConfigRaw, config); err != nil {
+			return err
+		}
+
+		backend.StartNewBackend(app.Name, config.Path, config.AutoReboot, strings.Split(config.Argument, " ")...)
 	}
 
 	return nil

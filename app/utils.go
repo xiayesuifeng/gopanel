@@ -76,6 +76,30 @@ func adaptOldAppToNewVersion(app App) (App, error) {
 		}
 	}
 
+	if app.Path != "" {
+		app.BackendType = ExecBackend
+
+		bConfig := ExecBackendConfig{
+			AutoReboot: app.AutoReboot,
+			Path:       app.Path,
+			Argument:   app.BootArgument,
+		}
+
+		bConfigRaw, err := json.Marshal(&bConfig)
+		if err != nil {
+			return App{}, err
+		}
+
+		app.BackendConfigRaw = bConfigRaw
+
+		// reset deprecated field to zero value
+		app.AutoReboot = false
+		app.Path = ""
+		app.BootArgument = ""
+	} else {
+		app.BackendType = NoneBackend
+	}
+
 	app.Version = "1.0.0"
 	app.CaddyConfig.Domain = hosts
 	app.CaddyConfig.Routes = routes
@@ -106,7 +130,16 @@ func ReloadAppConfig() {
 					log.Println(err)
 				}
 
-				backend.StartNewBackend(app.Name, app.Path, app.AutoReboot, strings.Split(app.BootArgument, " ")...)
+				if app.BackendType == ExecBackend {
+					config := &ExecBackendConfig{}
+
+					if err := json.Unmarshal(app.BackendConfigRaw, config); err != nil {
+						log.Println(err)
+					} else {
+						backend.StartNewBackend(app.Name, config.Path, config.AutoReboot, strings.Split(config.Argument, " ")...)
+
+					}
+				}
 			}
 		}
 	}
