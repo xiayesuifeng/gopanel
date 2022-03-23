@@ -64,7 +64,7 @@ func (m *Manager) convertToCaddyConfig() (config *Config) {
 
 			route := newRoute([]string{wildcardDomain}, routes)
 
-			servers[name].Routes = append(servers[m.HTTPSServerName].Routes, route)
+			servers[name].Routes = append(servers[name].Routes, route)
 		}
 
 		tlsDomains = append(tlsDomains, wildcardDomain)
@@ -87,7 +87,7 @@ func (m *Manager) convertToCaddyConfig() (config *Config) {
 
 		route := newRoute(config.Domain, config.Routes)
 
-		servers[name].Routes = append(servers[m.HTTPSServerName].Routes, route)
+		servers[name].Routes = append(servers[name].Routes, route)
 
 		tlsDomains = append(tlsDomains, config.Domain...)
 	}
