@@ -26,6 +26,7 @@
   "netdata":{
     "enable": false,
     "host": "localhost:19999",
-    "path": ""
+    "path": "",
+    "ssl": false
   }
 }

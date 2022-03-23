@@ -88,7 +88,9 @@ sudo systemctl enable --now gopanel
     "enable": false,
     // 反代地址
     "host": "localhost:19999",
-    "path": ""
+    "path": "",
+    // 使用 SSL 访问
+    "ssl": false
   }
 }
 ```

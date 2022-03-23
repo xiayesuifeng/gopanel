@@ -48,10 +48,7 @@ const netdataCaddyJson = `{
         {
 	      "handler": "reverse_proxy",
 	      "upstreams": [{"dial": "{host}"}],
-	      "transport": {
-	        "protocol": "http",
-	    	"tls": {}
-	      },
+	      {netdataSSLJson}
           "headers": {"request": {"set": {"Host": ["{http.reverse_proxy.upstream.hostport}"]}}}
 	    }
 	  ],
@@ -83,6 +80,13 @@ func LoadPanelConfig(port string) (err error) {
 			pathConf = strings.ReplaceAll(pathConf, "{path}", netdataPath)
 			netdataConf = strings.ReplaceAll(netdataConf, "{netdataPathJson}", pathConf)
 		}
+
+		if core.Conf.Netdata.SSL {
+			netdataConf = strings.ReplaceAll(netdataConf, "{netdataSSLJson}", "\"transport\": {\"protocol\": \"http\",\"tls\": {}},")
+		} else {
+			netdataConf = strings.ReplaceAll(netdataConf, "{netdataSSLJson}", "")
+		}
+
 		conf = strings.ReplaceAll(conf, "{netdataJson}", netdataConf)
 	} else {
 		conf = strings.ReplaceAll(conf, "{netdataJson}", "")
