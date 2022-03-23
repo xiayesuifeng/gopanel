@@ -72,7 +72,11 @@ func (m *Manager) convertToCaddyConfig() (config *Config) {
 
 	for _, config := range normalApp {
 		if config.ListenPort == 0 {
-			config.ListenPort = app.HTTPSPort
+			if config.DisableSSL {
+				config.ListenPort = app.HTTPPort
+			} else {
+				config.ListenPort = app.HTTPSPort
+			}
 		}
 
 		name, exist := serverName[config.ListenPort]
@@ -88,6 +92,12 @@ func (m *Manager) convertToCaddyConfig() (config *Config) {
 		route := newRoute(config.Domain, config.Routes)
 
 		servers[name].Routes = append(servers[name].Routes, route)
+
+		if config.ListenPort != app.HTTPPort && config.DisableSSL {
+			servers[name].AutoHTTPS = &caddyhttp.AutoHTTPSConfig{
+				Disabled: true,
+			}
+		}
 
 		tlsDomains = append(tlsDomains, config.Domain...)
 	}

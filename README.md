@@ -60,8 +60,8 @@ sudo systemctl enable --now gopanel
     "domain": "example.com",
     // 端口设置，如没设置域名则必须设置否则无特殊要求不需要设置
     "port": 2020,
-    // 自动 HTTPS 开关
-    "automaticHttps": false
+    // 禁用 SSL (取代原来的 automaticHttps)
+    "disableSSL": true
   },
   // caddy 2 配置
   "caddy": {

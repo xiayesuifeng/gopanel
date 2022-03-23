@@ -21,9 +21,9 @@ type Config struct {
 }
 
 type Panel struct {
-	Domain         string `json:"domain,omitempty"`
-	Port           int    `json:"port,omitempty"`
-	AutomaticHttps bool   `json:"automaticHttps,omitempty"`
+	Domain     string `json:"domain,omitempty"`
+	Port       int    `json:"port,omitempty"`
+	DisableSSL bool   `json:"disableSSL,omitempty"`
 }
 
 type Caddy struct {
@@ -55,7 +55,6 @@ type Netdata struct {
 
 func ParseConf(config string) error {
 	var c Config
-	c.Panel.AutomaticHttps = true
 
 	conf, err := os.Open(config)
 	if err != nil {

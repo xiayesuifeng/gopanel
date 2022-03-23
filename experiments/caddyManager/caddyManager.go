@@ -26,6 +26,8 @@ type APPConfig struct {
 	ListenPort int               `json:"listenPort,omitempty"`
 	Domain     []string          `json:"domain"`
 	Routes     []caddyhttp.Route `json:"routes"`
+
+	DisableSSL bool `json:"disableSSL,omitempty"`
 }
 
 type Manager struct {

@@ -60,7 +60,8 @@ const netdataCaddyJson = `{
 
 func LoadPanelConfig(port string) (err error) {
 	panelApp := &caddyManager.APPConfig{
-		Domain: []string{core.Conf.Panel.Domain},
+		Domain:     []string{core.Conf.Panel.Domain},
+		DisableSSL: core.Conf.Panel.DisableSSL,
 	}
 
 	if port := core.Conf.Panel.Port; port != 0 {
