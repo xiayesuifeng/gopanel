@@ -3,8 +3,8 @@ package caddyManager
 import (
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"github.com/go-resty/resty/v2"
-	"gitlab.com/xiayesuifeng/gopanel/configuration/caddy"
 	"gitlab.com/xiayesuifeng/gopanel/core"
+	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyutil/caddyconfig"
 	"log"
 	"net"
 	"strconv"
@@ -32,7 +32,7 @@ type APPConfig struct {
 
 type Manager struct {
 	httpClient      *resty.Client
-	caddyConf       *caddy.Configuration
+	caddyConf       *caddyconfig.Configuration
 	HTTPSServerName string
 	app             map[string]*APPConfig
 	appChange       chan bool
@@ -63,11 +63,11 @@ func InitManager(adminAddress core.NetAddress) (err error) {
 		httpsPort = appConfig.HTTPSPort
 	}
 
-	if err := caddy.InitDefaultPortConf(httpPort, httpsPort); err != nil {
+	if err := caddyconfig.InitDefaultPortConf(httpPort, httpsPort); err != nil {
 		return err
 	}
 
-	manager.caddyConf = caddy.GetConfiguration()
+	manager.caddyConf = caddyconfig.GetConfiguration()
 
 	for name, server := range appConfig.Servers {
 		for _, listen := range server.Listen {
@@ -143,7 +143,7 @@ func (m *Manager) NotifyCaddyConfigChange() {
 		}
 	}
 
-	m.caddyConf = caddy.GetConfiguration()
+	m.caddyConf = caddyconfig.GetConfiguration()
 
 	m.appChange <- true
 }

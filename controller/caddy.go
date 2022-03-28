@@ -2,15 +2,15 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"gitlab.com/xiayesuifeng/gopanel/configuration/caddy"
 	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyManager"
+	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyutil/caddyconfig"
 )
 
 type Caddy struct {
 }
 
 func (c *Caddy) GetConfiguration(ctx *gin.Context) {
-	conf := caddy.GetConfiguration()
+	conf := caddyconfig.GetConfiguration()
 	ctx.JSON(200, gin.H{
 		"code":          200,
 		"configuration": conf,
@@ -18,7 +18,7 @@ func (c *Caddy) GetConfiguration(ctx *gin.Context) {
 }
 
 func (c *Caddy) PutConfiguration(ctx *gin.Context) {
-	configuration := caddy.Configuration{}
+	configuration := caddyconfig.Configuration{}
 
 	if err := ctx.ShouldBind(&configuration); err != nil {
 		ctx.JSON(200, gin.H{
@@ -29,7 +29,7 @@ func (c *Caddy) PutConfiguration(ctx *gin.Context) {
 		return
 	}
 
-	if err := caddy.SetConfiguration(&configuration); err != nil {
+	if err := caddyconfig.SetConfiguration(&configuration); err != nil {
 		ctx.JSON(200, gin.H{
 			"code":    500,
 			"message": err.Error(),

@@ -1,4 +1,4 @@
-package caddy
+package caddyconfig
 
 import (
 	"encoding/json"
