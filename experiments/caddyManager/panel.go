@@ -1,10 +1,9 @@
-package caddy
+package caddyManager
 
 import (
 	"encoding/json"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"gitlab.com/xiayesuifeng/gopanel/core"
-	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyManager"
 	"strings"
 )
 
@@ -55,8 +54,8 @@ const netdataCaddyJson = `{
 	  "match": [{"path": ["/netdata/*"]}]
 	},`
 
-func LoadPanelConfig(port string) (err error) {
-	panelApp := &caddyManager.APPConfig{
+func loadPanelConfig(port string) *APPConfig {
+	panelApp := &APPConfig{
 		Domain:     []string{core.Conf.Panel.Domain},
 		DisableSSL: core.Conf.Panel.DisableSSL,
 	}
@@ -98,5 +97,5 @@ func LoadPanelConfig(port string) (err error) {
 		},
 	})
 
-	return caddyManager.GetManager().AddOrUpdateApp("gopanel", panelApp)
+	return panelApp
 }

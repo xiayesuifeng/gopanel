@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"gitlab.com/xiayesuifeng/gopanel/app"
 	"gitlab.com/xiayesuifeng/gopanel/auth"
-	"gitlab.com/xiayesuifeng/gopanel/caddy"
 	"gitlab.com/xiayesuifeng/gopanel/controller"
 	"gitlab.com/xiayesuifeng/gopanel/core"
 	"gitlab.com/xiayesuifeng/gopanel/core/storage"
@@ -111,11 +110,7 @@ func init() {
 		log.Fatalln(err)
 	}
 
-	if err := caddyManager.InitManager(core.Conf.Caddy.AdminAddress); err != nil {
-		log.Fatalln(err)
-	}
-
-	if err := caddy.LoadPanelConfig(strconv.Itoa(*port)); err != nil {
+	if err := caddyManager.InitManager(core.Conf.Caddy.AdminAddress, strconv.Itoa(*port)); err != nil {
 		log.Fatalln(err)
 	}
 

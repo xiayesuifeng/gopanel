@@ -39,7 +39,7 @@ type Manager struct {
 	onAppChange     func()
 }
 
-func InitManager(adminAddress core.NetAddress) (err error) {
+func InitManager(adminAddress core.NetAddress, panelPort string) (err error) {
 	manager = &Manager{
 		httpClient:      newClient(adminAddress),
 		HTTPSServerName: DefaultHttpsServerName,
@@ -79,6 +79,8 @@ func InitManager(adminAddress core.NetAddress) (err error) {
 
 	manager.onAppChange = manager.onAppChangeFunc
 	go manager.onAppChange()
+
+	manager.AddOrUpdateApp("gopanel", loadPanelConfig(panelPort))
 
 	return nil
 }
