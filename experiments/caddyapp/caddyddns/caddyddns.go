@@ -4,13 +4,31 @@ import (
 	"encoding/json"
 	"github.com/mholt/caddy-dynamicdns"
 	"gitlab.com/xiayesuifeng/gopanel/core/settingStorage"
+	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyapp"
 )
 
 const module = "caddy"
 
+var ctx caddyapp.Context
+
 type CaddyDDNS struct {
 	Enabled bool           `json:"enabled"`
 	Config  dynamicdns.App `json:"config"`
+}
+
+func (c *CaddyDDNS) AppInfo() caddyapp.AppInfo {
+	return caddyapp.AppInfo{
+		Name: "dynamic_dns",
+		New: func(c caddyapp.Context) caddyapp.CaddyApp {
+			ctx = c
+
+			return &CaddyDDNS{}
+		},
+	}
+}
+
+func (c *CaddyDDNS) LoadConfig(ctx caddyapp.Context) any {
+	return nil
 }
 
 func SetCaddyDDNS(ddns *CaddyDDNS) error {
@@ -21,7 +39,14 @@ func SetCaddyDDNS(ddns *CaddyDDNS) error {
 
 	storage := settingStorage.GetStorage()
 
-	return storage.Set(module, "ddns", bytes)
+	err = storage.Set(module, "ddns", bytes)
+	if err != nil {
+		return err
+	}
+
+	ctx.NotifyChange()
+
+	return nil
 }
 
 func GetCaddyDDNS() (*CaddyDDNS, error) {

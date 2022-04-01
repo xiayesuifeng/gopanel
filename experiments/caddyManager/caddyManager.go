@@ -5,6 +5,7 @@ import (
 	"github.com/go-resty/resty/v2"
 	"gitlab.com/xiayesuifeng/gopanel/core"
 	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyapp"
+	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyapp/caddyddns"
 	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyutil/caddyconfig"
 	"log"
 	"net"
@@ -81,6 +82,8 @@ func InitManager(adminAddress core.NetAddress, panelPort string) (err error) {
 			}
 		}
 	}
+
+	manager.RegisterCaddyApp(&caddyddns.CaddyDDNS{})
 
 	manager.onAppChange = manager.onAppChangeFunc
 	go manager.onAppChange()
