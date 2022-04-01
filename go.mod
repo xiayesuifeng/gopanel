@@ -17,6 +17,7 @@ require (
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/semver/v3 v3.1.1 // indirect
 	github.com/Masterminds/sprig/v3 v3.2.2 // indirect
+	github.com/NebulousLabs/go-upnp v0.0.0-20181203152547-b32978b8ccbf // indirect
 	github.com/antlr/antlr4 v0.0.0-20200503195918-621b933c7a7f // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/caddyserver/certmagic v0.15.4 // indirect
@@ -71,6 +72,7 @@ require (
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
 	github.com/mholt/acmez v1.0.2 // indirect
+	github.com/mholt/caddy-dynamicdns v0.0.0-20220312031409-f638ea80fe56 // indirect
 	github.com/micromdm/scep/v2 v2.1.0 // indirect
 	github.com/miekg/dns v1.1.43 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
@@ -98,6 +100,8 @@ require (
 	github.com/tailscale/tscert v0.0.0-20220125204807-4509a5fbaf74 // indirect
 	github.com/ugorji/go/codec v1.1.7 // indirect
 	github.com/urfave/cli v1.22.5 // indirect
+	gitlab.com/NebulousLabs/fastrand v0.0.0-20181126182046-603482d69e40 // indirect
+	gitlab.com/NebulousLabs/go-upnp v0.0.0-20181011194642-3a71999ed0d3 // indirect
 	go.mozilla.org/pkcs7 v0.0.0-20210826202110-33d05740a352 // indirect
 	go.step.sm/cli-utils v0.7.0 // indirect
 	go.step.sm/crypto v0.13.0 // indirect
