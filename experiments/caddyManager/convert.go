@@ -7,6 +7,7 @@ import (
 	"github.com/caddyserver/caddy/v2/caddyconfig"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"github.com/caddyserver/caddy/v2/modules/caddytls"
+	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyapp"
 	"strings"
 )
 
@@ -103,6 +104,11 @@ func (m *Manager) convertToCaddyConfig() (config *Config) {
 	}
 
 	config.Apps["tls"] = loadTLSConfig(tlsDomains, m.caddyConf.TLS.DNSChallenges)
+
+	// load caddy app config
+	for name, app := range m.caddyApp {
+		config.Apps[name] = app.LoadConfig(caddyapp.Context{Change: m.appChange})
+	}
 
 	return
 }
