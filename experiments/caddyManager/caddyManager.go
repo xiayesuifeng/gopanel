@@ -4,6 +4,7 @@ import (
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"github.com/go-resty/resty/v2"
 	"gitlab.com/xiayesuifeng/gopanel/core"
+	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyapp"
 	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyutil/caddyconfig"
 	"log"
 	"net"
@@ -37,6 +38,9 @@ type Manager struct {
 	app             map[string]*APPConfig
 	appChange       chan bool
 	onAppChange     func()
+
+	caddyApp map[string]caddyapp.CaddyApp
+	appMutex sync.RWMutex
 }
 
 func InitManager(adminAddress core.NetAddress, panelPort string) (err error) {
@@ -45,6 +49,7 @@ func InitManager(adminAddress core.NetAddress, panelPort string) (err error) {
 		HTTPSServerName: DefaultHttpsServerName,
 		app:             map[string]*APPConfig{},
 		appChange:       make(chan bool),
+		caddyApp:        map[string]caddyapp.CaddyApp{},
 	}
 
 	appConfig, err := manager.getAppConfig()
@@ -148,4 +153,16 @@ func (m *Manager) NotifyCaddyConfigChange() {
 	m.caddyConf = caddyconfig.GetConfiguration()
 
 	m.appChange <- true
+}
+
+func (m *Manager) RegisterCaddyApp(app caddyapp.CaddyApp) {
+	m.appMutex.Lock()
+	defer m.appMutex.Unlock()
+
+	a := app.AppInfo()
+	if a.Name == "" {
+		panic("CaddyAPP Name missing")
+	}
+
+	m.caddyApp[a.Name] = a.New(caddyapp.Context{Change: m.appChange})
 }
