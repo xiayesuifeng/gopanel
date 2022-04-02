@@ -6,9 +6,9 @@ import (
 )
 
 type ModuleList struct {
-	Standard    map[string][]string
-	NonStandard map[string][]string
-	Unknown     map[string][]string
+	Standard    map[string][]string `json:"standard"`
+	NonStandard map[string][]string `json:"nonStandard"`
+	Unknown     map[string][]string `json:"unknown"`
 }
 
 func GetModuleList() (*ModuleList, error) {
