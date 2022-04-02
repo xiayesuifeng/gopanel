@@ -5,6 +5,7 @@ import (
 	"github.com/mholt/caddy-dynamicdns"
 	"gitlab.com/xiayesuifeng/gopanel/core/settingStorage"
 	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyapp"
+	"log"
 )
 
 const module = "caddy"
@@ -28,7 +29,17 @@ func (c *CaddyDDNS) AppInfo() caddyapp.AppInfo {
 }
 
 func (c *CaddyDDNS) LoadConfig(ctx caddyapp.Context) any {
-	return nil
+	ddns, err := GetCaddyDDNS()
+	if err != nil {
+		log.Println("[caddy ddns] get ddns config fail,err:", err)
+		return nil
+	}
+
+	if ddns.Enabled {
+		return ddns.Config
+	} else {
+		return nil
+	}
 }
 
 func SetCaddyDDNS(ddns *CaddyDDNS) error {

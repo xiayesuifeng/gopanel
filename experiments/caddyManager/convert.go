@@ -107,7 +107,10 @@ func (m *Manager) convertToCaddyConfig() (config *Config) {
 
 	// load caddy app config
 	for name, app := range m.caddyApp {
-		config.Apps[name] = app.LoadConfig(caddyapp.Context{Change: m.appChange})
+		if c := app.LoadConfig(caddyapp.Context{Change: m.appChange}); c != nil {
+			config.Apps[name] = c
+		}
+
 	}
 
 	return
