@@ -60,6 +60,7 @@ func main() {
 		caddyRouter.GET("/module", caddyC.GetModuleList)
 
 		caddyRouter.GET("/ddns", caddyC.GetDynamicDNS)
+		caddyRouter.PUT("/ddns", caddyC.PutDynamicDNS)
 	}
 
 	webPath := os.Getenv("GOPANEL_WEB_PATH")

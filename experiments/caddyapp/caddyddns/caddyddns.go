@@ -2,6 +2,7 @@ package caddyddns
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/mholt/caddy-dynamicdns"
 	"gitlab.com/xiayesuifeng/gopanel/core/settingStorage"
 	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyapp"
@@ -43,6 +44,10 @@ func (c *CaddyDDNS) LoadConfig(ctx caddyapp.Context) any {
 }
 
 func SetCaddyDDNS(ddns *CaddyDDNS) error {
+	if len(ddns.Config.DNSProviderRaw) == 0 {
+		return errors.New("a DNS provider is required")
+	}
+
 	bytes, err := json.Marshal(ddns)
 	if err != nil {
 		return err

@@ -70,3 +70,25 @@ func (c *Caddy) GetDynamicDNS(ctx *gin.Context) {
 		})
 	}
 }
+
+func (c *Caddy) PutDynamicDNS(ctx *gin.Context) {
+	caddyDDNS := caddyddns.CaddyDDNS{}
+
+	if err := ctx.ShouldBind(&caddyDDNS); err != nil {
+		ctx.JSON(200, gin.H{
+			"code":    400,
+			"message": err.Error(),
+		})
+
+		return
+	}
+
+	if err := caddyddns.SetCaddyDDNS(&caddyDDNS); err != nil {
+		ctx.JSON(200, gin.H{
+			"code":    500,
+			"message": err.Error(),
+		})
+	} else {
+		ctx.JSON(200, gin.H{"code": 200})
+	}
+}
