@@ -2,6 +2,7 @@ module gitlab.com/xiayesuifeng/gopanel
 
 require (
 	github.com/caddyserver/caddy/v2 v2.5.0-beta.1.0.20220315220919-4e9fbee1e2ef
+	github.com/coreos/go-systemd/v22 v22.3.2
 	github.com/gin-gonic/contrib v0.0.0-20201101042839-6a891bf89f19
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-resty/resty/v2 v2.6.0
@@ -40,6 +41,7 @@ require (
 	github.com/go-playground/validator/v10 v10.10.1 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/go-task/slim-sprig v0.0.0-20210107165309-348f09dbbbc0 // indirect
+	github.com/godbus/dbus/v5 v5.0.4 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.3 // indirect
 	github.com/google/cel-go v0.7.3 // indirect
