@@ -63,6 +63,12 @@ func main() {
 		caddyRouter.PUT("/ddns", caddyC.PutDynamicDNS)
 	}
 
+	serviceRouter := apiRouter.Group("/service")
+	{
+		serviceC := &controller.Service{}
+		serviceRouter.GET("", serviceC.Get)
+	}
+
 	webPath := os.Getenv("GOPANEL_WEB_PATH")
 	if webPath == "" {
 		webPath = "web"
