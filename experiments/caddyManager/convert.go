@@ -8,6 +8,8 @@ import (
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"github.com/caddyserver/caddy/v2/modules/caddytls"
 	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyapp"
+	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyutil/caddymodule"
+	"log"
 	"strings"
 )
 
@@ -17,6 +19,7 @@ type Config struct {
 }
 
 func (m *Manager) convertToCaddyConfig() (config *Config) {
+	m.filterInvalidDNSChallenges()
 	m.filterInvalidWildcardDomains()
 
 	config = newConfig()
@@ -114,6 +117,29 @@ func (m *Manager) convertToCaddyConfig() (config *Config) {
 	}
 
 	return
+}
+
+func (m *Manager) filterInvalidDNSChallenges() {
+	list, err := caddymodule.GetModuleList()
+	if err != nil {
+		log.Println("[caddy manager] get caddy module list fail,error:", err)
+		return
+	}
+
+	for domain, config := range m.caddyConf.TLS.DNSChallenges {
+		provider := make(map[string]string)
+
+		err := json.Unmarshal(config.ProviderRaw, &provider)
+		if err != nil {
+			log.Println("[caddy manager] unmarshal dns challenges provider fail,error:", err)
+			return
+		}
+
+		if !list.HasNonStandardModule("dns.providers." + provider["name"]) {
+			delete(m.caddyConf.TLS.DNSChallenges, domain)
+		}
+	}
+
 }
 
 func (m *Manager) filterInvalidWildcardDomains() {
