@@ -7,6 +7,7 @@ import (
 	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyapp"
 	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyapp/caddyddns"
 	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyutil/caddyconfig"
+	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyutil/caddymodule"
 	"log"
 	"net"
 	"strconv"
@@ -40,6 +41,8 @@ type Manager struct {
 	appChange       chan bool
 	onAppChange     func()
 
+	moduleList *caddymodule.ModuleList
+
 	caddyApp map[string]caddyapp.CaddyApp
 	appMutex sync.RWMutex
 }
@@ -51,6 +54,12 @@ func InitManager(adminAddress core.NetAddress, panelPort string) (err error) {
 		app:             map[string]*APPConfig{},
 		appChange:       make(chan bool),
 		caddyApp:        map[string]caddyapp.CaddyApp{},
+	}
+
+	manager.moduleList, err = caddymodule.GetModuleList()
+	if err != nil {
+		log.Println("[caddy manager] get caddy module list fail,error:", err)
+		return
 	}
 
 	appConfig, err := manager.getAppConfig()

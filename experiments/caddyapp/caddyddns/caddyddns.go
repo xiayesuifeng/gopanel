@@ -36,6 +36,20 @@ func (c *CaddyDDNS) LoadConfig(ctx caddyapp.Context) any {
 		return nil
 	}
 
+	provider := make(map[string]string)
+
+	err = json.Unmarshal(ddns.Config.DNSProviderRaw, &provider)
+	if err != nil {
+		log.Println("[caddy ddns] unmarshal dns provider fail,error:", err)
+		return nil
+	}
+
+	moduleName := "dns.providers." + provider["name"]
+	if !ctx.ModuleList.HasNonStandardModule(moduleName) {
+		log.Println("[caddy ddns] caddy module:", moduleName, "not found,skip")
+		return nil
+	}
+
 	if ddns.Enabled {
 		return ddns.Config
 	} else {

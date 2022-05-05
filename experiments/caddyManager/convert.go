@@ -8,7 +8,6 @@ import (
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"github.com/caddyserver/caddy/v2/modules/caddytls"
 	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyapp"
-	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyutil/caddymodule"
 	"log"
 	"strings"
 )
@@ -110,7 +109,12 @@ func (m *Manager) convertToCaddyConfig() (config *Config) {
 
 	// load caddy app config
 	for name, app := range m.caddyApp {
-		if c := app.LoadConfig(caddyapp.Context{Change: m.appChange}); c != nil {
+		if !m.moduleList.HasNonStandardModule(name) {
+			log.Println("[caddy manager] caddy module:", name, "not found,skip to loading non standard app")
+			continue
+		}
+
+		if c := app.LoadConfig(caddyapp.Context{Change: m.appChange, ModuleList: m.moduleList}); c != nil {
 			config.Apps[name] = c
 		}
 
@@ -120,12 +124,6 @@ func (m *Manager) convertToCaddyConfig() (config *Config) {
 }
 
 func (m *Manager) filterInvalidDNSChallenges() {
-	list, err := caddymodule.GetModuleList()
-	if err != nil {
-		log.Println("[caddy manager] get caddy module list fail,error:", err)
-		return
-	}
-
 	for domain, config := range m.caddyConf.TLS.DNSChallenges {
 		provider := make(map[string]string)
 
@@ -135,7 +133,7 @@ func (m *Manager) filterInvalidDNSChallenges() {
 			return
 		}
 
-		if !list.HasNonStandardModule("dns.providers." + provider["name"]) {
+		if !m.moduleList.HasNonStandardModule("dns.providers." + provider["name"]) {
 			delete(m.caddyConf.TLS.DNSChallenges, domain)
 		}
 	}
