@@ -10,7 +10,7 @@ PrivateTmp=true
 PrivateDevices=true
 ProtectHome=true
 ProtectSystem=strict
-ReadWritePaths=/etc/gopanel/app.conf.d
+ReadWritePaths=/etc/gopanel/app.conf.d /var/lib/gopanel
 Restart=always
 
 [Install]
