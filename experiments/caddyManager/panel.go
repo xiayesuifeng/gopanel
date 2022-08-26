@@ -78,6 +78,8 @@ func loadPanelConfig(port string) *APPConfig {
 			pathConf := netdataPathCaddyJson
 			pathConf = strings.ReplaceAll(pathConf, "{path}", netdataPath)
 			netdataConf = strings.ReplaceAll(netdataConf, "{netdataPathJson}", pathConf)
+		} else {
+			netdataConf = strings.ReplaceAll(netdataConf, "{netdataPathJson}", "")
 		}
 
 		if core.Conf.Netdata.SSL {
