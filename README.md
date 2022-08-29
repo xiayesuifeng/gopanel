@@ -1,6 +1,8 @@
 # Gopanel
 
-A control panel that is written in Golang and is able to manage [Caddy 2](https://caddyserver.com/) and Guard Go web server.
+A control panel that is written in Golang and is able to manage [Caddy 2](https://caddyserver.com/) and Guard web server.
+
+Committed to becoming a server-type, router-type, NAS-type all-round management panel.
 
 [![AUR package](https://repology.org/badge/version-for-repo/aur/gopanel.svg)](https://repology.org/project/gopanel/versions)
 [![pipeline status](https://gitlab.com/xiayesuifeng/gopanel/badges/master/pipeline.svg)](https://gitlab.com/xiayesuifeng/gopanel/commits/master)
@@ -12,6 +14,40 @@ A control panel that is written in Golang and is able to manage [Caddy 2](https:
 # Gopanel 前端
 
 [gopanel-web](https://gitlab.com/xiayesuifeng/gopanel-web.git)
+
+## Features (功能)
+> PS: 以下大部分仍在开发中
+
+* 图形化配置反向代理，静态文件服务器等所有 `Caddy` 支持的操作
+* 应用管理
+  * 优雅管理 web 服务
+  * 支持应用中心，一键安装部署
+  * 一站式从路由配置到 web 服务进程管理
+  * 自定义应用图形化管理
+  * 支持与 systemd 服务集成
+* DDNS (基于 Caddy 动态 DNS 插件实现)
+* 容器化支持
+  * 支持 Docker/Podman 后端
+  * 与应用中心集成，一键部署容器服务
+  * 图形化配置容器
+* 网络 (从基础配置到像路由器那样丰富的功能)
+  * 防火墙
+  * DHCP
+  * DNS
+  * 交换机
+  * VLAN
+  * 端口转发
+* 虚拟化支持
+* 存储
+  * 硬盘管理
+  * Samba
+  * NFS
+* 系统管理 (依赖使用 systemd 的发行版)
+  * 服务管理
+  * 日志管理
+* 插件
+  * 支持插件中心
+  * 通过插件扩展更多更强大的功能
 
 ## Installer (安装)
 
