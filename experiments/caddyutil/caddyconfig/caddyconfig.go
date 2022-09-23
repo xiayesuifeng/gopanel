@@ -9,10 +9,9 @@ import (
 )
 
 const (
-	HTTPPortKey          = "general/httpPort"
-	HTTPSPortKey         = "general/httpsPort"
-	ExperimentalHttp3Key = "general/experimentalHttp3"
-	AllowH2CKey          = "general/allowH2C"
+	HTTPPortKey  = "general/httpPort"
+	HTTPSPortKey = "general/httpsPort"
+	AllowH2CKey  = "general/allowH2C"
 
 	TLSKey = "tls"
 
@@ -28,8 +27,7 @@ type General struct {
 	HTTPPort  int `json:"HTTPPort"`
 	HTTPSPort int `json:"HTTPSPort"`
 
-	ExperimentalHttp3 bool `json:"experimentalHttp3"`
-	AllowH2C          bool `json:"allowH2C"`
+	AllowH2C bool `json:"allowH2C"`
 }
 
 type TLS struct {
@@ -76,11 +74,6 @@ func GetConfiguration() *Configuration {
 		caddy.General.HTTPSPort = httpsPort
 	}
 
-	experimentalHttp3, err := strconv.ParseBool(string(storage.Get(module, ExperimentalHttp3Key, []byte("false"))))
-	if err == nil {
-		caddy.General.ExperimentalHttp3 = experimentalHttp3
-	}
-
 	allowH2C, err := strconv.ParseBool(string(storage.Get(module, AllowH2CKey, []byte("false"))))
 	if err == nil {
 		caddy.General.AllowH2C = allowH2C
@@ -112,12 +105,7 @@ func SetConfiguration(configuration *Configuration) error {
 		}
 	}
 
-	err := storage.Set(module, ExperimentalHttp3Key, []byte(strconv.FormatBool(configuration.General.ExperimentalHttp3)))
-	if err != nil {
-		return err
-	}
-
-	err = storage.Set(module, AllowH2CKey, []byte(strconv.FormatBool(configuration.General.AllowH2C)))
+	err := storage.Set(module, AllowH2CKey, []byte(strconv.FormatBool(configuration.General.AllowH2C)))
 	if err != nil {
 		return err
 	}

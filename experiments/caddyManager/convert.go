@@ -34,8 +34,10 @@ func (m *Manager) convertToCaddyConfig() (config *Config) {
 	serverName := map[int]string{app.HTTPSPort: m.HTTPSServerName}
 
 	servers[m.HTTPSServerName] = newServer(fmt.Sprintf(":%d", app.HTTPSPort))
-	servers[m.HTTPSServerName].ExperimentalHTTP3 = m.caddyConf.General.ExperimentalHttp3
-	servers[m.HTTPSServerName].AllowH2C = m.caddyConf.General.AllowH2C
+
+	if m.caddyConf.General.AllowH2C {
+		servers[m.HTTPSServerName].Protocols = []string{"h1", "h2", "h2c", "h3"}
+	}
 
 	wildcardDomainsApp, normalApp := filterWildcardDomainsApp(m.caddyConf.TLS.WildcardDomains, m.app)
 
