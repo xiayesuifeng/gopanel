@@ -13,11 +13,13 @@ import (
 	"strings"
 )
 
+type Type int
+
 const (
-	GO_TYPE = iota + 1
-	JAVA_TYPE
-	PHP_TYPE
-	OTHER_TYPE
+	GoType Type = iota + 1
+	JavaType
+	PHPType
+	OtherType
 )
 
 type BackendType string
@@ -30,7 +32,7 @@ const (
 type App struct {
 	Name             string                 `json:"name"`
 	CaddyConfig      caddyManager.APPConfig `json:"caddyConfig" binding:"required"`
-	Type             int                    `json:"type" binding:"required"`
+	Type             Type                   `json:"type" binding:"required"`
 	BackendType      BackendType            `json:"backendType"`
 	BackendConfigRaw json.RawMessage        `json:"backendConfig"`
 	Version          string                 `json:"version"`
