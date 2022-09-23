@@ -20,6 +20,8 @@ const (
 	JavaType
 	PHPType
 	OtherType
+	ReverseProxyType
+	StaticWebType
 )
 
 type BackendType string
