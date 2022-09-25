@@ -133,3 +133,33 @@ func StopService(ctx context.Context, name string, mode Mode) (jobID int, err er
 
 	return
 }
+
+func RestartService(ctx context.Context, name string, mode Mode) (jobID int, err error) {
+	conn, err := dbus.NewWithContext(ctx)
+	if err != nil {
+		return 0, err
+	}
+	defer conn.Close()
+
+	resultChan := make(chan string)
+	defer close(resultChan)
+
+	jobID, err = conn.RestartUnitContext(ctx, name, string(mode), resultChan)
+
+	result := <-resultChan
+
+	switch result {
+	case "canceled":
+		err = CanceledJobError
+	case "timeout":
+		err = TimeoutJobError
+	case "failed":
+		err = FailedJobError
+	case "dependency":
+		err = DependencyJobError
+	case "skipped":
+		err = SkippedJobError
+	}
+
+	return
+}
