@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"github.com/coreos/go-systemd/v22/dbus"
 	"path"
 )
@@ -13,6 +14,24 @@ type Service struct {
 	ActiveState bool   `json:"activeState"`
 	SubStatus   string `json:"subStatus"`
 }
+
+type Mode string
+
+const (
+	ReplaceMode            = "replace"
+	FailMode               = "fail"
+	IsolateMode            = "isolate"
+	IgnoreDependenciesMode = "ignore-dependencies"
+	IgnoreRequirementsMode = "ignore-requirements"
+)
+
+var (
+	CanceledJobError   = errors.New("systemd service unit job canceled")
+	TimeoutJobError    = errors.New("systemd service unit job timeout")
+	FailedJobError     = errors.New("systemd service unit job failed")
+	DependencyJobError = errors.New("systemd service unit job dependency")
+	SkippedJobError    = errors.New("systemd service unit job skipped")
+)
 
 func GetServices(context context.Context) ([]*Service, error) {
 	conn, err := dbus.NewWithContext(context)
@@ -50,4 +69,37 @@ func GetServices(context context.Context) ([]*Service, error) {
 	}
 
 	return services, nil
+}
+
+func StartService(ctx context.Context, name string, mode Mode) (jobID int, err error) {
+	conn, err := dbus.NewWithContext(ctx)
+	if err != nil {
+		return 0, err
+	}
+	defer conn.Close()
+
+	resultChan := make(chan string)
+	defer close(resultChan)
+
+	jobID, err = conn.StartUnitContext(ctx, name, string(mode), resultChan)
+	if err != nil {
+		return
+	}
+
+	result := <-resultChan
+
+	switch result {
+	case "canceled":
+		err = CanceledJobError
+	case "timeout":
+		err = TimeoutJobError
+	case "failed":
+		err = FailedJobError
+	case "dependency":
+		err = DependencyJobError
+	case "skipped":
+		err = SkippedJobError
+	}
+
+	return
 }
