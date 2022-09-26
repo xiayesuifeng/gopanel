@@ -4,15 +4,17 @@ import (
 	"context"
 	"errors"
 	"github.com/coreos/go-systemd/v22/dbus"
+	"log"
 	"path"
 )
 
 type Service struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Enabled     bool   `json:"enabled"`
-	ActiveState bool   `json:"activeState"`
-	SubStatus   string `json:"subStatus"`
+	Name        string   `json:"name"`
+	Description string   `json:"description"`
+	Enabled     bool     `json:"enabled"`
+	ActiveState bool     `json:"activeState"`
+	SubStatus   string   `json:"subStatus"`
+	TriggeredBy []string `json:"triggeredBy"`
 }
 
 type Mode string
@@ -58,12 +60,23 @@ func GetServices(context context.Context) ([]*Service, error) {
 		}
 
 		if len(units) > 0 {
+			triggeredBy := make([]string, 0)
+			properties, err := conn.GetUnitPropertiesContext(context, units[0].Name)
+			if err != nil {
+				log.Println("Failed to get unit properties,unit:", units[0].Name)
+			} else {
+				if tmp, ok := properties["TriggeredBy"].([]string); ok {
+					triggeredBy = tmp
+				}
+			}
+
 			services = append(services, &Service{
 				Name:        units[0].Name,
 				Description: units[0].Description,
 				Enabled:     file.Type == "enabled",
 				ActiveState: units[0].ActiveState == "active",
 				SubStatus:   units[0].SubState,
+				TriggeredBy: triggeredBy,
 			})
 		}
 	}
