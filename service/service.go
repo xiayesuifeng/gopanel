@@ -64,7 +64,7 @@ func GetServices(context context.Context) (ServerList, error) {
 	services := make(ServerList, 0)
 
 	for _, file := range unitFiles {
-		if file.Type == "static" {
+		if file.Type == "static" || file.Type == "alias" {
 			continue
 		}
 
