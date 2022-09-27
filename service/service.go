@@ -101,23 +101,12 @@ func StartService(ctx context.Context, name string, mode Mode) (jobID int, err e
 
 	result := <-resultChan
 
-	switch result {
-	case "canceled":
-		err = CanceledJobError
-	case "timeout":
-		err = TimeoutJobError
-	case "failed":
-		err = FailedJobError
-	case "dependency":
-		err = DependencyJobError
-	case "skipped":
-		err = SkippedJobError
-	}
+	err = getJobError(result)
 
 	return
 }
 
-func StopService(ctx context.Context, name string, mode Mode) (jobID int, err error) {
+func StopService(ctx context.Context, name string, mode Mode, stopTriggeredBy bool) (jobID int, err error) {
 	conn, err := dbus.NewWithContext(ctx)
 	if err != nil {
 		return 0, err
@@ -131,17 +120,34 @@ func StopService(ctx context.Context, name string, mode Mode) (jobID int, err er
 
 	result := <-resultChan
 
-	switch result {
-	case "canceled":
-		err = CanceledJobError
-	case "timeout":
-		err = TimeoutJobError
-	case "failed":
-		err = FailedJobError
-	case "dependency":
-		err = DependencyJobError
-	case "skipped":
-		err = SkippedJobError
+	err = getJobError(result)
+
+	if err != nil {
+		return
+	}
+
+	if stopTriggeredBy {
+		properties := make(map[string]any)
+		properties, err = conn.GetUnitPropertiesContext(ctx, name)
+		if err != nil {
+			return jobID, err
+		}
+
+		if triggeredBy, ok := properties["TriggeredBy"].([]string); ok {
+			for _, n := range triggeredBy {
+				_, err = conn.StopUnitContext(ctx, n, string(mode), resultChan)
+				if err != nil {
+					return
+				}
+
+				result = <-resultChan
+
+				err = getJobError(result)
+				if err != nil {
+					return
+				}
+			}
+		}
 	}
 
 	return
@@ -161,6 +167,12 @@ func RestartService(ctx context.Context, name string, mode Mode) (jobID int, err
 
 	result := <-resultChan
 
+	err = getJobError(result)
+
+	return
+}
+
+func getJobError(result string) (err error) {
 	switch result {
 	case "canceled":
 		err = CanceledJobError
