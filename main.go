@@ -67,6 +67,7 @@ func main() {
 	{
 		serviceC := &controller.Service{}
 		serviceRouter.GET("", serviceC.Get)
+		serviceRouter.POST("/:name/:action", serviceC.Post)
 	}
 
 	webPath := os.Getenv("GOPANEL_WEB_PATH")
