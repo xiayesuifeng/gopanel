@@ -35,7 +35,21 @@ var (
 	SkippedJobError    = errors.New("systemd service unit job skipped")
 )
 
-func GetServices(context context.Context) ([]*Service, error) {
+type ServerList []*Service
+
+func (s ServerList) Len() int {
+	return len(s)
+}
+
+func (s ServerList) Less(i, j int) bool {
+	return s[i].Name < s[j].Name
+}
+
+func (s ServerList) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+
+func GetServices(context context.Context) (ServerList, error) {
 	conn, err := dbus.NewWithContext(context)
 	if err != nil {
 		return nil, err
@@ -47,7 +61,7 @@ func GetServices(context context.Context) ([]*Service, error) {
 		return nil, err
 	}
 
-	services := make([]*Service, 0)
+	services := make(ServerList, 0)
 
 	for _, file := range unitFiles {
 		if file.Type == "static" {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/gin-gonic/gin"
 	"gitlab.com/xiayesuifeng/gopanel/service"
+	"sort"
 )
 
 type Service struct {
@@ -16,6 +17,8 @@ func (s *Service) Get(ctx *gin.Context) {
 			"message": err.Error(),
 		})
 	} else {
+		sort.Sort(services)
+
 		ctx.JSON(200, gin.H{
 			"code": 200,
 			"data": services,
