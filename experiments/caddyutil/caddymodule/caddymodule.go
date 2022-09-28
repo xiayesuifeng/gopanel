@@ -17,7 +17,7 @@ func GetModuleList() (*ModuleList, error) {
 		return nil, err
 	}
 
-	cmd := exec.Command(path, "list-modules", "-packages")
+	cmd := exec.Command(path, "list-modules", "--packages")
 
 	outBytes, err := cmd.CombinedOutput()
 	if err != nil {
