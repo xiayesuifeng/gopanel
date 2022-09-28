@@ -21,7 +21,7 @@ func Validate(config []byte) error {
 		return err
 	}
 
-	cmd := exec.Command(path, "validate", "-config", tmpFile)
+	cmd := exec.Command(path, "validate", "--config", tmpFile)
 	out, err := cmd.CombinedOutput()
 
 	os.Remove(tmpFile)
