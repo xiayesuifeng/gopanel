@@ -46,10 +46,12 @@ func (s *Service) Post(ctx *gin.Context) {
 		data, err = service.RestartService(ctx, name, service.FailMode)
 	case "enable":
 		_, data, err = service.EnableService(ctx, name)
+	case "disable":
+		data, err = service.DisableService(ctx, name)
 	default:
 		ctx.JSON(200, gin.H{
 			"code":    400,
-			"message": "action must be one of start, stop, restart, enable",
+			"message": "action must be one of start, stop, restart, enable, disable",
 		})
 		return
 	}
