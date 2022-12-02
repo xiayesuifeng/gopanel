@@ -33,21 +33,23 @@ func (s *Service) Post(ctx *gin.Context) {
 	stopTriggeredBy := ctx.Query("stopTriggeredBy")
 
 	var (
-		jobID int
-		err   error
+		data interface{}
+		err  error
 	)
 
 	switch action {
 	case "start":
-		jobID, err = service.StartService(ctx, name, service.FailMode)
+		data, err = service.StartService(ctx, name, service.FailMode)
 	case "stop":
-		jobID, err = service.StopService(ctx, name, service.FailMode, stopTriggeredBy == "true")
+		data, err = service.StopService(ctx, name, service.FailMode, stopTriggeredBy == "true")
 	case "restart":
-		jobID, err = service.RestartService(ctx, name, service.FailMode)
+		data, err = service.RestartService(ctx, name, service.FailMode)
+	case "enable":
+		_, data, err = service.EnableService(ctx, name)
 	default:
 		ctx.JSON(200, gin.H{
 			"code":    400,
-			"message": "action must be one of start, stop, restart",
+			"message": "action must be one of start, stop, restart, enable",
 		})
 		return
 	}
@@ -60,7 +62,7 @@ func (s *Service) Post(ctx *gin.Context) {
 	} else {
 		ctx.JSON(200, gin.H{
 			"code": 200,
-			"data": jobID,
+			"data": data,
 		})
 	}
 }

@@ -186,6 +186,16 @@ func RestartService(ctx context.Context, name string, mode Mode) (jobID int, err
 	return
 }
 
+func EnableService(ctx context.Context, name string) (bool, []dbus.EnableUnitFileChange, error) {
+	conn, err := dbus.NewWithContext(ctx)
+	if err != nil {
+		return false, nil, err
+	}
+	defer conn.Close()
+
+	return conn.EnableUnitFilesContext(ctx, []string{name}, false, true)
+}
+
 func getJobError(result string) (err error) {
 	switch result {
 	case "canceled":
