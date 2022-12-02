@@ -5,7 +5,7 @@ Requires=caddy.service
 
 [Service]
 Environment=GOPANEL_WEB_PATH=/usr/share/gopanel/web
-ExecStart=/usr/bin/gopanel -c /etc/gopanel/config.json -p 12020
+ExecStart=/usr/bin/gopanel server -c /etc/gopanel/config.json -p 12020
 PrivateTmp=true
 PrivateDevices=true
 ProtectHome=true
