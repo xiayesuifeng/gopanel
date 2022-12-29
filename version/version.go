@@ -29,6 +29,7 @@ type VersionInfo struct {
 	Revision   string
 	Version    string
 	Prerelease string
+	Metadata   string
 }
 
 func GetVersion() *VersionInfo {
@@ -56,6 +57,7 @@ func GetVersion() *VersionInfo {
 		Revision:   GitCommit,
 		Version:    fmt.Sprintf("%s.%s.%s", result["major"], result["minor"], result["patch"]),
 		Prerelease: result["prerelease"],
+		Metadata:   result["buildmetadata"],
 	}
 }
 
@@ -64,6 +66,10 @@ func (v *VersionInfo) VersionNumber() string {
 
 	if v.Prerelease != "" {
 		version = fmt.Sprintf("%s-%s", version, v.Prerelease)
+	}
+
+	if v.Metadata != "" {
+		version = fmt.Sprintf("%s+%s", version, v.Metadata)
 	}
 
 	return version
@@ -75,6 +81,10 @@ func (v *VersionInfo) FullVersionNumber(rev bool) string {
 	fmt.Fprintf(&versionString, "Gopanel v%s", v.Version)
 	if v.Prerelease != "" {
 		fmt.Fprintf(&versionString, "-%s", v.Prerelease)
+	}
+
+	if v.Metadata != "" {
+		fmt.Fprintf(&versionString, "+%s", v.Metadata)
 	}
 
 	if rev && v.Revision != "" {
