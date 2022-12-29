@@ -12,7 +12,7 @@ build-gopanel:
     - mkdir -p $CI_PROJECT_DIR/gopanel
     - go build -o $CI_PROJECT_DIR/gopanel/gopanel
     - cp config.default.json $CI_PROJECT_DIR/gopanel
-    - cp -rf systemd $CI_PROJECT_DIR/gopanel
+    - cp -rf contrib/systemd $CI_PROJECT_DIR/gopanel
     - wget https://gitlab.com/xiayesuifeng/gopanel-web/builds/artifacts/master/download?job=build-web -O web.zip
     - unzip web.zip
     - mv build $CI_PROJECT_DIR/gopanel/web
