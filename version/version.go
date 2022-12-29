@@ -2,8 +2,13 @@ package version
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
+	"log"
+	"regexp"
 )
+
+const semverRegexStr = `^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$`
 
 var (
 	// GitCommit git rev-parse HEAD
@@ -15,17 +20,9 @@ var (
 	//	-ldflags '-X gitlab.com/xiayesuifeng/gopanel/version.Version=x.y.z'
 	//
 	// for example.
-	Version string
+	Version = "1.0.0-dev"
 
-	// Prerelease A pre-release marker for the version. If this is "" (empty string)
-	// then it means that it is a final release. Otherwise, this is a pre-release
-	// such as "dev" (in development), "beta", "rc1", etc.
-	// Set this variable during `go build` with `-ldflags`:
-	//
-	//	-ldflags '-X gitlab.com/xiayesuifeng/gopanel/version.Prerelease=dev'
-	//
-	// for example.
-	Prerelease = "dev"
+	ErrInvalidSemVer = errors.New("invalid Semantic Versions")
 )
 
 type VersionInfo struct {
@@ -35,13 +32,30 @@ type VersionInfo struct {
 }
 
 func GetVersion() *VersionInfo {
-	ver := Version
-	rel := Prerelease
+	reg := regexp.MustCompile(semverRegexStr)
+
+	match := reg.FindStringSubmatch(Version)
+	groupNames := reg.SubexpNames()
+
+	if len(match) == 0 {
+		log.Panicln(ErrInvalidSemVer)
+	}
+
+	result := make(map[string]string)
+
+	for i, name := range groupNames {
+		// skip first element
+		if i == 0 && name == "" {
+			continue
+		}
+
+		result[name] = match[i]
+	}
 
 	return &VersionInfo{
 		Revision:   GitCommit,
-		Version:    ver,
-		Prerelease: rel,
+		Version:    fmt.Sprintf("%s.%s.%s", result["major"], result["minor"], result["patch"]),
+		Prerelease: result["prerelease"],
 	}
 }
 
