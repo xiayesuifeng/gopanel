@@ -1,0 +1,4 @@
+[submodule "web"]
+	path = web
+	url = https://gitlab.com/xiayesuifeng/gopanel-web.git
+	branch = master
