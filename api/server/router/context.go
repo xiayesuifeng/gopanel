@@ -20,3 +20,7 @@ func (ctx *Context) NoContent() error {
 
 	return nil
 }
+
+func (ctx *Context) Error(code int, message string) error {
+	return &APIError{Message: message, Code: code}
+}
