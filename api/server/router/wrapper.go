@@ -54,9 +54,11 @@ func (w *wrapperRouter) wrapHandler(handlerFunc ...HandlerFunc) (funks []gin.Han
 		funks = append(funks, func(ctx *gin.Context) {
 			err := f(&Context{ctx})
 			if err != nil {
-				ctx.JSON(http.StatusInternalServerError, gin.H{
-					"message": err.Error(),
-				})
+				if apiError, ok := err.(*APIError); ok {
+					ctx.JSON(apiError.Code, apiError)
+				} else {
+					ctx.JSON(http.StatusInternalServerError, APIError{Message: err.Error()})
+				}
 			}
 		})
 	}
