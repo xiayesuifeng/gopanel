@@ -14,3 +14,9 @@ func (ctx *Context) JSON(data interface{}) error {
 
 	return nil
 }
+
+func (ctx *Context) NoContent() error {
+	ctx.Context.Status(http.StatusNoContent)
+
+	return nil
+}
