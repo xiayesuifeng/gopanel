@@ -1,0 +1,32 @@
+package server
+
+import (
+	"github.com/gin-gonic/gin"
+	"gitlab.com/xiayesuifeng/gopanel/api/server/router"
+)
+
+type Server struct {
+	endpoints []router.Endpoint
+}
+
+func NewServer() *Server {
+	return &Server{}
+}
+
+func (s *Server) Register(endpoint router.Endpoint) {
+	s.endpoints = append(s.endpoints, endpoint)
+}
+
+func (s *Server) Run(address ...string) error {
+	engine := gin.Default()
+
+	apiRouter := engine.Group("/api")
+
+	r := router.NewRouter(apiRouter)
+
+	for _, e := range s.endpoints {
+		e.Run(r.Group("/" + e.Name()))
+	}
+
+	return engine.Run(address...)
+}
