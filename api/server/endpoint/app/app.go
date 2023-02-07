@@ -1,8 +1,9 @@
-package controller
+package app
 
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"gitlab.com/xiayesuifeng/gopanel/api/server/router"
 	"gitlab.com/xiayesuifeng/gopanel/app"
 	"gitlab.com/xiayesuifeng/gopanel/core"
 	"strings"
@@ -11,7 +12,19 @@ import (
 type App struct {
 }
 
-func (a *App) GetValidate(ctx *gin.Context) bool {
+func (a *App) Name() string {
+	return "app"
+}
+
+func (a *App) Run(r router.Router) {
+	r.GET("", a.Gets)
+	r.GET("/:name", a.Get)
+	r.POST("", a.Post)
+	r.PUT("/:name", a.Put)
+	r.DELETE("/:name", a.Delete)
+}
+
+func (a *App) GetValidate(ctx *router.Context) bool {
 	validate := false
 	host := core.Conf.Panel.Domain
 	if host == "" {
@@ -30,102 +43,68 @@ func (a *App) GetValidate(ctx *gin.Context) bool {
 	return validate
 }
 
-func (a *App) Get(ctx *gin.Context) {
+func (a *App) Get(ctx *router.Context) error {
 	name := ctx.Param("name")
 
 	if app, err := app.GetApp(name); err == nil {
-		ctx.JSON(200, gin.H{
-			"code": 200,
-			"app":  app,
+		return ctx.JSON(gin.H{
+			"app": app,
 		})
 	} else if err.Error() == "app not found" {
-		ctx.JSON(200, gin.H{
-			"code":    404,
-			"message": "app not found",
-		})
+		return ctx.Error(404, "app not found")
 	} else {
-		ctx.JSON(200, gin.H{
-			"code":    500,
-			"message": err.Error(),
-		})
+		return err
 	}
 }
 
-func (a *App) Gets(ctx *gin.Context) {
-	ctx.JSON(200, gin.H{
-		"code": 200,
+func (a *App) Gets(ctx *router.Context) error {
+	return ctx.JSON(gin.H{
 		"apps": app.GetApps(),
 	})
 }
 
-func (a *App) Post(ctx *gin.Context) {
+func (a *App) Post(ctx *router.Context) error {
 	data := app.App{}
 	if err := ctx.ShouldBind(&data); err != nil {
-		ctx.JSON(200, gin.H{
-			"code":    400,
-			"message": err.Error(),
-		})
-		return
+		return ctx.Error(400, err.Error())
 	}
 
 	if data.Name == "" {
-		ctx.JSON(200, gin.H{
-			"code":    400,
-			"message": "name must exist",
-		})
-		return
+		return ctx.Error(400, "name must exist")
 	}
 
 	if err := app.AddApp(data, a.GetValidate(ctx)); err != nil {
-		ctx.JSON(200, gin.H{
-			"code":    400,
-			"message": err.Error(),
-		})
+		return ctx.Error(400, err.Error())
 	} else {
-		ctx.JSON(200, gin.H{"code": 200})
+		return ctx.NoContent()
 	}
 }
 
-func (a *App) Put(ctx *gin.Context) {
+func (a *App) Put(ctx *router.Context) error {
 	name := ctx.Param("name")
 
 	data := app.App{}
 	if err := ctx.ShouldBind(&data); err != nil {
-		ctx.JSON(200, gin.H{
-			"code":    400,
-			"message": err.Error(),
-		})
-		return
+		return ctx.Error(400, err.Error())
 	}
 
 	data.Name = name
 
 	if err := app.EditApp(data, a.GetValidate(ctx)); err != nil {
-		ctx.JSON(200, gin.H{
-			"code":    500,
-			"message": err.Error(),
-		})
+		return err
 	} else {
-		ctx.JSON(200, gin.H{"code": 200})
+		return ctx.NoContent()
 	}
 }
 
-func (a *App) Delete(ctx *gin.Context) {
+func (a *App) Delete(ctx *router.Context) error {
 	name := ctx.Param("name")
 
 	if err := app.DeleteApp(name); err == nil {
-		ctx.JSON(200, gin.H{
-			"code": 200,
-		})
+		return ctx.NoContent()
 	} else if err.Error() == "app not found" {
-		ctx.JSON(200, gin.H{
-			"code":    404,
-			"message": "app not found",
-		})
+		return ctx.Error(404, "app not found")
 	} else {
-		ctx.JSON(200, gin.H{
-			"code":    500,
-			"message": err.Error(),
-		})
+		return err
 	}
 }

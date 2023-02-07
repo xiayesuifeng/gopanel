@@ -1,6 +1,7 @@
 package server
 
 import (
+	"gitlab.com/xiayesuifeng/gopanel/api/server/endpoint/app"
 	"gitlab.com/xiayesuifeng/gopanel/api/server/endpoint/auth"
 	"gitlab.com/xiayesuifeng/gopanel/api/server/router"
 )
@@ -8,6 +9,7 @@ import (
 func (s *Server) registerAll() {
 	endpoints := []router.Endpoint{
 		&auth.Auth{},
+		&app.App{},
 	}
 
 	for _, endpoint := range endpoints {
