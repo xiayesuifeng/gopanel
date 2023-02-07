@@ -1,8 +1,8 @@
-package controller
+package service
 
 import (
-	"context"
 	"github.com/gin-gonic/gin"
+	"gitlab.com/xiayesuifeng/gopanel/api/server/router"
 	"gitlab.com/xiayesuifeng/gopanel/service"
 	"sort"
 )
@@ -10,23 +10,28 @@ import (
 type Service struct {
 }
 
-func (s *Service) Get(ctx *gin.Context) {
-	if services, err := service.GetServices(context.TODO()); err != nil {
-		ctx.JSON(200, gin.H{
-			"code":    500,
-			"message": err.Error(),
-		})
+func (s *Service) Name() string {
+	return "service"
+}
+
+func (s *Service) Run(r router.Router) {
+	r.GET("", s.Get)
+	r.POST("/:name/:action", s.Post)
+}
+
+func (s *Service) Get(ctx *router.Context) error {
+	if services, err := service.GetServices(ctx); err != nil {
+		return err
 	} else {
 		sort.Sort(services)
 
-		ctx.JSON(200, gin.H{
-			"code": 200,
+		return ctx.JSON(gin.H{
 			"data": services,
 		})
 	}
 }
 
-func (s *Service) Post(ctx *gin.Context) {
+func (s *Service) Post(ctx *router.Context) error {
 	name := ctx.Param("name")
 	action := ctx.Param("action")
 
@@ -49,21 +54,13 @@ func (s *Service) Post(ctx *gin.Context) {
 	case "disable":
 		data, err = service.DisableService(ctx, name)
 	default:
-		ctx.JSON(200, gin.H{
-			"code":    400,
-			"message": "action must be one of start, stop, restart, enable, disable",
-		})
-		return
+		return ctx.Error(400, "action must be one of start, stop, restart, enable, disable")
 	}
 
 	if err != nil {
-		ctx.JSON(200, gin.H{
-			"code":    500,
-			"message": err.Error(),
-		})
+		return err
 	} else {
-		ctx.JSON(200, gin.H{
-			"code": 200,
+		return ctx.JSON(gin.H{
 			"data": data,
 		})
 	}

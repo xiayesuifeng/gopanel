@@ -7,8 +7,6 @@ import (
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"gitlab.com/xiayesuifeng/gopanel/app"
-	"gitlab.com/xiayesuifeng/gopanel/auth"
-	"gitlab.com/xiayesuifeng/gopanel/controller"
 	"gitlab.com/xiayesuifeng/gopanel/core"
 	"gitlab.com/xiayesuifeng/gopanel/core/storage"
 	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyManager"
@@ -69,15 +67,6 @@ func serverRun(cmd *cobra.Command, args []string) {
 	}
 
 	router := gin.Default()
-
-	apiRouter := router.Group("/api", auth.AuthMiddleware)
-
-	serviceRouter := apiRouter.Group("/service")
-	{
-		serviceC := &controller.Service{}
-		serviceRouter.GET("", serviceC.Get)
-		serviceRouter.POST("/:name/:action", serviceC.Post)
-	}
 
 	webPath := os.Getenv("GOPANEL_WEB_PATH")
 	if webPath == "" {
