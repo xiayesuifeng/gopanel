@@ -9,6 +9,10 @@ type wrapperRouter struct {
 	gin.IRouter
 }
 
+func (w *wrapperRouter) Use(middleware ...HandlerFunc) {
+	w.IRouter.Use(w.wrapHandler(middleware...)...)
+}
+
 func (w *wrapperRouter) Handle(httpMethod, relativePath string, handlers ...HandlerFunc) {
 	w.IRouter.Handle(httpMethod, relativePath, w.wrapHandler(handlers...)...)
 }

@@ -17,6 +17,8 @@ type Router interface {
 }
 
 type Routes interface {
+	Use(...HandlerFunc)
+
 	Handle(string, string, ...HandlerFunc)
 	Any(string, ...HandlerFunc)
 	GET(string, ...HandlerFunc)
