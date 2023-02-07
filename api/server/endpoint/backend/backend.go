@@ -1,8 +1,9 @@
-package controller
+package backend
 
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"gitlab.com/xiayesuifeng/gopanel/api/server/router"
 	"gitlab.com/xiayesuifeng/gopanel/backend"
 	"log"
 	"net/http"
@@ -11,29 +12,38 @@ import (
 type Backend struct {
 }
 
+func (b *Backend) Name() string {
+	return "backend"
+}
+
+func (b *Backend) Run(r router.Router) {
+	r.GET("/:name", b.Get)
+	r.GET("/:name/ws", b.GetWS)
+}
+
 var wsupgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 }
 
-func (b *Backend) Get(ctx *gin.Context) {
+func (b *Backend) Get(ctx *router.Context) error {
 	{
 		b := backend.GetBackend(ctx.Param("name"))
-		ctx.JSON(200, gin.H{
+		return ctx.JSON(gin.H{
 			"status": b.Status,
 			"log":    b.Log.String(),
 		})
 	}
 }
 
-func (b *Backend) GetWS(ctx *gin.Context) {
+func (b *Backend) GetWS(ctx *router.Context) error {
 	headers := http.Header{}
 	headers.Add("Sec-WebSocket-Protocol", ctx.GetHeader("Sec-WebSocket-Protocol"))
 
 	conn, err := wsupgrader.Upgrade(ctx.Writer, ctx.Request, headers)
 	if err != nil {
 		log.Println("Failed to set websocket upgrade: %+v", err)
-		return
+		return nil
 	}
 	defer conn.Close()
 
@@ -63,4 +73,5 @@ func (b *Backend) GetWS(ctx *gin.Context) {
 	}()
 
 	<-exit
+	return nil
 }

@@ -72,13 +72,6 @@ func serverRun(cmd *cobra.Command, args []string) {
 
 	apiRouter := router.Group("/api", auth.AuthMiddleware)
 
-	backendRouter := apiRouter.Group("/backend")
-	{
-		backendC := &controller.Backend{}
-		backendRouter.GET("/:name", backendC.Get)
-		backendRouter.GET("/:name/ws", backendC.GetWS)
-	}
-
 	caddyRouter := apiRouter.Group("/caddy")
 	{
 		caddyC := &controller.Caddy{}
