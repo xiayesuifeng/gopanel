@@ -10,7 +10,11 @@ type Server struct {
 }
 
 func NewServer() *Server {
-	return &Server{}
+	server := &Server{}
+
+	server.registerAll()
+
+	return server
 }
 
 func (s *Server) Register(endpoint router.Endpoint) {

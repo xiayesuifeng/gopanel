@@ -72,13 +72,6 @@ func serverRun(cmd *cobra.Command, args []string) {
 
 	apiRouter := router.Group("/api", auth.AuthMiddleware)
 
-	authRouter := apiRouter.Group("/auth")
-	{
-		authC := &controller.Auth{}
-		authRouter.GET("/token", authC.GetToken)
-		authRouter.POST("/login", authC.Login)
-	}
-
 	appRouter := apiRouter.Group("/app")
 	{
 		appC := &controller.App{}
