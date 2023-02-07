@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
+	"gitlab.com/xiayesuifeng/gopanel/api/server/middleware"
 	"gitlab.com/xiayesuifeng/gopanel/api/server/router"
 )
 
@@ -27,6 +28,7 @@ func (s *Server) Run(address ...string) error {
 	apiRouter := engine.Group("/api")
 
 	r := router.NewRouter(apiRouter)
+	r.Use(middleware.AuthMiddleware)
 
 	for _, e := range s.endpoints {
 		e.Run(r.Group("/" + e.Name()))

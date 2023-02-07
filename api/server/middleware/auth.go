@@ -1,15 +1,16 @@
-package auth
+package middleware
 
 import (
-	"github.com/gin-gonic/gin"
+	"gitlab.com/xiayesuifeng/gopanel/api/server/router"
+	"gitlab.com/xiayesuifeng/gopanel/auth"
 	"log"
 	"strings"
 )
 
-func AuthMiddleware(ctx *gin.Context) {
+func AuthMiddleware(ctx *router.Context) error {
 	if strings.HasSuffix(ctx.Request.RequestURI, "/api/auth/login") {
 		ctx.Next()
-		return
+		return nil
 	}
 
 	token := ctx.GetHeader("Authorization")
@@ -18,25 +19,19 @@ func AuthMiddleware(ctx *gin.Context) {
 		token = ctx.GetHeader("Sec-WebSocket-Protocol")
 	}
 
-	claims, err := ParseToken(token)
+	claims, err := auth.ParseToken(token)
 	if err != nil {
 		log.Println(err)
-		ctx.JSON(200, gin.H{
-			"code":    401,
-			"message": "no authorization",
-		})
 		ctx.Abort()
-		return
+		return ctx.Error(401, "no authorization")
 	}
 
 	if err := claims.Valid(); err != nil {
-		ctx.JSON(200, gin.H{
-			"code":    401,
-			"message": "no authorization",
-		})
 		ctx.Abort()
-		return
+		return ctx.Error(401, "no authorization")
 	}
 
 	ctx.Next()
+
+	return nil
 }
