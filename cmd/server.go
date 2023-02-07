@@ -72,18 +72,6 @@ func serverRun(cmd *cobra.Command, args []string) {
 
 	apiRouter := router.Group("/api", auth.AuthMiddleware)
 
-	caddyRouter := apiRouter.Group("/caddy")
-	{
-		caddyC := &controller.Caddy{}
-		caddyRouter.GET("/configuration", caddyC.GetConfiguration)
-		caddyRouter.PUT("/configuration", caddyC.PutConfiguration)
-
-		caddyRouter.GET("/module", caddyC.GetModuleList)
-
-		caddyRouter.GET("/ddns", caddyC.GetDynamicDNS)
-		caddyRouter.PUT("/ddns", caddyC.PutDynamicDNS)
-	}
-
 	serviceRouter := apiRouter.Group("/service")
 	{
 		serviceC := &controller.Service{}
