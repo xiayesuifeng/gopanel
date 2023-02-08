@@ -4,8 +4,8 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/cobra"
 	"gitlab.com/xiayesuifeng/gopanel/app"
 	"gitlab.com/xiayesuifeng/gopanel/core"
 	"gitlab.com/xiayesuifeng/gopanel/core/storage"
@@ -13,9 +13,6 @@ import (
 	"log"
 	"os"
 	"strconv"
-	"strings"
-
-	"github.com/spf13/cobra"
 )
 
 var (
@@ -67,21 +64,6 @@ func serverRun(cmd *cobra.Command, args []string) {
 	}
 
 	router := gin.Default()
-
-	webPath := os.Getenv("GOPANEL_WEB_PATH")
-	if webPath == "" {
-		webPath = "web"
-	}
-	router.Use(static.Serve("/", static.LocalFile(webPath, false)))
-	router.NoRoute(func(c *gin.Context) {
-		if !strings.Contains(c.Request.RequestURI, "/api") && !strings.Contains(c.Request.RequestURI, "/netdata") {
-			path := strings.Split(c.Request.URL.Path, "/")
-			if len(path) > 1 {
-				c.File(webPath + "/index.html")
-				return
-			}
-		}
-	})
 
 	if err := router.Run(":" + strconv.FormatInt(int64(port), 10)); err != nil {
 		log.Fatalln(err)
