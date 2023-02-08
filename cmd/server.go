@@ -4,12 +4,13 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
+	"gitlab.com/xiayesuifeng/gopanel/api/server"
 	"gitlab.com/xiayesuifeng/gopanel/app"
 	"gitlab.com/xiayesuifeng/gopanel/core"
 	"gitlab.com/xiayesuifeng/gopanel/core/storage"
 	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyManager"
+	"gitlab.com/xiayesuifeng/gopanel/web"
 	"log"
 	"os"
 	"strconv"
@@ -63,9 +64,9 @@ func serverRun(cmd *cobra.Command, args []string) {
 		log.Fatalln(err)
 	}
 
-	router := gin.Default()
+	srv := server.NewServer(web.Assets())
 
-	if err := router.Run(":" + strconv.FormatInt(int64(port), 10)); err != nil {
+	if err := srv.Run(":" + strconv.FormatInt(int64(port), 10)); err != nil {
 		log.Fatalln(err)
 	}
 }
