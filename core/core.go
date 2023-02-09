@@ -2,9 +2,11 @@ package core
 
 import (
 	"context"
+	"gitlab.com/xiayesuifeng/gopanel/api/server"
 	"gitlab.com/xiayesuifeng/gopanel/app"
 	"gitlab.com/xiayesuifeng/gopanel/core/storage"
 	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyManager"
+	"gitlab.com/xiayesuifeng/gopanel/web"
 	"log"
 	"os"
 	"strconv"
@@ -12,10 +14,14 @@ import (
 
 type Core struct {
 	listenPort int
+	server     *server.Server
 }
 
 func New(port int) (*Core, error) {
-	return &Core{listenPort: port}, nil
+	return &Core{
+		listenPort: port,
+		server:     server.NewServer(web.Assets()),
+	}, nil
 }
 
 func (c *Core) Start(ctx context.Context) error {
@@ -41,7 +47,7 @@ func (c *Core) Start(ctx context.Context) error {
 
 	app.ReloadAppConfig()
 
-	return nil
+	return c.server.Run(":" + strconv.FormatInt(int64(c.listenPort), 10))
 }
 
 func (c *Core) Close() error {

@@ -5,11 +5,8 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"gitlab.com/xiayesuifeng/gopanel/api/server"
 	"gitlab.com/xiayesuifeng/gopanel/core"
-	"gitlab.com/xiayesuifeng/gopanel/web"
 	"log"
-	"strconv"
 )
 
 var (
@@ -36,12 +33,6 @@ func serverRun(cmd *cobra.Command, args []string) {
 	}
 
 	if err := instance.Start(cmd.Context()); err != nil {
-		log.Fatalln(err)
-	}
-
-	srv := server.NewServer(web.Assets())
-
-	if err := srv.Run(":" + strconv.FormatInt(int64(port), 10)); err != nil {
 		log.Fatalln(err)
 	}
 }
