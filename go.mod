@@ -12,6 +12,7 @@ require (
 	github.com/mholt/caddy-dynamicdns v0.0.0-20220715223239-7f55c953bf06
 	github.com/spf13/cobra v1.6.1
 	go.etcd.io/bbolt v1.3.6
+	golang.org/x/exp v0.0.0-20230206171751-46f607a40771
 )
 
 require (
@@ -119,7 +120,6 @@ require (
 	go.uber.org/multierr v1.9.0 // indirect
 	go.uber.org/zap v1.24.0 // indirect
 	golang.org/x/crypto v0.5.0 // indirect
-	golang.org/x/exp v0.0.0-20230203172020-98cc5a0785f9 // indirect
 	golang.org/x/mod v0.7.0 // indirect
 	golang.org/x/net v0.5.0 // indirect
 	golang.org/x/sys v0.4.0 // indirect

@@ -8,6 +8,8 @@ import (
 	"gitlab.com/xiayesuifeng/gopanel/core/storage"
 	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyManager"
 	"gitlab.com/xiayesuifeng/gopanel/web"
+	"golang.org/x/exp/slog"
+	"io"
 	"log"
 	"os"
 	"strconv"
@@ -19,6 +21,42 @@ type Core struct {
 }
 
 func New(port int) (*Core, error) {
+	log.Println("[core] initialize...")
+
+	// initialize logger
+	var logOut io.Writer
+	switch config.Conf.Log.Output {
+	case "stderr":
+		logOut = os.Stderr
+	case "stdout":
+		logOut = os.Stdout
+	default:
+		logFile, err := os.OpenFile(config.Conf.Log.Output, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			return nil, err
+		}
+		logOut = logFile
+	}
+
+	level := slog.LevelWarn
+	switch config.Conf.Log.Level {
+	case "debug":
+		level = slog.LevelDebug
+	case "info":
+		level = slog.LevelInfo
+	case "warn":
+		level = slog.LevelWarn
+	case "error":
+		level = slog.LevelError
+	}
+
+	logOpts := slog.HandlerOptions{Level: level}
+	logger := slog.New(logOpts.NewTextHandler(logOut))
+	if config.Conf.Log.Format == "json" {
+		logger = slog.New(logOpts.NewJSONHandler(logOut))
+	}
+	slog.SetDefault(logger)
+
 	return &Core{
 		listenPort: port,
 		server:     server.NewServer(web.Assets()),
@@ -26,6 +64,8 @@ func New(port int) (*Core, error) {
 }
 
 func (c *Core) Start(ctx context.Context) error {
+	slog.Info("[core] starting...")
+
 	appConf := os.Getenv("GOPANEL_APP_CONF_PATH")
 	if appConf != "" {
 		config.Conf.AppConf = appConf
@@ -52,5 +92,7 @@ func (c *Core) Start(ctx context.Context) error {
 }
 
 func (c *Core) Close() error {
+	slog.Info("[core] closing...")
+
 	return nil
 }
