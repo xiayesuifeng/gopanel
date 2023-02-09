@@ -82,6 +82,15 @@ sudo systemctl enable --now gopanel
 ## 配置文件详解
 ```json5
 {
+  // 日志配置
+  "log": {
+    // 日志级别，可选 debug, info, warn, error
+    "level": "debug",
+    // 日志输出，可选 stdout, stderr, 文件路径
+    "output": "stderr",
+    // 日志格式，可选  text, json
+    "format": "text"
+  },
   // 运行模式，如调试好请改 release
   "mode":"debug",
   // 登录密码，默认为 admin，如要修改请参考下方的 ‘加密密码生成’

@@ -18,6 +18,13 @@ type Config struct {
 	Db       Database `json:"database"`
 	Smtp     Smtp     `json:"smtp"`
 	Netdata  Netdata  `json:"netdata"`
+	Log      Log      `json:"log"`
+}
+
+type Log struct {
+	Level  string `json:"level"`
+	Output string `json:"output"`
+	Format string `json:"format"`
 }
 
 type Panel struct {
