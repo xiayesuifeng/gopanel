@@ -60,6 +60,15 @@ func serverInit() error {
 }
 
 func serverRun(cmd *cobra.Command, args []string) {
+	instance, err := core.New()
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	if err := instance.Start(cmd.Context()); err != nil {
+		log.Fatalln(err)
+	}
+
 	if err := serverInit(); err != nil {
 		log.Fatalln(err)
 	}
