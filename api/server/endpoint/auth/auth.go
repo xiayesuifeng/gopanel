@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"gitlab.com/xiayesuifeng/gopanel/api/server/router"
 	"gitlab.com/xiayesuifeng/gopanel/auth"
-	"gitlab.com/xiayesuifeng/gopanel/core"
 	"gitlab.com/xiayesuifeng/gopanel/core/config"
 )
 
@@ -30,7 +29,7 @@ func (a *Auth) Login(ctx *router.Context) error {
 		return ctx.Error(400, err.Error())
 	}
 
-	if core.EncryptionPassword(d.Password) != config.Conf.Password {
+	if auth.EncryptionPassword(d.Password) != config.Conf.Password {
 		return ctx.Error(400, "password error")
 	}
 
