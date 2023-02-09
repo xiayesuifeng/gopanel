@@ -6,13 +6,9 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 	"gitlab.com/xiayesuifeng/gopanel/api/server"
-	"gitlab.com/xiayesuifeng/gopanel/app"
 	"gitlab.com/xiayesuifeng/gopanel/core"
-	"gitlab.com/xiayesuifeng/gopanel/core/storage"
-	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyManager"
 	"gitlab.com/xiayesuifeng/gopanel/web"
 	"log"
-	"os"
 	"strconv"
 )
 
@@ -33,43 +29,13 @@ func init() {
 	serverCmd.PersistentFlags().IntVarP(&port, "port", "p", 8080, "server listen port")
 }
 
-func serverInit() error {
-	appConf := os.Getenv("GOPANEL_APP_CONF_PATH")
-	if appConf != "" {
-		core.Conf.AppConf = appConf
-	}
-	if _, err := os.Stat(core.Conf.AppConf); err != nil {
-		if os.IsNotExist(err) {
-			os.MkdirAll(core.Conf.AppConf, 0755)
-		} else {
-			log.Fatalln("app.conf.d dir create failure")
-		}
-	}
-
-	if err := storage.InitBaseStorage(core.Conf.Data); err != nil {
-		return err
-	}
-
-	if err := caddyManager.InitManager(core.Conf.Caddy.AdminAddress, strconv.Itoa(port)); err != nil {
-		return err
-	}
-
-	app.ReloadAppConfig()
-
-	return nil
-}
-
 func serverRun(cmd *cobra.Command, args []string) {
-	instance, err := core.New()
+	instance, err := core.New(port)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	if err := instance.Start(cmd.Context()); err != nil {
-		log.Fatalln(err)
-	}
-
-	if err := serverInit(); err != nil {
 		log.Fatalln(err)
 	}
 
