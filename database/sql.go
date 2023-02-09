@@ -5,7 +5,7 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"gitlab.com/xiayesuifeng/gopanel/core"
+	"gitlab.com/xiayesuifeng/gopanel/core/config"
 	"log"
 	"sync"
 )
@@ -14,7 +14,7 @@ var db *gorm.DB
 var once sync.Once
 
 func initDB() {
-	conf := core.Conf.Db
+	conf := config.Conf.Db
 	args := ""
 
 	switch conf.Driver {

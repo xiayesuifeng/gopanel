@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"gitlab.com/xiayesuifeng/gopanel/backend"
-	"gitlab.com/xiayesuifeng/gopanel/core"
+	"gitlab.com/xiayesuifeng/gopanel/core/config"
 	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyManager"
 	"io/ioutil"
 	"log"
@@ -13,7 +13,7 @@ import (
 )
 
 func SaveAppConfig(app App) error {
-	conf, err := os.OpenFile(core.Conf.AppConf+"/"+app.Name+".json", os.O_RDWR|os.O_TRUNC|os.O_CREATE, 0644)
+	conf, err := os.OpenFile(config.Conf.AppConf+"/"+app.Name+".json", os.O_RDWR|os.O_TRUNC|os.O_CREATE, 0644)
 	if err != nil {
 		return err
 	}
@@ -22,7 +22,7 @@ func SaveAppConfig(app App) error {
 
 func LoadAppConfig(name string) (App, error) {
 	app := App{}
-	conf, err := os.OpenFile(core.Conf.AppConf+"/"+name, os.O_RDONLY, 0644)
+	conf, err := os.OpenFile(config.Conf.AppConf+"/"+name, os.O_RDONLY, 0644)
 	if err != nil {
 		return app, err
 	}
@@ -108,7 +108,7 @@ func adaptOldAppToNewVersion(app App) (App, error) {
 }
 
 func CheckAppExist(name string) bool {
-	if _, err := os.Stat(core.Conf.AppConf + "/" + name + ".json"); err != nil {
+	if _, err := os.Stat(config.Conf.AppConf + "/" + name + ".json"); err != nil {
 		return !os.IsNotExist(err)
 	}
 
@@ -116,7 +116,7 @@ func CheckAppExist(name string) bool {
 }
 
 func ReloadAppConfig() {
-	files, _ := ioutil.ReadDir(core.Conf.AppConf)
+	files, _ := ioutil.ReadDir(config.Conf.AppConf)
 	for _, file := range files {
 		if !file.IsDir() && strings.HasSuffix(file.Name(), ".json") {
 			app, err := LoadAppConfig(file.Name())

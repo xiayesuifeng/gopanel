@@ -3,7 +3,7 @@ package caddyManager
 import (
 	"encoding/json"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
-	"gitlab.com/xiayesuifeng/gopanel/core"
+	"gitlab.com/xiayesuifeng/gopanel/core/config"
 	"strings"
 )
 
@@ -56,21 +56,21 @@ const netdataCaddyJson = `{
 
 func loadPanelConfig(port string) *APPConfig {
 	panelApp := &APPConfig{
-		Domain:     []string{core.Conf.Panel.Domain},
-		DisableSSL: core.Conf.Panel.DisableSSL,
+		Domain:     []string{config.Conf.Panel.Domain},
+		DisableSSL: config.Conf.Panel.DisableSSL,
 	}
 
-	if port := core.Conf.Panel.Port; port != 0 {
+	if port := config.Conf.Panel.Port; port != 0 {
 		panelApp.ListenPort = port
 	}
 
 	conf := panelRouteHandleCaddyJson
 	conf = strings.ReplaceAll(conf, "{port}", port)
 
-	if core.Conf.Netdata.Enable {
+	if config.Conf.Netdata.Enable {
 		netdataConf := netdataCaddyJson
-		netdataConf = strings.ReplaceAll(netdataConf, "{host}", core.Conf.Netdata.Host)
-		netdataPath := core.Conf.Netdata.Path
+		netdataConf = strings.ReplaceAll(netdataConf, "{host}", config.Conf.Netdata.Host)
+		netdataPath := config.Conf.Netdata.Path
 		if netdataPath != "" && netdataPath != "/" {
 			if !strings.HasSuffix(netdataPath, "/") {
 				netdataPath += "/"
@@ -82,7 +82,7 @@ func loadPanelConfig(port string) *APPConfig {
 			netdataConf = strings.ReplaceAll(netdataConf, "{netdataPathJson}", "")
 		}
 
-		if core.Conf.Netdata.SSL {
+		if config.Conf.Netdata.SSL {
 			netdataConf = strings.ReplaceAll(netdataConf, "{netdataSSLJson}", "\"transport\": {\"protocol\": \"http\",\"tls\": {}},")
 		} else {
 			netdataConf = strings.ReplaceAll(netdataConf, "{netdataSSLJson}", "")

@@ -3,7 +3,7 @@ package auth
 import (
 	"fmt"
 	"github.com/golang-jwt/jwt/v4"
-	"gitlab.com/xiayesuifeng/gopanel/core"
+	"gitlab.com/xiayesuifeng/gopanel/core/config"
 	"math/rand"
 	"time"
 )
@@ -13,16 +13,16 @@ func GenerateToken() (string, error) {
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 3)),
 	})
 
-	if core.Conf.Secret == "" {
+	if config.Conf.Secret == "" {
 		rand.Seed(time.Now().Unix())
-		core.Conf.Secret = fmt.Sprintf("gopanel-secret-%.6d", rand.Intn(999999))
+		config.Conf.Secret = fmt.Sprintf("gopanel-secret-%.6d", rand.Intn(999999))
 	}
-	return tokenClaims.SignedString([]byte(core.Conf.Secret))
+	return tokenClaims.SignedString([]byte(config.Conf.Secret))
 }
 
 func ParseToken(token string) (claims *jwt.RegisteredClaims, err error) {
 	tokenClaims, err := jwt.ParseWithClaims(token, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(core.Conf.Secret), nil
+		return []byte(config.Conf.Secret), nil
 	})
 
 	if tokenClaims != nil {

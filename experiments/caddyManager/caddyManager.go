@@ -3,7 +3,7 @@ package caddyManager
 import (
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"github.com/go-resty/resty/v2"
-	"gitlab.com/xiayesuifeng/gopanel/core"
+	"gitlab.com/xiayesuifeng/gopanel/core/config"
 	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyapp"
 	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyapp/caddyddns"
 	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyutil/caddyconfig"
@@ -47,7 +47,7 @@ type Manager struct {
 	appMutex sync.RWMutex
 }
 
-func InitManager(adminAddress core.NetAddress, panelPort string) (err error) {
+func InitManager(adminAddress config.NetAddress, panelPort string) (err error) {
 	manager = &Manager{
 		httpClient:      newClient(adminAddress),
 		HTTPSServerName: DefaultHttpsServerName,

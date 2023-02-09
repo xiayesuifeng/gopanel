@@ -5,6 +5,7 @@ import (
 	"gitlab.com/xiayesuifeng/gopanel/api/server/router"
 	"gitlab.com/xiayesuifeng/gopanel/auth"
 	"gitlab.com/xiayesuifeng/gopanel/core"
+	"gitlab.com/xiayesuifeng/gopanel/core/config"
 )
 
 type Auth struct {
@@ -29,7 +30,7 @@ func (a *Auth) Login(ctx *router.Context) error {
 		return ctx.Error(400, err.Error())
 	}
 
-	if core.EncryptionPassword(d.Password) != core.Conf.Password {
+	if core.EncryptionPassword(d.Password) != config.Conf.Password {
 		return ctx.Error(400, "password error")
 	}
 

@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"gitlab.com/xiayesuifeng/gopanel/core"
+	"gitlab.com/xiayesuifeng/gopanel/core/config"
 	"log"
 	"os"
 )
@@ -23,7 +23,7 @@ func Execute() error {
 }
 
 func initConfig(cmd *cobra.Command, args []string) {
-	err := core.ParseConf(cfgFile)
+	err := config.ParseConf(cfgFile)
 	if err != nil {
 		if os.IsNotExist(err) {
 			log.Fatalln("please config config.json")

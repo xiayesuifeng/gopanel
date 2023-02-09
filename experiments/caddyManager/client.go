@@ -3,13 +3,13 @@ package caddyManager
 import (
 	"context"
 	"github.com/go-resty/resty/v2"
-	"gitlab.com/xiayesuifeng/gopanel/core"
+	"gitlab.com/xiayesuifeng/gopanel/core/config"
 	"net"
 	"net/http"
 	"time"
 )
 
-func newClient(address core.NetAddress) *resty.Client {
+func newClient(address config.NetAddress) *resty.Client {
 	client := resty.New()
 
 	if address.IsUnixNetwork() {

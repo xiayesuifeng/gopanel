@@ -4,6 +4,7 @@ import (
 	"context"
 	"gitlab.com/xiayesuifeng/gopanel/api/server"
 	"gitlab.com/xiayesuifeng/gopanel/app"
+	"gitlab.com/xiayesuifeng/gopanel/core/config"
 	"gitlab.com/xiayesuifeng/gopanel/core/storage"
 	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyManager"
 	"gitlab.com/xiayesuifeng/gopanel/web"
@@ -27,21 +28,21 @@ func New(port int) (*Core, error) {
 func (c *Core) Start(ctx context.Context) error {
 	appConf := os.Getenv("GOPANEL_APP_CONF_PATH")
 	if appConf != "" {
-		Conf.AppConf = appConf
+		config.Conf.AppConf = appConf
 	}
-	if _, err := os.Stat(Conf.AppConf); err != nil {
+	if _, err := os.Stat(config.Conf.AppConf); err != nil {
 		if os.IsNotExist(err) {
-			os.MkdirAll(Conf.AppConf, 0755)
+			os.MkdirAll(config.Conf.AppConf, 0755)
 		} else {
 			log.Fatalln("app.conf.d dir create failure")
 		}
 	}
 
-	if err := storage.InitBaseStorage(Conf.Data); err != nil {
+	if err := storage.InitBaseStorage(config.Conf.Data); err != nil {
 		return err
 	}
 
-	if err := caddyManager.InitManager(Conf.Caddy.AdminAddress, strconv.Itoa(c.listenPort)); err != nil {
+	if err := caddyManager.InitManager(config.Conf.Caddy.AdminAddress, strconv.Itoa(c.listenPort)); err != nil {
 		return err
 	}
 

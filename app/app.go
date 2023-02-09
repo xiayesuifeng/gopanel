@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"gitlab.com/xiayesuifeng/gopanel/backend"
-	"gitlab.com/xiayesuifeng/gopanel/core"
+	"gitlab.com/xiayesuifeng/gopanel/core/config"
 	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyManager"
 	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyutil/caddyvalidate"
 	"io/ioutil"
@@ -97,7 +97,7 @@ func AddApp(app App, validate bool) error {
 
 func GetApps() []App {
 	apps := make([]App, 0)
-	infos, err := ioutil.ReadDir(core.Conf.AppConf)
+	infos, err := ioutil.ReadDir(config.Conf.AppConf)
 	if err != nil {
 		return apps
 	}
@@ -175,7 +175,7 @@ func DeleteApp(name string) error {
 			return err
 		}
 
-		return os.Remove(core.Conf.AppConf + "/" + name + ".json")
+		return os.Remove(config.Conf.AppConf + "/" + name + ".json")
 	} else {
 		return errors.New("app not found")
 	}

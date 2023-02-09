@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gitlab.com/xiayesuifeng/gopanel/api/server/router"
 	"gitlab.com/xiayesuifeng/gopanel/app"
-	"gitlab.com/xiayesuifeng/gopanel/core"
+	"gitlab.com/xiayesuifeng/gopanel/core/config"
 	"strings"
 )
 
@@ -26,17 +26,17 @@ func (a *App) Run(r router.Router) {
 
 func (a *App) GetValidate(ctx *router.Context) bool {
 	validate := false
-	host := core.Conf.Panel.Domain
+	host := config.Conf.Panel.Domain
 	if host == "" {
-		if strings.HasSuffix(ctx.Request.Host, fmt.Sprintf(":%d", core.Conf.Panel.Port)) {
+		if strings.HasSuffix(ctx.Request.Host, fmt.Sprintf(":%d", config.Conf.Panel.Port)) {
 			validate = true
 		}
-	} else if core.Conf.Panel.Port == 0 {
+	} else if config.Conf.Panel.Port == 0 {
 		if strings.HasPrefix(ctx.Request.Host, host) {
 			validate = true
 		}
 	} else {
-		host += fmt.Sprintf(":%d", core.Conf.Panel.Port)
+		host += fmt.Sprintf(":%d", config.Conf.Panel.Port)
 		validate = ctx.Request.Host == host
 	}
 
