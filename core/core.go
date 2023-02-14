@@ -5,6 +5,7 @@ import (
 	"gitlab.com/xiayesuifeng/gopanel/api/server"
 	"gitlab.com/xiayesuifeng/gopanel/app"
 	"gitlab.com/xiayesuifeng/gopanel/core/config"
+	"gitlab.com/xiayesuifeng/gopanel/core/control"
 	"gitlab.com/xiayesuifeng/gopanel/core/storage"
 	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyManager"
 	"gitlab.com/xiayesuifeng/gopanel/web"
@@ -59,10 +60,14 @@ func New(port int) (*Core, error) {
 	}
 	slog.SetDefault(logger)
 
-	return &Core{
+	core := &Core{
 		listenPort: port,
 		server:     server.NewServer(web.Assets()),
-	}, nil
+	}
+
+	control.Control = core
+
+	return core, nil
 }
 
 func (c *Core) Start(ctx context.Context) error {
@@ -103,4 +108,8 @@ func (c *Core) Close() error {
 	slog.Info("[core] closing...")
 
 	return nil
+}
+
+func (c *Core) IsFirstLaunch() bool {
+	return c.firstLaunch
 }
