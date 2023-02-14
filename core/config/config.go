@@ -7,7 +7,10 @@ import (
 	"os"
 )
 
-var Conf = &Config{}
+var (
+	Conf              = &Config{}
+	currentConfigFile string
+)
 
 type Config struct {
 	Mode     string   `json:"mode"`
@@ -86,11 +89,13 @@ func ParseConf(config string) (firstLaunch bool, err error) {
 
 	err = viper.Unmarshal(Conf, viper.DecodeHook(mapstructure.TextUnmarshallerHookFunc()))
 
+	currentConfigFile = config
+
 	return
 }
 
 func SaveConf() error {
-	conf, err := os.OpenFile("config.json", os.O_RDWR|os.O_TRUNC|os.O_CREATE, 0644)
+	conf, err := os.OpenFile(currentConfigFile, os.O_RDWR|os.O_TRUNC|os.O_CREATE, 0644)
 	if err != nil {
 		return err
 	}
