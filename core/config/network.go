@@ -40,7 +40,7 @@ func (n *NetAddress) UnmarshalJSON(bytes []byte) error {
 }
 
 func (n *NetAddress) MarshalJSON() ([]byte, error) {
-	return []byte(n.String()), nil
+	return []byte(fmt.Sprintf("\"%s\"", n.String())), nil
 }
 
 func (n *NetAddress) IsUnixNetwork() bool {
