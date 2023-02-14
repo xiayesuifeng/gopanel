@@ -11,6 +11,10 @@ type NetAddress struct {
 	Address string
 }
 
+func (n *NetAddress) UnmarshalText(text []byte) error {
+	return n.UnmarshalJSON(append([]byte{'"'}, append(text, '"')...))
+}
+
 func (n *NetAddress) UnmarshalJSON(bytes []byte) error {
 	address := ""
 

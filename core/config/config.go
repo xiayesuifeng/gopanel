@@ -2,10 +2,12 @@ package config
 
 import (
 	"encoding/json"
+	"github.com/mitchellh/mapstructure"
+	"github.com/spf13/viper"
 	"os"
 )
 
-var Conf *Config
+var Conf = &Config{}
 
 type Config struct {
 	Mode     string   `json:"mode"`
@@ -61,17 +63,30 @@ type Netdata struct {
 	SSL    bool   `json:"ssl"`
 }
 
-func ParseConf(config string) error {
-	var c Config
-
-	conf, err := os.Open(config)
-	if err != nil {
-		return err
+func ParseConf(config string) (firstLaunch bool, err error) {
+	viper.SetConfigType("json")
+	viper.SetConfigFile(config)
+	if err := viper.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok || os.IsNotExist(err) {
+			// Config file not found, first launch need to install
+			firstLaunch = true
+		} else {
+			return false, err
+		}
 	}
-	err = json.NewDecoder(conf).Decode(&c)
 
-	Conf = &c
-	return err
+	viper.SetDefault("mode", "debug")
+	viper.SetDefault("data", "data")
+	viper.SetDefault("appConf", "app.conf.d")
+	viper.SetDefault("log", Log{
+		Level:  "info",
+		Output: "stderr",
+		Format: "text",
+	})
+
+	err = viper.Unmarshal(Conf, viper.DecodeHook(mapstructure.TextUnmarshallerHookFunc()))
+
+	return
 }
 
 func SaveConf() error {

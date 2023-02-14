@@ -1,10 +1,10 @@
 package cmd
 
 import (
+	"context"
 	"github.com/spf13/cobra"
 	"gitlab.com/xiayesuifeng/gopanel/core/config"
 	"log"
-	"os"
 )
 
 var (
@@ -23,12 +23,11 @@ func Execute() error {
 }
 
 func initConfig(cmd *cobra.Command, args []string) {
-	err := config.ParseConf(cfgFile)
-	if err != nil {
-		if os.IsNotExist(err) {
-			log.Fatalln("please config config.json")
-		}
+	firstLaunch, err := config.ParseConf(cfgFile)
 
+	if err != nil {
 		log.Fatalln(err)
 	}
+
+	cmd.SetContext(context.WithValue(cmd.Context(), "firstLaunch", firstLaunch))
 }
