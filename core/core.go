@@ -18,6 +18,8 @@ import (
 type Core struct {
 	listenPort int
 	server     *server.Server
+
+	firstLaunch bool
 }
 
 func New(port int) (*Core, error) {
@@ -66,27 +68,33 @@ func New(port int) (*Core, error) {
 func (c *Core) Start(ctx context.Context) error {
 	slog.Info("[core] starting...")
 
-	appConf := os.Getenv("GOPANEL_APP_CONF_PATH")
-	if appConf != "" {
-		config.Conf.AppConf = appConf
-	}
-	if _, err := os.Stat(config.Conf.AppConf); err != nil {
-		if os.IsNotExist(err) {
-			os.MkdirAll(config.Conf.AppConf, 0755)
-		} else {
-			log.Fatalln("app.conf.d dir create failure")
+	c.firstLaunch = ctx.Value("firstLaunch").(bool)
+
+	if c.firstLaunch {
+		slog.Info("[core] first launch, skip storage and caddy manager init")
+	} else {
+		appConf := os.Getenv("GOPANEL_APP_CONF_PATH")
+		if appConf != "" {
+			config.Conf.AppConf = appConf
 		}
-	}
+		if _, err := os.Stat(config.Conf.AppConf); err != nil {
+			if os.IsNotExist(err) {
+				os.MkdirAll(config.Conf.AppConf, 0755)
+			} else {
+				log.Fatalln("app.conf.d dir create failure")
+			}
+		}
 
-	if err := storage.InitBaseStorage(config.Conf.Data); err != nil {
-		return err
-	}
+		if err := storage.InitBaseStorage(config.Conf.Data); err != nil {
+			return err
+		}
 
-	if err := caddyManager.InitManager(config.Conf.Caddy.AdminAddress, strconv.Itoa(c.listenPort)); err != nil {
-		return err
-	}
+		if err := caddyManager.InitManager(config.Conf.Caddy.AdminAddress, strconv.Itoa(c.listenPort)); err != nil {
+			return err
+		}
 
-	app.ReloadAppConfig()
+		app.ReloadAppConfig()
+	}
 
 	return c.server.Run(":" + strconv.FormatInt(int64(c.listenPort), 10))
 }
