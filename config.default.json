@@ -16,13 +16,6 @@
     "conf": "/etc/caddy/caddy.conf.d",
     "data": "/var/lib/caddy"
   },
-  "database":{
-    "username":"root",
-    "password":"",
-    "dbname":"gopanel",
-    "address":"127.0.0.1",
-    "port":"3306"
-  },
   "smtp":{
     "username":"",
     "password": "",

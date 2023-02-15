@@ -113,14 +113,6 @@ sudo systemctl enable --now gopanel
     // caddy 2 API 
     "adminAddress": "http://localhost:2019",
   },
-  // 预留配置，未来或支持数据库管理功能
-  "database":{
-    "username":"root",
-    "password":"",
-    "dbname":"gopanel",
-    "address":"127.0.0.1",
-    "port":"3306"
-  },
   // 预留配置，未来用于后端异常状态通知
   "smtp":{
     "username":"",
