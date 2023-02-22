@@ -12,6 +12,7 @@ import (
 	"golang.org/x/exp/slog"
 	"io"
 	"log"
+	"net/http"
 	"os"
 	"strconv"
 )
@@ -21,6 +22,8 @@ type Core struct {
 	server     *server.Server
 
 	firstLaunch bool
+
+	done chan bool
 }
 
 func New(port int) (*Core, error) {
@@ -63,6 +66,7 @@ func New(port int) (*Core, error) {
 	core := &Core{
 		listenPort: port,
 		server:     server.NewServer(web.Assets()),
+		done:       make(chan bool),
 	}
 
 	control.Control = core
@@ -101,12 +105,25 @@ func (c *Core) Start(ctx context.Context) error {
 		app.ReloadAppConfig()
 	}
 
-	return c.server.Run(":" + strconv.FormatInt(int64(c.listenPort), 10))
+	if err := c.server.Run(":" + strconv.FormatInt(int64(c.listenPort), 10)); err != nil && err != http.ErrServerClosed {
+		return err
+	}
+
+	<-c.done
+
+	return nil
 }
 
 func (c *Core) Close() error {
 	slog.Info("[core] closing...")
 
+	if err := c.server.Shutdown(context.Background()); err != nil {
+		return err
+	}
+
+	c.done <- true
+
+	slog.Info("[core] close")
 	return nil
 }
 
