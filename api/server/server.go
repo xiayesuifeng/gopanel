@@ -37,6 +37,7 @@ func (s *Server) Run(address string) error {
 	apiRouter := engine.Group("/api")
 
 	r := router.NewRouter(apiRouter)
+	r.Use(middleware.InstallMiddleware)
 	r.Use(middleware.AuthMiddleware)
 
 	for _, e := range s.endpoints {
