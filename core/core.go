@@ -98,8 +98,10 @@ func (c *Core) Start(ctx context.Context) error {
 			}
 		}
 
-		if err := storage.InitBaseStorage(config.Conf.Data); err != nil {
-			return err
+		if storage.GetBaseStorage() == nil {
+			if err := storage.InitBaseStorage(config.Conf.Data); err != nil {
+				return err
+			}
 		}
 
 		if err := caddyManager.InitManager(config.Conf.Caddy.AdminAddress, strconv.Itoa(c.listenPort)); err != nil {
