@@ -15,6 +15,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"sync"
 )
 
 type Core struct {
@@ -22,6 +23,9 @@ type Core struct {
 	server     *server.Server
 
 	firstLaunch bool
+
+	starting  bool
+	closeLock sync.Mutex
 
 	done chan bool
 }
@@ -105,6 +109,8 @@ func (c *Core) Start(ctx context.Context) error {
 		app.ReloadAppConfig()
 	}
 
+	c.starting = true
+
 	if err := c.server.Run(":" + strconv.FormatInt(int64(c.listenPort), 10)); err != nil && err != http.ErrServerClosed {
 		return err
 	}
@@ -115,6 +121,13 @@ func (c *Core) Start(ctx context.Context) error {
 }
 
 func (c *Core) Close() error {
+	c.closeLock.Lock()
+	defer c.closeLock.Unlock()
+	if !c.starting {
+		slog.Info("[core] core already closed")
+		return nil
+	}
+
 	slog.Info("[core] closing...")
 
 	if err := c.server.Shutdown(context.Background()); err != nil {
@@ -124,6 +137,7 @@ func (c *Core) Close() error {
 	c.done <- true
 
 	slog.Info("[core] close")
+	c.starting = false
 	return nil
 }
 
