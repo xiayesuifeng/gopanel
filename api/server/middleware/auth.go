@@ -8,7 +8,7 @@ import (
 )
 
 func AuthMiddleware(ctx *router.Context) error {
-	if strings.HasSuffix(ctx.Request.RequestURI, "/api/auth/login") {
+	if strings.HasSuffix(ctx.Request.RequestURI, "/api/auth/login") || strings.HasSuffix(ctx.Request.RequestURI, "/api/install") {
 		ctx.Next()
 		return nil
 	}
