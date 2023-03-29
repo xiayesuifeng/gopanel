@@ -42,6 +42,9 @@ type Caddy struct {
 	AdminAddress NetAddress `json:"adminAddress"`
 	Conf         string     `json:"conf"`
 	Data         string     `json:"data"`
+
+	DefaultHTTPPort  int `json:"-"`
+	DefaultHTTPSPort int `json:"-"`
 }
 
 type Database struct {
@@ -81,6 +84,10 @@ func ParseConf(config string) (firstLaunch bool, err error) {
 	viper.SetDefault("mode", "debug")
 	viper.SetDefault("data", "data")
 	viper.SetDefault("appConf", "app.conf.d")
+	viper.SetDefault("caddy", Caddy{
+		DefaultHTTPPort:  80,
+		DefaultHTTPSPort: 443,
+	})
 	viper.SetDefault("log", Log{
 		Level:  "info",
 		Output: "stderr",

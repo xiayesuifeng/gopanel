@@ -20,8 +20,6 @@ var (
 )
 
 const (
-	DefaultHttpPort        = 80
-	DefaultHttpsPort       = 443
 	DefaultHttpsServerName = "gopanel"
 )
 
@@ -67,8 +65,8 @@ func InitManager(adminAddress config.NetAddress, panelPort string) (err error) {
 		return
 	}
 
-	httpPort := DefaultHttpPort
-	httpsPort := DefaultHttpsPort
+	httpPort := config.Conf.Caddy.DefaultHTTPPort
+	httpsPort := config.Conf.Caddy.DefaultHTTPSPort
 
 	if appConfig.HTTPPort != 0 {
 		httpPort = appConfig.HTTPPort
