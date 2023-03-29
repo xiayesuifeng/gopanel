@@ -7,6 +7,9 @@ import (
 	"github.com/spf13/cobra"
 	"gitlab.com/xiayesuifeng/gopanel/core"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 var (
@@ -32,7 +35,20 @@ func serverRun(cmd *cobra.Command, args []string) {
 		log.Fatalln(err)
 	}
 
-	if err := instance.Start(cmd.Context()); err != nil {
-		log.Fatalln(err)
+	go func() {
+		if err := instance.Start(cmd.Context()); err != nil {
+			log.Fatalln(err)
+		}
+	}()
+
+	sigChan := make(chan os.Signal)
+
+	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
+
+	select {
+	case <-sigChan:
+		if err := instance.Close(); err != nil {
+			log.Fatalln(err)
+		}
 	}
 }
