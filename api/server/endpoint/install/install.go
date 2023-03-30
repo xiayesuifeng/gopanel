@@ -13,6 +13,7 @@ import (
 )
 
 type Install struct {
+	lastInstallError error
 }
 
 func (i *Install) Name() string {
@@ -20,7 +21,20 @@ func (i *Install) Name() string {
 }
 
 func (i *Install) Run(r router.Router) {
+	r.GET("", i.Get)
 	r.POST("", i.Install)
+}
+
+func (i *Install) Get(ctx *router.Context) error {
+	err := ""
+	if i.lastInstallError != nil {
+		err = i.lastInstallError.Error()
+	}
+
+	return ctx.JSON(gin.H{
+		"status":    !control.Control.IsFirstLaunch(),
+		"lastError": err,
+	})
 }
 
 type Request struct {
@@ -91,6 +105,7 @@ func (i *Install) Install(ctx *router.Context) error {
 
 		err = control.Control.Start(context.WithValue(ctx, "firstLaunch", false))
 		if err != nil {
+			i.lastInstallError = err
 			slog.Error("[install] failed to start api server, rollback to first launch mode", err)
 			err = control.Control.Start(context.WithValue(ctx, "firstLaunch", true))
 			if err != nil {
