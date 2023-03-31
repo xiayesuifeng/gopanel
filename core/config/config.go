@@ -72,6 +72,10 @@ type Netdata struct {
 func ParseConf(config string) (firstLaunch bool, err error) {
 	viper.SetConfigType("json")
 	viper.SetConfigFile(config)
+
+	viper.SetEnvPrefix("GOPANEL")
+	viper.AutomaticEnv()
+
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok || os.IsNotExist(err) {
 			// Config file not found, first launch need to install
