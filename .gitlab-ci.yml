@@ -17,7 +17,7 @@ build-gopanel:
     - unzip web.zip
     - mv build $CI_PROJECT_DIR/web
     - mkdir -p $CI_PROJECT_DIR/gopanel
-    - go build -o $CI_PROJECT_DIR/gopanel/gopanel
+    - go build --tags web -o $CI_PROJECT_DIR/gopanel/gopanel
     - cp -rf contrib/systemd $CI_PROJECT_DIR/gopanel
 
   artifacts:
