@@ -1,5 +1,10 @@
 image: archlinux/archlinux:base-devel
 
+cache:
+  key: node_modules
+  paths:
+    - web/node_modules
+
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
   GIT_SUBMODULE_DEPTH: 1
