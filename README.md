@@ -57,27 +57,64 @@ Committed to becoming a server-type, router-type, NAS-type all-round management 
 ```bash
 yay -S gopanel-bin
 ```
+或者
+```bash
+yay -S gopanel
+```
+或者 Git 版本(1.0.0 版本发布之前推荐)
+```bash
+yay -S gopanel-git
+```
+
+> 以下发行版软件包下载链接仅供参考，请自行访问 `https://gitlab.com/xiayesuifeng/gopanel/-/jobs/artifacts/master/raw/dist` 根据架构和发行版下载对应的包
+
+> 支持的架构：`amd64`, `arm64`, `armv7`
+
+> Debian/Ubuntu (Debian/Ubuntu)
+
+```bash
+wget "https://gitlab.com/xiayesuifeng/gopanel/-/jobs/artifacts/master/raw/dist/gopanel_0.3.0-dev_linux_amd64.deb?job=build-gopanel" -o gopanel.deb
+sudo dpkg -i gopanel.deb
+rm -rf gopanel.deb
+```
+
+> CentOS/RHEL (CentOS/RHEL)
+
+```bash
+wget "https://gitlab.com/xiayesuifeng/gopanel/-/jobs/artifacts/master/raw/dist/gopanel_0.3.0-dev_linux_amd64.rpm?job=build-gopanel" -o gopanel.rpm
+sudo rpm -i gopanel.rpm
+rm -rf gopanel.rpm
+```
+
+> Apk (Alpine)
+
+```bash
+wget "https://gitlab.com/xiayesuifeng/gopanel/-/jobs/artifacts/master/raw/dist/gopanel_0.3.0-dev_linux_amd64.apk?job=build-gopanel" -o gopanel.apk
+sudo apk add gopanel.apk
+rm -rf gopanel.apk
+```
 
 > Other GNU/Linux Distro (其他 `GNU/Linux` 发行版)
 > 请确保已安装好 `caddy2`
 ```bash
-wget https://gitlab.com/xiayesuifeng/gopanel/-/jobs/artifacts/master/download?job=build-gopanel -o gopanel.zip
-unzip gopanel.zip
-cd gopanel
-sudo mkdir -p /etc/gopanel/app.conf.d
-sudo mkdir -p /usr/share/gopanel
-sudo install -D -m 0755 gopanel /usr/bin/gopanel
-sudo install -D -m 0644 systemd/gopanel.service /usr/lib/systemd/system/gopanel.service
-sudo install -D -m 0644 config.default.json /etc/gopanel/config.json
-sudo cp -rf web /usr/share/gopanel/web
-sudo chmod -R 0644 /usr/share/gopanel/web
-sudo systemctl daemon-reload
+wget "https://gitlab.com/xiayesuifeng/gopanel/-/jobs/artifacts/master/raw/dist/gopanel_0.3.0-dev_linux_amd64.tar.gz?job=build-gopanel" -o gopanel.tar.gz
+mkdir gopanel
+tar -xf gopanel.tar.gz -C gopanel
+sudo install -d /etc/gopanel/app.conf.d
+sudo install -d /var/lib/gopanel
+sudo install -D -m 0755 gopanel/gopanel /usr/bin/gopanel
+sudo install -D -m 0644 gopanel/usr/lib/systemd/system/gopanel.service /usr/lib/systemd/system/gopanel.service
+rm -rf gopanel.tar.gz gopanel
 ```
 
 ## 开机自启与运行
 ```bash
 sudo systemctl enable --now gopanel
 ```
+
+## 初始化安装
+
+首次启动将监听 `:12020` 端口，访问 `http://localhost:12020` 进行初始化安装
 
 ## 配置文件详解
 ```json5
