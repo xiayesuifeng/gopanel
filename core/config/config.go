@@ -13,17 +13,16 @@ var (
 )
 
 type Config struct {
-	Mode     string   `json:"mode"`
-	Password string   `json:"password"`
-	AppConf  string   `json:"appConf"`
-	Data     string   `json:"data"`
-	Secret   string   `json:"secret"`
-	Panel    Panel    `json:"panel"`
-	Caddy    Caddy    `json:"caddy"`
-	Db       Database `json:"database"`
-	Smtp     Smtp     `json:"smtp"`
-	Netdata  Netdata  `json:"netdata"`
-	Log      Log      `json:"log"`
+	Mode     string  `json:"mode"`
+	Password string  `json:"password"`
+	AppConf  string  `json:"appConf"`
+	Data     string  `json:"data"`
+	Secret   string  `json:"secret"`
+	Panel    Panel   `json:"panel"`
+	Caddy    Caddy   `json:"caddy"`
+	Smtp     Smtp    `json:"smtp"`
+	Netdata  Netdata `json:"netdata"`
+	Log      Log     `json:"log"`
 }
 
 type Log struct {
@@ -45,15 +44,6 @@ type Caddy struct {
 
 	DefaultHTTPPort  int `json:"-"`
 	DefaultHTTPSPort int `json:"-"`
-}
-
-type Database struct {
-	Driver   string `json:"driver"`
-	Address  string `json:"address" form:"address"`
-	Port     string `json:"port" form:"port"`
-	Dbname   string `json:"dbname" form:"dbname"`
-	Username string `json:"username"`
-	Password string `json:"password"`
 }
 
 type Smtp struct {
