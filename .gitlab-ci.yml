@@ -7,6 +7,7 @@ variables:
 before_script:
   - pacman -Sy --noconfirm git go wget unzip goreleaser
   - go install github.com/go-task/task/v3/cmd/task@latest
+  - export PATH="$(go env GOPATH)/bin:$PATH"
 
 stages:
   - build
