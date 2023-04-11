@@ -1,0 +1,69 @@
+before:
+  hooks:
+    - task web
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - "7"
+    flags:
+      - -trimpath
+    tags:
+      - web
+    ldflags:
+      - -s -w -X gitlab.com/xiayesuifeng/gopanel/version.Version={{ .Version }} -X gitlab.com/xiayesuifeng/gopanel/version.GitCommit={{ .Commit }}
+archives:
+  - rlcp: true
+    files:
+      - src: ./contrib/systemd/gopanel.service
+        dst: /usr/lib/systemd/system/gopanel.service
+        info:
+          mode: 0644
+      - dst: /etc/gopanel/app.conf.d
+        info:
+          mode: 0755
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ incminor .Version }}-dev"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+
+nfpms:
+  - maintainer: XiaYeSuiFeng <xiayesuifeng@firerain.me>
+    description: A control panel that is written in Golang and is able to manage Caddy 2.
+    homepage: https://gitlab.com/xiayesuifeng/gopanel
+    license: GPLv3
+    formats:
+      - deb
+      - rpm
+      - apk
+    bindir: /usr/bin
+    contents:
+      - src: ./contrib/systemd/gopanel.service
+        dst: /usr/lib/systemd/system/gopanel.service
+        file_info:
+          mode: 0644
+      - dst: /etc/gopanel/app.conf.d
+        type: dir
+        file_info:
+          mode: 0755
+      - dst: /var/lib/gopanel
+        type: dir
+        file_info:
+          mode: 0755
+    dependencies:
+      - caddy
+
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+# vim: set ts=2 sw=2 tw=0 fo=cnqoj

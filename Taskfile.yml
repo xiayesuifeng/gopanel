@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+
+version: '3'
+
+tasks:
+  build:
+    desc: Build the binary
+    sources:
+      - ./**/*.go
+    generates:
+      - ./gopanel
+    cmds:
+      - go build
+
+  goreleaser:build:
+    desc: Build the binary with goreleaser
+    sources:
+      - ./**/*.go
+    generates:
+      - ./gopanel
+    vars:
+      SNAPSHOT:
+        sh: 'if [[ -z $CI_COMMIT_TAG ]]; then echo "--snapshot"; fi'
+    cmds:
+      - goreleaser build --single-target -o ./gopanel --clean {{.SNAPSHOT}}
+
+  goreleaser:
+    desc: Run GoReleaser either in snapshot or release mode
+    vars:
+      SNAPSHOT:
+        sh: 'if [[ -z $CI_COMMIT_TAG ]]; then echo "--snapshot"; fi'
+    cmds:
+      - goreleaser release --clean {{.SNAPSHOT}}
+
+includes:
+  web:
+    taskfile: ./web/Taskfile.yml
+    dir: ./web
