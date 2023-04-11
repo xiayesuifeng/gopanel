@@ -5,21 +5,20 @@ variables:
   GIT_SUBMODULE_DEPTH: 1
 
 before_script:
-  - pacman -Sy --noconfirm git go wget unzip
+  - pacman -Sy --noconfirm git go wget unzip goreleaser
+  - go install github.com/go-task/task/v3/cmd/task@latest
 
 stages:
   - build
 
 build-gopanel:
   stage: build
+  except:
+    - tags
   script:
-    - wget https://gitlab.com/xiayesuifeng/gopanel-web/builds/artifacts/master/download?job=build-web -O web.zip
-    - unzip web.zip
-    - mv build $CI_PROJECT_DIR/web
-    - mkdir -p $CI_PROJECT_DIR/gopanel
-    - go build --tags web -o $CI_PROJECT_DIR/gopanel/gopanel
-    - cp -rf contrib/systemd $CI_PROJECT_DIR/gopanel
-
+    - task goreleaser
   artifacts:
     paths:
-      - $CI_PROJECT_DIR/gopanel
+      - $CI_PROJECT_DIR/dist/{*.tar.gz,*.deb,*.rpm,*.apk}
+      - $CI_PROJECT_DIR/dist/metadata.json
+      - $CI_PROJECT_DIR/dist/checksums.txt
