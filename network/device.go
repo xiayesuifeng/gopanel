@@ -5,7 +5,11 @@ import (
 )
 
 type Device struct {
-	net.Interface
+	Index int       `json:"index"`
+	MTU   int       `json:"mtu"`
+	Name  string    `json:"name"`
+	MAC   string    `json:"mac"`
+	Flags net.Flags `json:"flags"`
 }
 
 func GetDevices() ([]*Device, error) {
@@ -16,7 +20,13 @@ func GetDevices() ([]*Device, error) {
 
 	devices := make([]*Device, 0, len(interfaces))
 	for _, iface := range interfaces {
-		devices = append(devices, &Device{iface})
+		devices = append(devices, &Device{
+			Index: iface.Index,
+			MTU:   iface.MTU,
+			Name:  iface.Name,
+			MAC:   iface.HardwareAddr.String(),
+			Flags: iface.Flags,
+		})
 	}
 
 	return devices, nil
