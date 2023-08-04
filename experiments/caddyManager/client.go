@@ -19,7 +19,7 @@ func newClient(address config.NetAddress) *resty.Client {
 			},
 		}
 
-		client.SetTransport(transport).SetScheme("http")
+		client.SetTransport(transport).SetHostURL("http://127.0.0.1")
 	} else {
 		client.SetHostURL(address.Address)
 	}
