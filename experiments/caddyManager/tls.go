@@ -51,8 +51,8 @@ func loadTLSConfig(domains []string, dnsChallenges map[string]caddytls.DNSChalle
 		zeroSSLIssuerRaw := caddyconfig.JSON(newZeroSSLIssuer(challenges), nil)
 
 		policies = append(policies, &caddytls.AutomationPolicy{
-			Subjects:   subjects,
-			IssuersRaw: []json.RawMessage{acmeIssuerRaw, zeroSSLIssuerRaw},
+			SubjectsRaw: subjects,
+			IssuersRaw:  []json.RawMessage{acmeIssuerRaw, zeroSSLIssuerRaw},
 		})
 	}
 
