@@ -1,42 +1,24 @@
 package caddyvalidate
 
 import (
-	"errors"
-	"fmt"
-	"io/ioutil"
-	"os"
-	"os/exec"
-	"regexp"
-	"time"
+	"encoding/json"
+	"github.com/caddyserver/caddy/v2"
+	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
+	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyManager"
 )
 
-func Validate(config []byte) error {
-	path, err := exec.LookPath("caddy")
+func Validate(config caddyManager.APPConfig) error {
+	bytes, err := json.Marshal(config.Routes)
 	if err != nil {
 		return err
 	}
 
-	tmpFile := fmt.Sprintf("%s/gopanel.%d.json", os.TempDir(), time.Now().Unix())
-	if err := ioutil.WriteFile(tmpFile, config, 0600); err != nil {
-		return err
-	}
+	bytes = caddy.RemoveMetaFields(bytes)
 
-	cmd := exec.Command(path, "validate", "--config", tmpFile)
-	out, err := cmd.CombinedOutput()
-
-	os.Remove(tmpFile)
-
+	var routes []caddyhttp.Route
+	err = caddy.StrictUnmarshalJSON(bytes, &routes)
 	if err != nil {
-		str := string(out)
-		exp, err := regexp.Compile("validate: decoding config: (.*)")
-		if err == nil && exp.Match(out) {
-			ssm := exp.FindStringSubmatch(str)
-			if len(ssm) > 0 {
-				return errors.New(ssm[len(ssm)-1])
-			}
-		}
-
-		return errors.New(str)
+		return err
 	}
 
 	return nil

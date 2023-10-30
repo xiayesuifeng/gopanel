@@ -64,12 +64,7 @@ func AddApp(app App, validate bool) error {
 	}
 
 	if validate {
-		bytes, err := json.Marshal(app.CaddyConfig)
-		if err != nil {
-			return err
-		}
-
-		if err := caddyvalidate.Validate(bytes); err != nil {
+		if err := caddyvalidate.Validate(app.CaddyConfig); err != nil {
 			return err
 		}
 	}
@@ -133,12 +128,7 @@ func EditApp(app App, validate bool) error {
 	}
 
 	if validate {
-		bytes, err := json.Marshal(app.CaddyConfig)
-		if err != nil {
-			return err
-		}
-
-		if err := caddyvalidate.Validate(bytes); err != nil {
+		if err := caddyvalidate.Validate(app.CaddyConfig); err != nil {
 			return err
 		}
 	}
