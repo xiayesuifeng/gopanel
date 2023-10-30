@@ -5,8 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"gitlab.com/xiayesuifeng/gopanel/api/server/middleware"
 	"gitlab.com/xiayesuifeng/gopanel/api/server/router"
-	"golang.org/x/exp/slog"
 	"io/fs"
+	"log/slog"
 	"net/http"
 	"time"
 )

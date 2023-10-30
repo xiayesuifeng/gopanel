@@ -9,9 +9,9 @@ import (
 	"gitlab.com/xiayesuifeng/gopanel/core/storage"
 	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyManager"
 	"gitlab.com/xiayesuifeng/gopanel/web"
-	"golang.org/x/exp/slog"
 	"io"
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"strconv"
@@ -61,9 +61,9 @@ func New(port int) (*Core, error) {
 	}
 
 	logOpts := slog.HandlerOptions{Level: level}
-	logger := slog.New(logOpts.NewTextHandler(logOut))
+	logger := slog.New(slog.NewTextHandler(logOut, &logOpts))
 	if config.Conf.Log.Format == "json" {
-		logger = slog.New(logOpts.NewJSONHandler(logOut))
+		logger = slog.New(slog.NewJSONHandler(logOut, &logOpts))
 	}
 	slog.SetDefault(logger)
 

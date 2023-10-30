@@ -8,7 +8,7 @@ import (
 	"gitlab.com/xiayesuifeng/gopanel/auth"
 	"gitlab.com/xiayesuifeng/gopanel/core/config"
 	"gitlab.com/xiayesuifeng/gopanel/core/control"
-	"golang.org/x/exp/slog"
+	"log/slog"
 	"net"
 )
 
