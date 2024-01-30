@@ -19,3 +19,11 @@ func TestInstallPlugin(t *testing.T) {
 		t.Log("install complete")
 	}
 }
+
+func TestRemovePlugin(t *testing.T) {
+	if err := RemovePlugin("github.com/caddy-dns/cloudflare"); err != nil {
+		t.Error(err)
+	} else {
+		t.Log("remove complete")
+	}
+}

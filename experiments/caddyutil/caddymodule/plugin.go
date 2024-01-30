@@ -71,3 +71,26 @@ func InstallPlugin(packages ...string) error {
 
 	return nil
 }
+
+func RemovePlugin(packages ...string) error {
+	path, err := exec.LookPath("caddy")
+	if err != nil {
+		return err
+	}
+
+	cmd := exec.Command(path, "remove-package", strings.Join(packages, " "))
+
+	outBytes, err := cmd.CombinedOutput()
+	if err != nil {
+		str := string(outBytes)
+		for _, line := range strings.Split(string(outBytes), "\n") {
+			if strings.HasPrefix(line, "Error:") {
+				return errors.New(strings.Replace(line, "Error: ", "", 1))
+			}
+		}
+
+		return errors.New(str)
+	}
+
+	return nil
+}
