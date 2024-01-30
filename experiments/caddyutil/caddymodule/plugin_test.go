@@ -11,3 +11,11 @@ func TestGetOfficialPluginList(t *testing.T) {
 		}
 	}
 }
+
+func TestInstallPlugin(t *testing.T) {
+	if err := InstallPlugin("github.com/caddy-dns/cloudflare"); err != nil {
+		t.Error(err)
+	} else {
+		t.Log("install complete")
+	}
+}
