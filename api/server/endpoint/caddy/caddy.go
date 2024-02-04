@@ -23,6 +23,7 @@ func (c *Caddy) Run(r router.Router) {
 	r.GET("/module", c.GetModuleList)
 	r.GET("/plugin/repo", c.GetOfficialPluginList)
 	r.POST("/plugin", c.InstallPlugin)
+	r.DELETE("/plugin", c.RemovePlugin)
 
 	r.GET("/ddns", c.GetDynamicDNS)
 	r.PUT("/ddns", c.PutDynamicDNS)
@@ -80,6 +81,16 @@ func (c *Caddy) InstallPlugin(ctx *router.Context) error {
 	}
 
 	if err := caddymodule.InstallPlugin(data.Packages...); err != nil {
+		return err
+	}
+
+	return ctx.NoContent()
+}
+
+func (c *Caddy) RemovePlugin(ctx *router.Context) error {
+	pkgs := ctx.QueryArray("package")
+
+	if err := caddymodule.RemovePlugin(pkgs...); err != nil {
 		return err
 	}
 
