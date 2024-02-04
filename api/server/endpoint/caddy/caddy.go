@@ -22,6 +22,7 @@ func (c *Caddy) Run(r router.Router) {
 
 	r.GET("/module", c.GetModuleList)
 	r.GET("/plugin/repo", c.GetOfficialPluginList)
+	r.POST("/plugin", c.InstallPlugin)
 
 	r.GET("/ddns", c.GetDynamicDNS)
 	r.PUT("/ddns", c.PutDynamicDNS)
@@ -67,6 +68,22 @@ func (c *Caddy) GetOfficialPluginList(ctx *router.Context) error {
 	}
 
 	return ctx.JSON(list)
+}
+
+func (c *Caddy) InstallPlugin(ctx *router.Context) error {
+	data := &struct {
+		Packages []string `json:"packages"`
+	}{}
+
+	if err := ctx.ShouldBind(data); err != nil {
+		return err
+	}
+
+	if err := caddymodule.InstallPlugin(data.Packages...); err != nil {
+		return err
+	}
+
+	return ctx.NoContent()
 }
 
 func (c *Caddy) GetDynamicDNS(ctx *router.Context) error {
