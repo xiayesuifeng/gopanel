@@ -19,7 +19,7 @@ func (c *Caddy) Run(r router.Router) {
 	r.GET("/configuration", c.GetConfiguration)
 	r.PUT("/configuration", c.PutConfiguration)
 
-	r.GET("/module", c.GetModuleList)
+	r.GET("/plugin/module", c.GetModuleList)
 	r.GET("/plugin/repo", c.GetOfficialPluginList)
 	r.POST("/plugin", c.InstallPlugin)
 	r.DELETE("/plugin", c.RemovePlugin)
