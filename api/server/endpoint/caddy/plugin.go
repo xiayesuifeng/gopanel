@@ -44,6 +44,10 @@ func (c *Caddy) InstallPlugin(ctx *router.Context) error {
 func (c *Caddy) RemovePlugin(ctx *router.Context) error {
 	pkgs := ctx.QueryArray("package")
 
+	if len(pkgs) == 0 {
+		return ctx.Error(400, "package must have at least one element")
+	}
+
 	if err := caddymodule.RemovePlugin(pkgs...); err != nil {
 		return err
 	}
