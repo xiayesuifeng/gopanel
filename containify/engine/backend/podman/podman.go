@@ -13,7 +13,8 @@ type Podman struct {
 
 	serviceVersion *semver.Version
 
-	image *image
+	container *container
+	image     *image
 }
 
 type Setting struct {
@@ -30,6 +31,8 @@ func (p *Podman) New(setting []byte) error {
 
 	p.uri = data.Endpoint
 
+	//p.uri = "unix:///run/user/1000/podman/podman.sock"
+	p.uri = "unix:///var/run/podman/podman.sock"
 	conn, err := bindings.NewConnection(context.Background(), p.uri)
 	if err != nil {
 		return err
@@ -37,14 +40,14 @@ func (p *Podman) New(setting []byte) error {
 
 	p.serviceVersion = bindings.ServiceVersion(conn)
 
+	p.container = &container{podman: p}
 	p.image = &image{podman: p}
 
 	return nil
 }
 
 func (p *Podman) Container() engine.Container {
-	//TODO implement me
-	panic("implement me")
+	return p.container
 }
 
 func (p *Podman) Image() engine.Image {
