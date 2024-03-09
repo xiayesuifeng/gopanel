@@ -7,7 +7,7 @@ type ListContainer struct {
 type ContainerBasic struct {
 	AutoRemove bool              `json:"autoRemove"`
 	ID         string            `json:"id"`
-	Names      []string          `json:"names"`
+	Name       string            `json:"name"`
 	Image      string            `json:"image"`
 	ImageID    string            `json:"imageID"`
 	Command    string            `json:"command"`
