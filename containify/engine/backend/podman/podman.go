@@ -12,6 +12,8 @@ type Podman struct {
 	uri string
 
 	serviceVersion *semver.Version
+
+	image *image
 }
 
 type Setting struct {
@@ -35,6 +37,8 @@ func (p *Podman) New(setting []byte) error {
 
 	p.serviceVersion = bindings.ServiceVersion(conn)
 
+	p.image = &image{podman: p}
+
 	return nil
 }
 
@@ -44,8 +48,7 @@ func (p *Podman) Container() engine.Container {
 }
 
 func (p *Podman) Image() engine.Image {
-	//TODO implement me
-	panic("implement me")
+	return p.image
 }
 
 func init() {
