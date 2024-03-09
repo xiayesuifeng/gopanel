@@ -12,6 +12,7 @@ var (
 type Engine interface {
 	New(setting []byte) error
 
+	Container() Container
 	Image() Image
 }
 
