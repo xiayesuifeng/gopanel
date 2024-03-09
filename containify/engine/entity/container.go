@@ -10,7 +10,7 @@ type ContainerBasic struct {
 	Name       string            `json:"name"`
 	Image      string            `json:"image"`
 	ImageID    string            `json:"imageID"`
-	Command    string            `json:"command"`
+	Command    []string          `json:"command"`
 	Env        map[string]string `json:"env"`
 	Ports      []PortMapping     `json:"ports"`
 	Labels     map[string]string `json:"labels"`
