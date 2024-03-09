@@ -11,6 +11,8 @@ var (
 
 type Engine interface {
 	New(setting []byte) error
+
+	Image() Image
 }
 
 func New(engine string, setting []byte) (Engine, error) {
