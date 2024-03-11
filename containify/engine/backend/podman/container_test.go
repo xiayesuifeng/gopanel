@@ -50,6 +50,22 @@ func TestContainer_Create(t *testing.T) {
 	}
 }
 
+func TestContainer_List(t *testing.T) {
+	instance, err := getInstance()
+	if err != nil {
+		t.Error(err)
+	}
+
+	list, err := instance.container.List(context.TODO())
+	if err != nil {
+		t.Error(err)
+	}
+
+	for _, container := range list {
+		t.Log(container)
+	}
+}
+
 func TestContainer_Start(t *testing.T) {
 	instance, err := getInstance()
 	if err != nil {

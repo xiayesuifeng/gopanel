@@ -77,8 +77,52 @@ func (c *container) Remove(ctx context.Context, nameOrID string) error {
 }
 
 func (c *container) List(ctx context.Context) ([]*entity.ListContainer, error) {
-	//TODO implement me
-	panic("implement me")
+	conn, err := c.podman.getConn(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	b := true
+	list, err := containers.List(conn, &containers.ListOptions{All: &b})
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]*entity.ListContainer, 0, len(list))
+	for _, c := range list {
+		name := ""
+		if len(c.Names) > 0 {
+			name = c.Names[0]
+		}
+
+		portMappings := make([]entity.PortMapping, 0, len(c.Ports))
+		for _, port := range c.Ports {
+			portMappings = append(portMappings, entity.PortMapping{
+				HostIP:        port.HostIP,
+				ContainerPort: port.ContainerPort,
+				HostPort:      port.HostPort,
+				Range:         port.Range,
+				Protocol:      port.Protocol,
+			})
+		}
+
+		result = append(result, &entity.ListContainer{
+			ContainerBasic: entity.ContainerBasic{
+				AutoRemove: c.AutoRemove,
+				ID:         c.ID,
+				Name:       name,
+				Image:      c.Image,
+				ImageID:    c.ImageID,
+				Command:    c.Command,
+				Ports:      portMappings,
+				Labels:     c.Labels,
+				State:      c.State,
+				Status:     c.Status,
+			},
+		})
+	}
+
+	return result, nil
 }
 
 func (c *container) Stop(ctx context.Context, nameOrID string) error {
