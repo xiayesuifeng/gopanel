@@ -6,6 +6,8 @@ import (
 	"testing"
 )
 
+const containerName = "test-create-c"
+
 func getInstance() (*Podman, error) {
 	instance := &Podman{}
 	err := instance.New(nil)
@@ -21,7 +23,7 @@ func TestContainer_Create(t *testing.T) {
 	if id, err := instance.Container().Create(context.TODO(), &entity.Container{
 		ContainerBasic: entity.ContainerBasic{
 			Image:   "archlinux",
-			Name:    "test-create-c",
+			Name:    containerName,
 			Command: []string{"/usr/bin/bash", "-c", "sleep 600s"},
 			Env: map[string]string{
 				"TEST_ENV": "true",
@@ -48,13 +50,25 @@ func TestContainer_Create(t *testing.T) {
 	}
 }
 
+func TestContainer_Start(t *testing.T) {
+	instance, err := getInstance()
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = instance.container.Start(context.TODO(), containerName)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
 func TestContainer_Remove(t *testing.T) {
 	instance, err := getInstance()
 	if err != nil {
 		t.Error(err)
 	}
 
-	err = instance.container.Remove(context.TODO(), "test-create-c")
+	err = instance.container.Remove(context.TODO(), containerName)
 	if err != nil {
 		t.Error(err)
 	}
