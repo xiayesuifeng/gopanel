@@ -67,8 +67,13 @@ func (c *container) Create(ctx context.Context, container *entity.Container) (co
 }
 
 func (c *container) Remove(ctx context.Context, nameOrID string) error {
-	//TODO implement me
-	panic("implement me")
+	conn, err := c.podman.getConn(ctx)
+	if err != nil {
+		return err
+	}
+
+	_, err = containers.Remove(conn, nameOrID, nil)
+	return err
 }
 
 func (c *container) List(ctx context.Context) ([]*entity.ListContainer, error) {

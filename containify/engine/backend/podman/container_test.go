@@ -47,3 +47,15 @@ func TestContainer_Create(t *testing.T) {
 		t.Log(id)
 	}
 }
+
+func TestContainer_Remove(t *testing.T) {
+	instance, err := getInstance()
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = instance.container.Remove(context.TODO(), "test-create-c")
+	if err != nil {
+		t.Error(err)
+	}
+}
