@@ -62,6 +62,18 @@ func TestContainer_Start(t *testing.T) {
 	}
 }
 
+func TestContainer_Restart(t *testing.T) {
+	instance, err := getInstance()
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = instance.container.Restart(context.TODO(), containerName)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
 func TestContainer_Remove(t *testing.T) {
 	instance, err := getInstance()
 	if err != nil {
