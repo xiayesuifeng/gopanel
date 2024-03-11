@@ -6,6 +6,9 @@ import (
 	"github.com/blang/semver/v4"
 	"github.com/containers/podman/v5/pkg/bindings"
 	"gitlab.com/xiayesuifeng/gopanel/containify/engine"
+	"os"
+	"runtime"
+	"strconv"
 )
 
 type Podman struct {
@@ -25,14 +28,22 @@ type Setting struct {
 func (p *Podman) New(setting []byte) error {
 	data := &Setting{}
 
-	if err := json.Unmarshal(setting, data); err != nil {
-		return err
+	if setting != nil {
+		if err := json.Unmarshal(setting, data); err != nil {
+			return err
+		}
 	}
 
 	p.uri = data.Endpoint
 
-	//p.uri = "unix:///run/user/1000/podman/podman.sock"
-	p.uri = "unix:///var/run/podman/podman.sock"
+	if len(p.uri) == 0 && runtime.GOOS != "windows" {
+		if uid := os.Getuid(); uid == 0 {
+			p.uri = "unix:///var/run/podman/podman.sock"
+		} else {
+			p.uri = "unix:///var/run/user/" + strconv.Itoa(uid) + "/podman/podman.sock"
+		}
+	}
+
 	conn, err := bindings.NewConnection(context.Background(), p.uri)
 	if err != nil {
 		return err
