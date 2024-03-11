@@ -6,7 +6,7 @@ import (
 )
 
 type Container interface {
-	Create(ctx context.Context, nameOrID string, container *entity.Container) error
+	Create(ctx context.Context, container *entity.Container) (containerID string, err error)
 	Remove(ctx context.Context, nameOrID string) error
 	List(ctx context.Context) ([]*entity.ListContainer, error)
 	Stop(ctx context.Context, nameOrID string) error

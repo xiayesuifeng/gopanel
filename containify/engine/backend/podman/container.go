@@ -9,7 +9,7 @@ type container struct {
 	podman *Podman
 }
 
-func (c *container) Create(ctx context.Context, nameOrID string, container *entity.Container) error {
+func (c *container) Create(ctx context.Context, container *entity.Container) (containerID string, err error) {
 	//TODO implement me
 	panic("implement me")
 }
