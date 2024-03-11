@@ -82,8 +82,12 @@ func (c *container) List(ctx context.Context) ([]*entity.ListContainer, error) {
 }
 
 func (c *container) Stop(ctx context.Context, nameOrID string) error {
-	//TODO implement me
-	panic("implement me")
+	conn, err := c.podman.getConn(ctx)
+	if err != nil {
+		return err
+	}
+
+	return containers.Stop(conn, nameOrID, nil)
 }
 
 func (c *container) Start(ctx context.Context, nameOrID string) error {
