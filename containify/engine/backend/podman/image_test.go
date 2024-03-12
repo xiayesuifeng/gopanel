@@ -7,6 +7,21 @@ import (
 
 var imageName = "archlinux"
 
+func TestImage_Pull(t *testing.T) {
+	instance := &Podman{}
+	err := instance.New(nil)
+	if err != nil {
+		t.Error(err)
+	}
+
+	imageID, err := instance.Image().Pull(context.TODO(), imageName, nil)
+	if err != nil {
+		t.Error(err)
+	}
+
+	t.Logf(imageID)
+}
+
 func TestImage_List(t *testing.T) {
 	instance := &Podman{}
 	err := instance.New(nil)

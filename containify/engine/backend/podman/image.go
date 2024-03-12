@@ -5,10 +5,25 @@ import (
 	"errors"
 	"github.com/containers/podman/v5/pkg/bindings/images"
 	"gitlab.com/xiayesuifeng/gopanel/containify/engine/entity"
+	"io"
 )
 
 type image struct {
 	podman *Podman
+}
+
+func (i *image) Pull(ctx context.Context, rawImage string, progressWriter io.Writer) (string, error) {
+	conn, err := i.podman.getConn(ctx)
+	if err != nil {
+		return "", err
+	}
+
+	strings, err := images.Pull(conn, rawImage, &images.PullOptions{ProgressWriter: &progressWriter})
+	imageID := ""
+	if len(strings) > 0 {
+		imageID = strings[0]
+	}
+	return imageID, err
 }
 
 func (i *image) Remove(ctx context.Context, nameOrID string) error {
