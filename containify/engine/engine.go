@@ -36,3 +36,11 @@ func Register(name string, engine Engine) {
 
 	containerEngines[name] = engine
 }
+
+func GetEngines() (engines []string) {
+	for name := range containerEngines {
+		engines = append(engines, name)
+	}
+
+	return
+}
