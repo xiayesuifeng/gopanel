@@ -5,6 +5,7 @@ import (
 	"gitlab.com/xiayesuifeng/gopanel/api/server/endpoint/auth"
 	"gitlab.com/xiayesuifeng/gopanel/api/server/endpoint/backend"
 	"gitlab.com/xiayesuifeng/gopanel/api/server/endpoint/caddy"
+	"gitlab.com/xiayesuifeng/gopanel/api/server/endpoint/containify"
 	"gitlab.com/xiayesuifeng/gopanel/api/server/endpoint/install"
 	"gitlab.com/xiayesuifeng/gopanel/api/server/endpoint/network"
 	"gitlab.com/xiayesuifeng/gopanel/api/server/endpoint/port"
@@ -18,6 +19,7 @@ func (s *Server) registerAll() {
 		&app.App{},
 		&backend.Backend{},
 		&caddy.Caddy{},
+		&containify.Containify{},
 		&service.Service{},
 		&install.Install{},
 		&network.Network{},
