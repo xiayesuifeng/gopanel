@@ -20,6 +20,8 @@ func (c *Containify) Run(r router.Router) {
 	r.PUT("", c.Put)
 
 	r.Use(c.middleware)
+
+	r.GET("/images", c.GetImages)
 }
 
 type configuration struct {
