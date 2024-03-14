@@ -23,6 +23,8 @@ func (c *Containify) Run(r router.Router) {
 
 	r.GET("/images", c.GetImages)
 	r.DELETE("/image/:nameOrID", c.RemoveImage)
+
+	r.GET("/containers", c.GetContainers)
 }
 
 type configuration struct {
