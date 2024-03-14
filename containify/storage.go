@@ -29,3 +29,11 @@ func GetContainerEngine() (engine string, setting []byte) {
 	setting = settingStorage.GetStorage().Get(module, containerEngineSettingKey, []byte("{}"))
 	return
 }
+
+func SetContainerEngine(engine string, setting []byte) error {
+	if err := settingStorage.GetStorage().Set(module, containerEngineKey, []byte(engine)); err != nil {
+		return err
+	}
+
+	return settingStorage.GetStorage().Set(module, containerEngineSettingKey, setting)
+}
