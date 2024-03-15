@@ -21,3 +21,14 @@ func (c *Containify) StartContainer(ctx *router.Context) error {
 
 	return ctx.NoContent()
 }
+
+func (c *Containify) RestartContainer(ctx *router.Context) error {
+	nameOrID := ctx.Param("nameOrID")
+
+	err := c.service.ContainerEngine().Container().Restart(ctx, nameOrID)
+	if err != nil {
+		return err
+	}
+
+	return ctx.NoContent()
+}

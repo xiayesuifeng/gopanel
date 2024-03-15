@@ -26,6 +26,7 @@ func (c *Containify) Run(r router.Router) {
 
 	r.GET("/containers", c.GetContainers)
 	r.POST("/container/:nameOrID/start", c.StartContainer)
+	r.POST("/container/:nameOrID/restart", c.RestartContainer)
 }
 
 type configuration struct {
