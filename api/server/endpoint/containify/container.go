@@ -10,3 +10,14 @@ func (c *Containify) GetContainers(ctx *router.Context) error {
 
 	return ctx.JSON(list)
 }
+
+func (c *Containify) StartContainer(ctx *router.Context) error {
+	nameOrID := ctx.Param("nameOrID")
+
+	err := c.service.ContainerEngine().Container().Start(ctx, nameOrID)
+	if err != nil {
+		return err
+	}
+
+	return ctx.NoContent()
+}
