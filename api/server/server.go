@@ -31,6 +31,7 @@ func (s *Server) Register(endpoint router.Endpoint) {
 
 func (s *Server) Run(address string) error {
 	engine := gin.Default()
+	engine.UseH2C = true
 
 	s.registerWeb(engine)
 
@@ -46,7 +47,7 @@ func (s *Server) Run(address string) error {
 
 	s.server = http.Server{
 		Addr:    address,
-		Handler: engine,
+		Handler: engine.Handler(),
 	}
 
 	slog.Info("[server] listening and serving HTTP on " + address)
