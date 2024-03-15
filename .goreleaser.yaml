@@ -16,6 +16,7 @@ builds:
       - -trimpath
     tags:
       - web
+      - containers_image_openpgp
     ldflags:
       - -s -w -X gitlab.com/xiayesuifeng/gopanel/version.Version={{ .Version }} -X gitlab.com/xiayesuifeng/gopanel/version.GitCommit={{ .Commit }}
 archives:
