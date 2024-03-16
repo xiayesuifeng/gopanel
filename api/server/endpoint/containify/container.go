@@ -98,3 +98,14 @@ func (c *Containify) StopContainer(ctx *router.Context) error {
 
 	return ctx.NoContent()
 }
+
+func (c *Containify) RemoveContainers(ctx *router.Context) error {
+	nameOrID := ctx.Param("nameOrID")
+
+	err := c.service.ContainerEngine().Container().Remove(ctx, nameOrID)
+	if err != nil {
+		return err
+	}
+
+	return ctx.NoContent()
+}

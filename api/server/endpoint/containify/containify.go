@@ -29,6 +29,7 @@ func (c *Containify) Run(r router.Router) {
 	r.POST("/container/:nameOrID/start", c.StartContainer)
 	r.POST("/container/:nameOrID/restart", c.RestartContainer)
 	r.POST("/container/:nameOrID/stop", c.StopContainer)
+	r.DELETE("/container/:nameOrID", c.RemoveContainers)
 }
 
 type configuration struct {
