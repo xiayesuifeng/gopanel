@@ -20,7 +20,8 @@ type ContainerBasic struct {
 
 type Container struct {
 	ContainerBasic
-	Mounts []Mount
+	Entrypoint string `json:"entrypoint"`
+	Mounts     []Mount
 }
 
 type MountType string

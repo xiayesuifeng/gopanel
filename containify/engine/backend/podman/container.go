@@ -45,12 +45,18 @@ func (c *container) Create(ctx context.Context, container *entity.Container) (co
 		})
 	}
 
+	entrypoint := make([]string, 0)
+	if len(container.Entrypoint) > 0 {
+		entrypoint = append(entrypoint, container.Entrypoint)
+	}
+
 	resp, err := containers.CreateWithSpec(conn, &specgen.SpecGenerator{
 		ContainerBasicConfig: specgen.ContainerBasicConfig{
-			Name:    container.Name,
-			Command: container.Command,
-			Env:     container.Env,
-			Labels:  container.Labels,
+			Name:       container.Name,
+			Entrypoint: entrypoint,
+			Command:    container.Command,
+			Env:        container.Env,
+			Labels:     container.Labels,
 		},
 		ContainerStorageConfig: specgen.ContainerStorageConfig{
 			Image:  container.Image,
