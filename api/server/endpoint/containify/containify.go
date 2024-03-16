@@ -25,6 +25,7 @@ func (c *Containify) Run(r router.Router) {
 	r.DELETE("/image/:nameOrID", c.RemoveImage)
 
 	r.GET("/containers", c.GetContainers)
+	r.POST("/container", c.CreateContainers)
 	r.POST("/container/:nameOrID/start", c.StartContainer)
 	r.POST("/container/:nameOrID/restart", c.RestartContainer)
 	r.POST("/container/:nameOrID/stop", c.StopContainer)
