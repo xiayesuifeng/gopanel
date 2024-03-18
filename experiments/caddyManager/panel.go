@@ -14,7 +14,11 @@ const panelRouteHandleCaddyJson = `{
         {
           "handle": [{
 			"handler": "reverse_proxy",
-            "upstreams": [{"dial": "127.0.0.1:{port}"}]
+            "upstreams": [{"dial": "127.0.0.1:{port}"}],
+			"transport": {
+			  "protocol": "http",
+			  "versions": ["1.1", "2", "h2c"]
+			}
           }]
         }
       ]
