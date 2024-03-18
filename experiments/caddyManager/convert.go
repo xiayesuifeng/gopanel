@@ -33,11 +33,7 @@ func (m *Manager) convertToCaddyConfig() (config *Config) {
 	serverIdx := 1
 	serverName := map[int]string{app.HTTPSPort: m.HTTPSServerName}
 
-	servers[m.HTTPSServerName] = newServer(fmt.Sprintf(":%d", app.HTTPSPort))
-
-	if m.caddyConf.General.AllowH2C {
-		servers[m.HTTPSServerName].Protocols = []string{"h1", "h2", "h2c", "h3"}
-	}
+	servers[m.HTTPSServerName] = newServer(m.caddyConf.General.AllowH2C, fmt.Sprintf(":%d", app.HTTPSPort))
 
 	wildcardDomainsApp, normalApp := filterWildcardDomainsApp(m.caddyConf.TLS.WildcardDomains, m.app)
 
@@ -62,7 +58,7 @@ func (m *Manager) convertToCaddyConfig() (config *Config) {
 			if !exist {
 				name = fmt.Sprintf("gopanel%d", serverIdx)
 				serverName[port] = name
-				servers[name] = newServer(fmt.Sprintf(":%d", port))
+				servers[name] = newServer(m.caddyConf.General.AllowH2C, fmt.Sprintf(":%d", port))
 
 				serverIdx++
 			}
@@ -89,7 +85,7 @@ func (m *Manager) convertToCaddyConfig() (config *Config) {
 		if !exist {
 			name = fmt.Sprintf("gopanel%d", serverIdx)
 			serverName[config.ListenPort] = name
-			servers[name] = newServer(fmt.Sprintf(":%d", config.ListenPort))
+			servers[name] = newServer(m.caddyConf.General.AllowH2C, fmt.Sprintf(":%d", config.ListenPort))
 
 			serverIdx++
 		}
@@ -185,10 +181,16 @@ func newConfig() *Config {
 	}
 }
 
-func newServer(listen ...string) *caddyhttp.Server {
-	return &caddyhttp.Server{
+func newServer(allowH2C bool, listen ...string) *caddyhttp.Server {
+	srv := &caddyhttp.Server{
 		Listen: listen,
 	}
+
+	if allowH2C {
+		srv.Protocols = []string{"h1", "h2", "h2c", "h3"}
+	}
+
+	return srv
 }
 
 func filterWildcardDomainsApp(wildcardDomains []string, apps map[string]*APPConfig) (wildcardDomainAPPConfig map[string][]*APPConfig, normalAPPConfig []*APPConfig) {
