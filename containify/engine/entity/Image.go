@@ -14,11 +14,11 @@ type Image struct {
 }
 
 type InspectImage struct {
-	ExposedPorts map[string]struct{} `json:"ExposedPorts,omitempty"`
-	Env          []string            `json:"Env,omitempty"`
-	Entrypoint   []string            `json:"Entrypoint,omitempty"`
-	Cmd          []string            `json:"Cmd,omitempty"`
-	Volumes      map[string]struct{} `json:"Volumes,omitempty"`
-	WorkingDir   string              `json:"WorkingDir,omitempty"`
-	Labels       map[string]string   `json:"Labels,omitempty"`
+	ExposedPorts map[string]struct{} `json:"exposedPorts"`
+	Env          []string            `json:"env"`
+	Entrypoint   []string            `json:"entrypoint"`
+	Cmd          []string            `json:"cmd"`
+	Volumes      map[string]struct{} `json:"volumes"`
+	WorkingDir   string              `json:"workingDir"`
+	Labels       map[string]string   `json:"labels"`
 }
