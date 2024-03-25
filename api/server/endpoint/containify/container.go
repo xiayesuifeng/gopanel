@@ -18,7 +18,7 @@ func (c *Containify) GetContainers(ctx *router.Context) error {
 type CreateContainer struct {
 	Name       string               `json:"name" binding:"required"`
 	Image      string               `json:"image" binding:"required"`
-	Entrypoint string               `json:"entrypoint"`
+	Entrypoint []string             `json:"entrypoint"`
 	Command    []string             `json:"command"`
 	Env        map[string]string    `json:"env"`
 	Ports      []entity.PortMapping `json:"ports"`
