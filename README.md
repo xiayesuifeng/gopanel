@@ -73,7 +73,7 @@ yay -S gopanel-git
 > Debian/Ubuntu (Debian/Ubuntu)
 
 ```bash
-wget "https://gitlab.com/xiayesuifeng/gopanel/-/jobs/artifacts/master/raw/dist/gopanel_0.3.0-dev_linux_amd64.deb?job=build-gopanel" -o gopanel.deb
+wget "https://gitlab.com/xiayesuifeng/gopanel/-/jobs/artifacts/master/raw/dist/gopanel_0.3.0-dev_linux_amd64.deb?job=build-gopanel" -O gopanel.deb
 sudo dpkg -i gopanel.deb
 rm -rf gopanel.deb
 ```
@@ -81,7 +81,7 @@ rm -rf gopanel.deb
 > CentOS/RHEL (CentOS/RHEL)
 
 ```bash
-wget "https://gitlab.com/xiayesuifeng/gopanel/-/jobs/artifacts/master/raw/dist/gopanel_0.3.0-dev_linux_amd64.rpm?job=build-gopanel" -o gopanel.rpm
+wget "https://gitlab.com/xiayesuifeng/gopanel/-/jobs/artifacts/master/raw/dist/gopanel_0.3.0-dev_linux_amd64.rpm?job=build-gopanel" -O gopanel.rpm
 sudo rpm -i gopanel.rpm
 rm -rf gopanel.rpm
 ```
@@ -89,7 +89,7 @@ rm -rf gopanel.rpm
 > Apk (Alpine)
 
 ```bash
-wget "https://gitlab.com/xiayesuifeng/gopanel/-/jobs/artifacts/master/raw/dist/gopanel_0.3.0-dev_linux_amd64.apk?job=build-gopanel" -o gopanel.apk
+wget "https://gitlab.com/xiayesuifeng/gopanel/-/jobs/artifacts/master/raw/dist/gopanel_0.3.0-dev_linux_amd64.apk?job=build-gopanel" -O gopanel.apk
 sudo apk add gopanel.apk
 rm -rf gopanel.apk
 ```
@@ -97,7 +97,7 @@ rm -rf gopanel.apk
 > Other GNU/Linux Distro (其他 `GNU/Linux` 发行版)
 > 请确保已安装好 `caddy2`
 ```bash
-wget "https://gitlab.com/xiayesuifeng/gopanel/-/jobs/artifacts/master/raw/dist/gopanel_0.3.0-dev_linux_amd64.tar.gz?job=build-gopanel" -o gopanel.tar.gz
+wget "https://gitlab.com/xiayesuifeng/gopanel/-/jobs/artifacts/master/raw/dist/gopanel_0.3.0-dev_linux_amd64.tar.gz?job=build-gopanel" -O gopanel.tar.gz
 mkdir gopanel
 tar -xf gopanel.tar.gz -C gopanel
 sudo install -d /etc/gopanel/app.conf.d
