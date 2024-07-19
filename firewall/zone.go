@@ -77,3 +77,13 @@ func UpdateZone(zone *Zone, permanent bool) error {
 
 	return conn.UpdateZone(originZone)
 }
+
+func GetZoneNames(permanent bool) ([]string, error) {
+	conn, err := getConn(permanent)
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+
+	return conn.GetZoneNames()
+}
