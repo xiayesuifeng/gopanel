@@ -3,6 +3,8 @@ module gitlab.com/xiayesuifeng/gopanel
 require (
 	github.com/blang/semver/v4 v4.0.0
 	github.com/caddyserver/caddy/v2 v2.7.5
+	github.com/containers/common v0.58.0
+	github.com/containers/image/v5 v5.30.0
 	github.com/containers/podman/v5 v5.0.0-rc5
 	github.com/coreos/go-systemd/v22 v22.5.1-0.20231103132048-7d375ecc2b09
 	github.com/gin-gonic/contrib v0.0.0-20201101042839-6a891bf89f19
@@ -12,8 +14,10 @@ require (
 	github.com/gorilla/websocket v1.5.0
 	github.com/mholt/caddy-dynamicdns v0.0.0-20220715223239-7f55c953bf06
 	github.com/mitchellh/mapstructure v1.5.0
+	github.com/opencontainers/runtime-spec v1.2.0
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.17.0
+	gitlab.com/xiayesuifeng/go-firewalld v0.0.0-20240718172141-ff8d09cccfe4
 	go.etcd.io/bbolt v1.3.9
 )
 
@@ -48,8 +52,6 @@ require (
 	github.com/containerd/log v0.1.0 // indirect
 	github.com/containerd/stargz-snapshotter/estargz v0.15.1 // indirect
 	github.com/containers/buildah v1.35.0 // indirect
-	github.com/containers/common v0.58.0 // indirect
-	github.com/containers/image/v5 v5.30.0 // indirect
 	github.com/containers/libtrust v0.0.0-20230121012942-c1716e8a8d01 // indirect
 	github.com/containers/ocicrypt v1.1.9 // indirect
 	github.com/containers/psgo v1.9.0 // indirect
@@ -162,7 +164,6 @@ require (
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.0 // indirect
 	github.com/opencontainers/runc v1.1.12 // indirect
-	github.com/opencontainers/runtime-spec v1.2.0 // indirect
 	github.com/opencontainers/runtime-tools v0.9.1-0.20230914150019-408c51e934dc // indirect
 	github.com/opencontainers/selinux v1.11.0 // indirect
 	github.com/ostreedev/ostree-go v0.0.0-20210805093236-719684c64e4f // indirect
@@ -251,4 +252,6 @@ require (
 	tags.cncf.io/container-device-interface v0.6.2 // indirect
 )
 
-go 1.18
+go 1.22
+
+toolchain go1.22.4
