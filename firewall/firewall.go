@@ -22,6 +22,16 @@ func SetDefaultZone(name string) error {
 	return conn.SetDefaultZone(name)
 }
 
+func Reload() error {
+	conn, err := firewalld.New()
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+
+	return conn.Reload()
+}
+
 func getConn(permanent bool) (*firewalld.Conn, error) {
 	conn, err := firewalld.New()
 	if err != nil {
