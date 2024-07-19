@@ -10,3 +10,16 @@ func GetDefaultZone() (string, error) {
 
 	return conn.GetDefaultZone()
 }
+
+func getConn(permanent bool) (*firewalld.Conn, error) {
+	conn, err := firewalld.New()
+	if err != nil {
+		return nil, err
+	}
+
+	if permanent {
+		conn = conn.Permanent()
+	}
+
+	return conn, nil
+}

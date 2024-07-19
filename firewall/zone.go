@@ -1,7 +1,5 @@
 package firewall
 
-import "gitlab.com/xiayesuifeng/go-firewalld"
-
 type ZoneStrategy string
 
 const (
@@ -27,13 +25,9 @@ type Zone struct {
 }
 
 func GetZone(name string, permanent bool) (*Zone, error) {
-	conn, err := firewalld.New()
+	conn, err := getConn(permanent)
 	if err != nil {
 		return nil, err
-	}
-
-	if permanent {
-		conn = conn.Permanent()
 	}
 
 	zone, err := conn.GetZoneByName(name)
@@ -54,4 +48,31 @@ func GetZone(name string, permanent bool) (*Zone, error) {
 		Interfaces:         zone.Interfaces,
 		Protocols:          zone.Protocols,
 	}, nil
+}
+
+// UpdateZone update zone setting, target and description field only change in permanent
+func UpdateZone(zone *Zone, permanent bool) error {
+	conn, err := getConn(permanent)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+
+	originZone, err := conn.GetZoneByName(zone.Name)
+	if err != nil {
+		return err
+	}
+
+	originZone.Description = zone.Description
+	originZone.Target = string(zone.Target)
+	originZone.IngressPriority = zone.IngressPriority
+	originZone.EgressPriority = zone.EgressPriority
+	originZone.ICMPBlocks = zone.ICMPBlocks
+	originZone.ICMPBlockInversion = zone.ICMPBlockInversion
+	originZone.Masquerade = zone.Masquerade
+	originZone.Forward = zone.Forward
+	originZone.Interfaces = zone.Interfaces
+	originZone.Protocols = zone.Protocols
+
+	return conn.UpdateZone(originZone)
 }
