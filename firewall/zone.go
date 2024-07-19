@@ -29,6 +29,7 @@ func GetZone(name string, permanent bool) (*Zone, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer conn.Close()
 
 	zone, err := conn.GetZoneByName(name)
 	if err != nil {
