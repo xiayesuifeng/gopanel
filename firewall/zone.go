@@ -26,10 +26,14 @@ type Zone struct {
 	Protocols          []string     `json:"protocols"`
 }
 
-func GetZone(name string) (*Zone, error) {
+func GetZone(name string, permanent bool) (*Zone, error) {
 	conn, err := firewalld.New()
 	if err != nil {
 		return nil, err
+	}
+
+	if permanent {
+		conn = conn.Permanent()
 	}
 
 	zone, err := conn.GetZoneByName(name)
