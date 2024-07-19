@@ -7,6 +7,7 @@ func GetDefaultZone() (string, error) {
 	if err != nil {
 		return "", err
 	}
+	defer conn.Close()
 
 	return conn.GetDefaultZone()
 }
