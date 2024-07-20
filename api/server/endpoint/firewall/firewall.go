@@ -14,6 +14,8 @@ func (f *Firewall) Name() string {
 }
 
 func (f *Firewall) Run(r router.Router) {
+	r.Use(permanentMiddleware)
+
 	r.GET("", f.GetConfig)
 }
 
