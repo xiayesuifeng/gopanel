@@ -11,7 +11,7 @@ type ZoneStrategy string
 const (
 	AcceptZoneStrategy   = "ACCEPT"
 	DefaultZoneStrategy  = "default"
-	RejectZoneStrategy   = "REJECT"
+	RejectZoneStrategy   = "%%REJECT%%"
 	ContinueZoneStrategy = "CONTINUE"
 	DropZoneStrategy     = "DROP"
 )
