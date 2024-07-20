@@ -18,6 +18,7 @@ func (f *Firewall) Run(r router.Router) {
 
 	r.GET("", f.GetConfig)
 	r.GET("/zone/names", f.GetZoneNames)
+	r.GET("/zone/:name", f.GetZoneByName)
 }
 
 func (f *Firewall) GetConfig(ctx *router.Context) error {
@@ -38,4 +39,13 @@ func (f *Firewall) GetZoneNames(ctx *router.Context) error {
 	}
 
 	return ctx.JSON(names)
+}
+
+func (f *Firewall) GetZoneByName(ctx *router.Context) error {
+	zone, err := firewall.GetZone(ctx.Param("name"), permanent(ctx))
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(zone)
 }
