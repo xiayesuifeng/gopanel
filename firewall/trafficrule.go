@@ -19,6 +19,8 @@ const (
 	ServiceRuleType     RuleType = "service"
 	PortRuleType        RuleType = "port"
 	ProtocolRuleType    RuleType = "protocol"
+	MasqueradeRuleType  RuleType = "masquerade"
+	IcmpBlockRuleType   RuleType = "icmp-block"
 	ForwardPortRuleType RuleType = "forward-port"
 	SourcePortRuleType  RuleType = "source-port"
 )
