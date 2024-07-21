@@ -2,7 +2,6 @@ package firewall
 
 import (
 	"encoding/json"
-	"net"
 )
 
 type RuleStrategy int
@@ -29,11 +28,11 @@ type TrafficRule struct {
 	// Family ipv4 or ipv6, empty means both
 	Family string `json:"family"`
 	// SrcAddr source address
-	SrcAddr       net.IPAddr `json:"srcAddr"`
-	SrcAddrInvert bool       `json:"srcAddrInvert"`
+	SrcAddr       string `json:"srcAddr,omitempty"`
+	SrcAddrInvert bool   `json:"srcAddrInvert,omitempty"`
 	// DestAddr destination address
-	DestAddr       net.IPAddr      `json:"destAddr"`
-	DestAddrInvert bool            `json:"destAddrInvert"`
+	DestAddr       string          `json:"destAddr,omitempty"`
+	DestAddrInvert bool            `json:"destAddrInvert,omitempty"`
 	Strategy       RuleStrategy    `json:"strategy"`
 	Type           RuleType        `json:"type"`
 	Value          json.RawMessage `json:"value"`
