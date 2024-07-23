@@ -17,6 +17,8 @@ func (f *Firewall) Run(r router.Router) {
 	r.Use(permanentMiddleware)
 
 	r.GET("", f.GetConfig)
+	r.POST("/reload", f.Reload)
+
 	r.GET("/zone", f.GetZone)
 	r.GET("/zone/names", f.GetZoneNames)
 	r.GET("/zone/:name", f.GetZoneByName)
@@ -35,6 +37,14 @@ func (f *Firewall) GetConfig(ctx *router.Context) error {
 	return ctx.JSON(gin.H{
 		"defaultZone": zone,
 	})
+}
+
+func (f *Firewall) Reload(ctx *router.Context) error {
+	if err := firewall.Reload(); err != nil {
+		return nil
+	}
+
+	return ctx.NoContent()
 }
 
 func (f *Firewall) GetZoneNames(ctx *router.Context) error {
