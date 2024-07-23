@@ -21,6 +21,8 @@ func (f *Firewall) Run(r router.Router) {
 	r.GET("/zone/names", f.GetZoneNames)
 	r.GET("/zone/:name", f.GetZoneByName)
 	r.PUT("/zone/:name", f.UpdateZoneByName)
+
+	r.GET("/zone/:name/trafficRule", f.GetTrafficRule)
 }
 
 func (f *Firewall) GetConfig(ctx *router.Context) error {
@@ -73,4 +75,13 @@ func (f *Firewall) UpdateZoneByName(ctx *router.Context) error {
 	}
 
 	return ctx.NoContent()
+}
+
+func (f *Firewall) GetTrafficRule(ctx *router.Context) error {
+	rules, err := firewall.GetTrafficRules(ctx.Param("name"), permanent(ctx))
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(rules)
 }
