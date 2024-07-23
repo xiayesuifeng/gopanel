@@ -23,6 +23,7 @@ func (f *Firewall) Run(r router.Router) {
 	r.PUT("/zone/:name", f.UpdateZoneByName)
 
 	r.GET("/zone/:name/trafficRule", f.GetTrafficRule)
+	r.GET("/zone/:name/portForward", f.GetPortForward)
 }
 
 func (f *Firewall) GetConfig(ctx *router.Context) error {
@@ -84,4 +85,13 @@ func (f *Firewall) GetTrafficRule(ctx *router.Context) error {
 	}
 
 	return ctx.JSON(rules)
+}
+
+func (f *Firewall) GetPortForward(ctx *router.Context) error {
+	forwards, err := firewall.GetPortForwards(ctx.Param("name"), permanent(ctx))
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(forwards)
 }
