@@ -51,9 +51,9 @@ type RuleLog struct {
 
 type Port struct {
 	// Port number or range (8080-8085)
-	Port string
+	Port string `json:"port"`
 	// Protocol tcp or udp
-	Protocol string
+	Protocol string `json:"protocol"`
 }
 
 var ruleElement = []string{
