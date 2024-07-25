@@ -29,6 +29,7 @@ func (f *Firewall) Run(r router.Router) {
 
 	r.GET("/zone/:name/portForward", f.GetPortForward)
 	r.POST("/zone/:name/portForward", f.AddPortForward)
+	r.DELETE("/zone/:name/portForward", f.RemovePortForward)
 }
 
 func (f *Firewall) GetConfig(ctx *router.Context) error {
@@ -132,7 +133,7 @@ func (f *Firewall) AddTrafficRule(ctx *router.Context) error {
 	return ctx.NoContent()
 }
 
-type AddPortForwardRequest struct {
+type PortForwardRequest struct {
 	// Port port number or range
 	Port     string                   `json:"port" binding:"required"`
 	Protocol firewall.ForwardProtocol `json:"protocol" binding:"required"`
@@ -142,13 +143,33 @@ type AddPortForwardRequest struct {
 }
 
 func (f *Firewall) AddPortForward(ctx *router.Context) error {
-	request := &AddPortForwardRequest{}
+	request := &PortForwardRequest{}
 
 	if err := ctx.ShouldBind(request); err != nil {
 		return ctx.Error(400, err.Error())
 	}
 
 	err := firewall.AddPortForward(ctx.Param("name"), &firewall.PortForward{
+		Port:      request.Port,
+		Protocol:  request.Protocol,
+		ToPort:    request.ToPort,
+		ToAddress: request.ToAddress,
+	}, permanent(ctx))
+	if err != nil {
+		return err
+	}
+
+	return ctx.NoContent()
+}
+
+func (f *Firewall) RemovePortForward(ctx *router.Context) error {
+	request := &PortForwardRequest{}
+
+	if err := ctx.ShouldBind(request); err != nil {
+		return ctx.Error(400, err.Error())
+	}
+
+	err := firewall.RemovePortForward(ctx.Param("name"), &firewall.PortForward{
 		Port:      request.Port,
 		Protocol:  request.Protocol,
 		ToPort:    request.ToPort,
