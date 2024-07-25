@@ -25,6 +25,8 @@ func (f *Firewall) Run(r router.Router) {
 	r.PUT("/zone/:name", f.UpdateZoneByName)
 
 	r.GET("/zone/:name/trafficRule", f.GetTrafficRule)
+	r.POST("/zone/:name/trafficRule", f.AddTrafficRule)
+
 	r.GET("/zone/:name/portForward", f.GetPortForward)
 	r.POST("/zone/:name/portForward", f.AddPortForward)
 }
@@ -105,6 +107,29 @@ func (f *Firewall) GetPortForward(ctx *router.Context) error {
 	}
 
 	return ctx.JSON(forwards)
+}
+
+type AddTrafficRuleRequest struct {
+	firewall.TrafficRule
+
+	Type firewall.RuleType `json:"type" binding:"required"`
+}
+
+func (f *Firewall) AddTrafficRule(ctx *router.Context) error {
+	request := &AddTrafficRuleRequest{}
+
+	if err := ctx.ShouldBind(request); err != nil {
+		return ctx.Error(400, err.Error())
+	}
+
+	request.TrafficRule.Type = request.Type
+
+	err := firewall.AddTrafficRule(ctx.Param("name"), &request.TrafficRule, permanent(ctx))
+	if err != nil {
+		return err
+	}
+
+	return ctx.NoContent()
 }
 
 type AddPortForwardRequest struct {
