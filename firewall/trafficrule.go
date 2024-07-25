@@ -2,6 +2,7 @@ package firewall
 
 import (
 	"encoding/json"
+	"gitlab.com/xiayesuifeng/go-firewalld"
 	"strings"
 )
 
@@ -255,4 +256,172 @@ func GetTrafficRules(zone string, permanent bool) ([]*TrafficRule, error) {
 	}
 
 	return rules, nil
+}
+
+func AddTrafficRule(zone string, rule *TrafficRule, permanent bool) error {
+	if rule == nil {
+		return nil
+	}
+
+	if rule.Type == ForwardPortRuleType {
+		// ForwardPortRuleType should be moved to addPortForwarding func handle
+		return nil
+	}
+
+	conn, err := getConn(permanent)
+	if err != nil {
+		return err
+	}
+
+	setting, err := conn.GetZoneByName(zone)
+	if err != nil {
+		return err
+	}
+
+	needRichRule := rule.needRichRule()
+	richRule := "rule"
+	if needRichRule {
+		if rule.Family != "" {
+			richRule += " family=" + rule.Family
+		}
+
+		if rule.SrcAddr != "" {
+			if rule.SrcAddrInvert {
+				richRule += " source NOT address=" + rule.SrcAddr
+			} else {
+				richRule += " source address=" + rule.SrcAddr
+			}
+		}
+
+		if rule.DestAddr != "" {
+			if rule.DestAddrInvert {
+				richRule += " destination NOT address=" + rule.DestAddr
+			} else {
+				richRule += " destination address=" + rule.DestAddr
+			}
+		}
+	}
+
+	switch rule.Type {
+	case ServiceRuleType:
+		if needRichRule {
+			richRule += " service name=" + string(rule.Value)
+		} else {
+			var val string
+			err := json.Unmarshal(rule.Value, &val)
+			if err != nil {
+				return err
+			}
+			setting.Services = append(setting.Services, val)
+		}
+	case PortRuleType:
+		var port Port
+		err := json.Unmarshal(rule.Value, &port)
+		if err != nil {
+			return err
+		}
+
+		if needRichRule {
+			richRule += " port port=" + port.Port
+			if port.Protocol != "" {
+				richRule += " protocol=" + port.Protocol
+			}
+		} else {
+			setting.Ports = append(setting.Ports, &firewalld.Port{
+				Port:     port.Port,
+				Protocol: port.Protocol,
+			})
+		}
+	case ProtocolRuleType:
+		if needRichRule {
+			richRule += " protocol value=" + string(rule.Value)
+		} else {
+			var val string
+			err := json.Unmarshal(rule.Value, &val)
+			if err != nil {
+				return err
+			}
+
+			setting.Protocols = append(setting.Protocols, val)
+		}
+	case MasqueradeRuleType:
+		if needRichRule {
+			richRule += " masquerade"
+		} else {
+			setting.Masquerade = true
+		}
+	case IcmpBlockRuleType:
+		if needRichRule {
+			richRule += " icmp-block name=" + string(rule.Value)
+		} else {
+			var val string
+			err := json.Unmarshal(rule.Value, &val)
+			if err != nil {
+				return err
+			}
+
+			setting.ICMPBlocks = append(setting.Protocols, val)
+		}
+	case SourcePortRuleType:
+		var port Port
+		err := json.Unmarshal(rule.Value, &port)
+		if err != nil {
+			return err
+		}
+
+		if needRichRule {
+			richRule += " source-port port=" + port.Port
+			if port.Protocol != "" {
+				richRule += " protocol=" + port.Protocol
+			}
+		} else {
+			setting.SourcePorts = append(setting.SourcePorts, &firewalld.Port{
+				Port:     port.Port,
+				Protocol: port.Protocol,
+			})
+		}
+	}
+
+	if needRichRule {
+		if rule.Log.Enabled {
+			richRule += " log"
+			if rule.Log.Prefix != "" {
+				richRule += " prefix=" + rule.Log.Prefix
+			}
+			if rule.Log.Level != "" {
+				richRule += " level=" + rule.Log.Level
+			}
+			if rule.Log.Prefix != "" {
+				richRule += " prefix=" + rule.Log.Prefix
+			}
+			richRule += " limit value=" + rule.Log.Limit
+		}
+
+		if rule.Audit {
+			richRule += " audit"
+		}
+
+		if rule.Type != MasqueradeRuleType && rule.Type != IcmpBlockRuleType {
+			switch rule.Strategy {
+			case AcceptRuleStrategy:
+				richRule += " accept"
+			case RejectRuleStrategy:
+				richRule += " reject"
+			case DropRuleStrategy:
+				richRule += " drop"
+			}
+		}
+
+		setting.RichRules = append(setting.RichRules, richRule)
+	}
+
+	return conn.UpdateZone(setting)
+}
+
+func (t *TrafficRule) needRichRule() bool {
+	if t.Strategy == AcceptRuleStrategy {
+		return !(t.Family == "" && t.SrcAddr == "" && !t.SrcAddrInvert && t.DestAddr == "" && !t.DestAddrInvert && !t.Log.Enabled && !t.Audit)
+	}
+
+	return true
 }
