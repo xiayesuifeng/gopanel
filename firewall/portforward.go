@@ -1,5 +1,7 @@
 package firewall
 
+import "gitlab.com/xiayesuifeng/go-firewalld"
+
 type ForwardProtocol string
 
 const (
@@ -40,4 +42,18 @@ func GetPortForwards(zone string, permanent bool) ([]*PortForward, error) {
 	}
 
 	return result, nil
+}
+
+func AddPortForward(zone string, portForward *PortForward, permanent bool) error {
+	conn, err := getConn(permanent)
+	if err != nil {
+		return err
+	}
+
+	return conn.AddZoneForwardPort(zone, &firewalld.ForwardPort{
+		Port:      portForward.Port,
+		Protocol:  string(portForward.Protocol),
+		ToPort:    portForward.ToPort,
+		ToAddress: portForward.ToAddress,
+	})
 }
