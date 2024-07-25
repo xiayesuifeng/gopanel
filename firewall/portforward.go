@@ -57,3 +57,17 @@ func AddPortForward(zone string, portForward *PortForward, permanent bool) error
 		ToAddress: portForward.ToAddress,
 	})
 }
+
+func RemovePortForward(zone string, portForward *PortForward, permanent bool) error {
+	conn, err := getConn(permanent)
+	if err != nil {
+		return err
+	}
+
+	return conn.RemoveZoneForwardPort(zone, &firewalld.ForwardPort{
+		Port:      portForward.Port,
+		Protocol:  string(portForward.Protocol),
+		ToPort:    portForward.ToPort,
+		ToAddress: portForward.ToAddress,
+	})
+}
