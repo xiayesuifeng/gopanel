@@ -1,6 +1,7 @@
 package firewall
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"gitlab.com/xiayesuifeng/gopanel/api/server/router"
 	"gitlab.com/xiayesuifeng/gopanel/firewall"
@@ -26,6 +27,7 @@ func (f *Firewall) Run(r router.Router) {
 
 	r.GET("/zone/:name/trafficRule", f.GetTrafficRule)
 	r.POST("/zone/:name/trafficRule", f.AddTrafficRule)
+	r.DELETE("/zone/:name/trafficRule", f.RemoveTrafficRule)
 
 	r.GET("/zone/:name/portForward", f.GetPortForward)
 	r.POST("/zone/:name/portForward", f.AddPortForward)
@@ -110,14 +112,14 @@ func (f *Firewall) GetPortForward(ctx *router.Context) error {
 	return ctx.JSON(forwards)
 }
 
-type AddTrafficRuleRequest struct {
+type TrafficRuleRequest struct {
 	firewall.TrafficRule
 
 	Type firewall.RuleType `json:"type" binding:"required"`
 }
 
 func (f *Firewall) AddTrafficRule(ctx *router.Context) error {
-	request := &AddTrafficRuleRequest{}
+	request := &TrafficRuleRequest{}
 
 	if err := ctx.ShouldBind(request); err != nil {
 		return ctx.Error(400, err.Error())
@@ -128,6 +130,27 @@ func (f *Firewall) AddTrafficRule(ctx *router.Context) error {
 	err := firewall.AddTrafficRule(ctx.Param("name"), &request.TrafficRule, permanent(ctx))
 	if err != nil {
 		return err
+	}
+
+	return ctx.NoContent()
+}
+
+func (f *Firewall) RemoveTrafficRule(ctx *router.Context) error {
+	request := &TrafficRuleRequest{}
+
+	if err := ctx.ShouldBind(request); err != nil {
+		return ctx.Error(400, err.Error())
+	}
+
+	request.TrafficRule.Type = request.Type
+
+	err := firewall.RemoveTrafficRule(ctx.Param("name"), &request.TrafficRule, permanent(ctx))
+	if err != nil {
+		if errors.Is(err, firewall.NotFoundErr) {
+			return ctx.Error(404, "traffic rule not found")
+		} else {
+			return err
+		}
 	}
 
 	return ctx.NoContent()
