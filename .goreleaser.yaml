@@ -1,3 +1,4 @@
+version: 2
 before:
   hooks:
     - env CI=false task web
@@ -20,8 +21,7 @@ builds:
     ldflags:
       - -s -w -X gitlab.com/xiayesuifeng/gopanel/version.Version={{ .Version }} -X gitlab.com/xiayesuifeng/gopanel/version.GitCommit={{ .Commit }}
 archives:
-  - rlcp: true
-    files:
+  - files:
       - src: ./contrib/systemd/gopanel.service
         dst: /usr/lib/systemd/system/gopanel.service
         info:
