@@ -1,6 +1,11 @@
 package firewall
 
-import "gitlab.com/xiayesuifeng/go-firewalld"
+import (
+	"errors"
+	"gitlab.com/xiayesuifeng/go-firewalld"
+)
+
+var NotFoundErr = errors.New("not found")
 
 func GetDefaultZone() (string, error) {
 	conn, err := firewalld.New()
