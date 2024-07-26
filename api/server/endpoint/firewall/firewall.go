@@ -32,6 +32,8 @@ func (f *Firewall) Run(r router.Router) {
 	r.GET("/zone/:name/portForward", f.GetPortForward)
 	r.POST("/zone/:name/portForward", f.AddPortForward)
 	r.DELETE("/zone/:name/portForward", f.RemovePortForward)
+
+	r.GET("/service/names", f.GetServiceNames)
 }
 
 func (f *Firewall) GetConfig(ctx *router.Context) error {
@@ -203,4 +205,13 @@ func (f *Firewall) RemovePortForward(ctx *router.Context) error {
 	}
 
 	return ctx.NoContent()
+}
+
+func (f *Firewall) GetServiceNames(ctx *router.Context) error {
+	names, err := firewall.GetServiceNames(permanent(ctx))
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(names)
 }
