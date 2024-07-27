@@ -231,16 +231,16 @@ func GetTrafficRules(zone string, permanent bool) ([]*TrafficRule, error) {
 			case "log":
 				rule.Log.Enabled = true
 				i++
-				if strings.HasPrefix(args[i+1], "prefix") {
-					i++
+				if strings.HasPrefix(args[i], "prefix") {
 					rule.Log.Prefix = strings.Trim(strings.Split(args[i], "=")[1], "\"")
-				}
-				if strings.HasPrefix(args[i+1], "level") {
 					i++
-					rule.Log.Level = strings.Trim(strings.Split(args[i], "=")[1], "\"")
 				}
-				if strings.HasPrefix(args[i+1], "limit") {
-					i += 2
+				if strings.HasPrefix(args[i], "level") {
+					rule.Log.Level = strings.Trim(strings.Split(args[i], "=")[1], "\"")
+					i++
+				}
+				if strings.HasPrefix(args[i], "limit") {
+					i++
 					rule.Log.Limit = strings.Trim(strings.Split(args[i], "=")[1], "\"")
 				}
 			case "audit":
