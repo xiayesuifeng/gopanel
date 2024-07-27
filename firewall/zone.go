@@ -1,9 +1,12 @@
 package firewall
 
 import (
+	"cmp"
 	"errors"
-	"gitlab.com/xiayesuifeng/go-firewalld"
+	"slices"
 	"sync"
+
+	"gitlab.com/xiayesuifeng/go-firewalld"
 )
 
 type ZoneStrategy string
@@ -118,6 +121,13 @@ func GetZones(permanent bool) (result []*Zone, err error) {
 
 	wg.Wait()
 	err = errors.Join(errs...)
+
+	if err == nil {
+		slices.SortFunc(result, func(a, b *Zone) int {
+			return cmp.Compare[string](a.Name, b.Name)
+		})
+	}
+
 	return
 }
 
