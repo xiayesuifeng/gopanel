@@ -48,6 +48,28 @@ func GetZone(name string, permanent bool) (*Zone, error) {
 	return toZone(zone), nil
 }
 
+func AddZone(zone *Zone) error {
+	conn, err := getConn(true)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+
+	return conn.AddZone(&firewalld.Zone{
+		Name:               zone.Name,
+		Description:        zone.Description,
+		Target:             string(zone.Target),
+		IngressPriority:    zone.IngressPriority,
+		EgressPriority:     zone.EgressPriority,
+		ICMPBlocks:         zone.ICMPBlocks,
+		ICMPBlockInversion: zone.ICMPBlockInversion,
+		Masquerade:         zone.Masquerade,
+		Forward:            zone.Forward,
+		Interfaces:         zone.Interfaces,
+		Protocols:          zone.Protocols,
+	})
+}
+
 // UpdateZone update zone setting, target and description field only change in permanent
 func UpdateZone(zone *Zone, permanent bool) error {
 	conn, err := getConn(permanent)
