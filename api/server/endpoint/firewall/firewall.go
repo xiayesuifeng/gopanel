@@ -21,6 +21,8 @@ func (f *Firewall) Run(r router.Router) {
 	r.POST("/reload", f.Reload)
 
 	r.GET("/zone", f.GetZone)
+	r.POST("/zone", f.AddZone)
+
 	r.GET("/zone/names", f.GetZoneNames)
 	r.GET("/zone/:name", f.GetZoneByName)
 	r.PUT("/zone/:name", f.UpdateZoneByName)
@@ -80,6 +82,20 @@ func (f *Firewall) GetZone(ctx *router.Context) error {
 	}
 
 	return ctx.JSON(zones)
+}
+
+func (f *Firewall) AddZone(ctx *router.Context) error {
+	zone := &firewall.Zone{}
+	if err := ctx.ShouldBindJSON(zone); err != nil {
+		return err
+	}
+
+	err := firewall.AddZone(zone)
+	if err != nil {
+		return err
+	}
+
+	return ctx.NoContent()
 }
 
 func (f *Firewall) UpdateZoneByName(ctx *router.Context) error {
