@@ -39,6 +39,8 @@ func (f *Firewall) Run(r router.Router) {
 
 	r.GET("/service/names", f.GetServiceNames)
 
+	r.GET("/icmpType/names", f.GetICMPTypeNames)
+
 	r.GET("/policy", f.GetPolicy)
 	r.POST("/policy", f.AddPolicy)
 	r.PUT("/policy/:name", f.UpdatePolicyByName)
@@ -289,4 +291,13 @@ func (f *Firewall) UpdatePolicyByName(ctx *router.Context) error {
 	}
 
 	return ctx.NoContent()
+}
+
+func (f *Firewall) GetICMPTypeNames(ctx *router.Context) error {
+	names, err := firewall.GetICMPTypeNames(permanent(ctx))
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(names)
 }
