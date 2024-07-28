@@ -2,7 +2,6 @@ package firewall
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
 	"gitlab.com/xiayesuifeng/gopanel/api/server/router"
 	"gitlab.com/xiayesuifeng/gopanel/firewall"
 )
@@ -18,6 +17,8 @@ func (f *Firewall) Run(r router.Router) {
 	r.Use(permanentMiddleware)
 
 	r.GET("", f.GetConfig)
+	r.POST("", f.UpdateConfig)
+
 	r.POST("/reload", f.Reload)
 	r.POST("/reset", f.Reset)
 
@@ -46,15 +47,30 @@ func (f *Firewall) Run(r router.Router) {
 	r.PUT("/policy/:name", f.UpdatePolicyByName)
 }
 
+type Config struct {
+	DefaultZone string `json:"defaultZone" binding:"required"`
+}
+
 func (f *Firewall) GetConfig(ctx *router.Context) error {
 	zone, err := firewall.GetDefaultZone()
 	if err != nil {
 		return err
 	}
 
-	return ctx.JSON(gin.H{
-		"defaultZone": zone,
-	})
+	return ctx.JSON(&Config{DefaultZone: zone})
+}
+
+func (f *Firewall) UpdateConfig(ctx *router.Context) error {
+	config := &Config{}
+	if err := ctx.ShouldBind(config); err != nil {
+		return err
+	}
+
+	if err := firewall.SetDefaultZone(config.DefaultZone); err != nil {
+		return err
+	}
+
+	return ctx.NoContent()
 }
 
 func (f *Firewall) Reload(ctx *router.Context) error {
