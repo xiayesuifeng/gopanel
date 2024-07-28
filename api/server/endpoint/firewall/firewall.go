@@ -56,7 +56,7 @@ func (f *Firewall) GetConfig(ctx *router.Context) error {
 
 func (f *Firewall) Reload(ctx *router.Context) error {
 	if err := firewall.Reload(); err != nil {
-		return nil
+		return err
 	}
 
 	return ctx.NoContent()
