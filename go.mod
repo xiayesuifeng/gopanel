@@ -17,7 +17,7 @@ require (
 	github.com/opencontainers/runtime-spec v1.2.0
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.17.0
-	gitlab.com/xiayesuifeng/go-firewalld v0.0.0-20240718172141-ff8d09cccfe4
+	gitlab.com/xiayesuifeng/go-firewalld v0.0.0-20240728083837-5ca378201e0c
 	go.etcd.io/bbolt v1.3.9
 )
 
@@ -233,7 +233,7 @@ require (
 	golang.org/x/mod v0.15.0 // indirect
 	golang.org/x/net v0.22.0 // indirect
 	golang.org/x/sync v0.6.0 // indirect
-	golang.org/x/sys v0.18.0 // indirect
+	golang.org/x/sys v0.22.0 // indirect
 	golang.org/x/term v0.18.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.3.0 // indirect

@@ -37,6 +37,16 @@ func Reload() error {
 	return conn.Reload()
 }
 
+func Reset() error {
+	conn, err := firewalld.New()
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+
+	return conn.Reset()
+}
+
 func getConn(permanent bool) (*firewalld.Conn, error) {
 	conn, err := firewalld.New()
 	if err != nil {

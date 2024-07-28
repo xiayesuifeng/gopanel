@@ -1571,6 +1571,8 @@ gitlab.com/NebulousLabs/go-upnp v0.0.0-20211002182029-11da932010b6 h1:WKij6HF8EC
 gitlab.com/NebulousLabs/go-upnp v0.0.0-20211002182029-11da932010b6/go.mod h1:vhrHTGDh4YR7wK8Z+kRJ+x8SF/6RUM3Vb64Si5FD0L8=
 gitlab.com/xiayesuifeng/go-firewalld v0.0.0-20240718172141-ff8d09cccfe4 h1:4XaZVzNDpD/voVVeK00wo5tZcTHUOiKQtnONzgrXV3U=
 gitlab.com/xiayesuifeng/go-firewalld v0.0.0-20240718172141-ff8d09cccfe4/go.mod h1:aKLl2EZzyLHAKEir0Pq3DZrnl1GP3StYnDHdw5xzwTE=
+gitlab.com/xiayesuifeng/go-firewalld v0.0.0-20240728083837-5ca378201e0c h1:vII5HKTRik54uh6b3zvqeRfgsU4Y6yF6X9eGIPXntgU=
+gitlab.com/xiayesuifeng/go-firewalld v0.0.0-20240728083837-5ca378201e0c/go.mod h1:aKLl2EZzyLHAKEir0Pq3DZrnl1GP3StYnDHdw5xzwTE=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/bbolt v1.3.3/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/bbolt v1.3.5/go.mod h1:G5EMThwa9y8QZGBClrRx5EY+Yw9kAhnjy3bSjsnlVTQ=
@@ -2033,6 +2035,8 @@ golang.org/x/sys v0.8.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.17.0/go.mod h1:/VUhepiaJMQUp4+oa/7Zr1D23ma6VTLIYjOOTFZPUcA=
 golang.org/x/sys v0.18.0 h1:DBdB3niSjOA/O0blCZBqDefyWNYveAYMNF1Wum0DYQ4=
 golang.org/x/sys v0.18.0/go.mod h1:/VUhepiaJMQUp4+oa/7Zr1D23ma6VTLIYjOOTFZPUcA=
+golang.org/x/sys v0.22.0 h1:RI27ohtqKCnwULzJLqkv897zojh5/DwS/ENaMzUOaWI=
+golang.org/x/sys v0.22.0/go.mod h1:/VUhepiaJMQUp4+oa/7Zr1D23ma6VTLIYjOOTFZPUcA=
 golang.org/x/term v0.0.0-20201117132131-f5c789dd3221/go.mod h1:Nr5EML6q2oocZ2LXRh80K7BxOlk5/8JxuGnuhpl+muw=
 golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1/go.mod h1:bj7SfCRtBDWHUb9snDiAeCFNEtKQo2Wmx5Cou7ajbmo=
 golang.org/x/term v0.0.0-20210503060354-a79de5458b56/go.mod h1:tfny5GFUkzUvx4ps4ajbZsCe5lw1metzhBm9T3x7oIY=
