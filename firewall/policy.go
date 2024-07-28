@@ -81,6 +81,72 @@ func GetPolicies(permanent bool) (result []*Policy, err error) {
 	return
 }
 
+// UpdatePolicy update policy setting, name, short, target and description field only change in permanent
+func UpdatePolicy(name string, policy Policy, permanent bool) error {
+	conn, err := getConn(permanent)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+
+	err = conn.UpdatePolicy(toFirewalldPolicy(&policy))
+	if err != nil {
+		return err
+	}
+
+	if permanent && name != policy.Name {
+		return conn.RenamePolicy(name, policy.Name)
+	}
+
+	return nil
+}
+
+func toFirewalldPolicy(policy *Policy) *firewalld.Policy {
+	forwardPorts := make([]*firewalld.ForwardPort, 0, len(policy.ForwardPorts))
+	for _, port := range policy.ForwardPorts {
+		forwardPorts = append(forwardPorts, &firewalld.ForwardPort{
+			Port:      port.Port,
+			Protocol:  string(port.Protocol),
+			ToPort:    port.ToPort,
+			ToAddress: port.ToAddress,
+		})
+	}
+
+	ports := make([]*firewalld.Port, 0, len(policy.Ports))
+	for _, port := range policy.Ports {
+		ports = append(ports, &firewalld.Port{
+			Port:     port.Port,
+			Protocol: port.Protocol,
+		})
+	}
+
+	sourcePorts := make([]*firewalld.Port, 0, len(policy.SourcePorts))
+	for _, port := range policy.SourcePorts {
+		sourcePorts = append(sourcePorts, &firewalld.Port{
+			Port:     port.Port,
+			Protocol: port.Protocol,
+		})
+	}
+
+	return &firewalld.Policy{
+		Name:         policy.Name,
+		Short:        policy.Short,
+		Description:  policy.Description,
+		Target:       policy.Target,
+		IngressZones: policy.IngressZones,
+		EgressZones:  policy.EgressZones,
+		Services:     policy.Services,
+		ICMPBlocks:   policy.ICMPBlocks,
+		Priority:     policy.Priority,
+		Masquerade:   policy.Masquerade,
+		ForwardPorts: forwardPorts,
+		RichRules:    policy.RichRules,
+		Protocols:    policy.Protocols,
+		Ports:        ports,
+		SourcePorts:  sourcePorts,
+	}
+}
+
 func toPolicy(policy *firewalld.Policy) *Policy {
 	icmpBlocks := make([]string, 0)
 	if policy.ICMPBlocks != nil {
