@@ -81,6 +81,16 @@ func GetPolicies(permanent bool) (result []*Policy, err error) {
 	return
 }
 
+func AddPolicy(policy Policy) error {
+	conn, err := getConn(true)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+
+	return conn.AddPolicy(toFirewalldPolicy(&policy))
+}
+
 // UpdatePolicy update policy setting, name, short, target and description field only change in permanent
 func UpdatePolicy(name string, policy Policy, permanent bool) error {
 	conn, err := getConn(permanent)
