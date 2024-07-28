@@ -39,6 +39,7 @@ func (f *Firewall) Run(r router.Router) {
 	r.GET("/service/names", f.GetServiceNames)
 
 	r.GET("/policy", f.GetPolicy)
+	r.POST("/policy", f.AddPolicy)
 	r.PUT("/policy/:name", f.UpdatePolicyByName)
 }
 
@@ -251,6 +252,20 @@ func (f *Firewall) GetPolicy(ctx *router.Context) error {
 	}
 
 	return ctx.JSON(policies)
+}
+
+func (f *Firewall) AddPolicy(ctx *router.Context) error {
+	policy := firewall.Policy{}
+	if err := ctx.ShouldBindJSON(&policy); err != nil {
+		return err
+	}
+
+	err := firewall.AddPolicy(policy)
+	if err != nil {
+		return err
+	}
+
+	return ctx.NoContent()
 }
 
 func (f *Firewall) UpdatePolicyByName(ctx *router.Context) error {
