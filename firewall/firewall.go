@@ -47,6 +47,15 @@ func Reset() error {
 	return conn.Reset()
 }
 
+func GetICMPTypeNames(permanent bool) ([]string, error) {
+	conn, err := getConn(permanent)
+	if err != nil {
+		return nil, err
+	}
+
+	return conn.GetICMPTypeNames()
+}
+
 func getConn(permanent bool) (*firewalld.Conn, error) {
 	conn, err := firewalld.New()
 	if err != nil {
