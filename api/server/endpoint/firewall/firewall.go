@@ -19,6 +19,7 @@ func (f *Firewall) Run(r router.Router) {
 
 	r.GET("", f.GetConfig)
 	r.POST("/reload", f.Reload)
+	r.POST("/reset", f.Reset)
 
 	r.GET("/zone", f.GetZone)
 	r.POST("/zone", f.AddZone)
@@ -56,6 +57,14 @@ func (f *Firewall) GetConfig(ctx *router.Context) error {
 
 func (f *Firewall) Reload(ctx *router.Context) error {
 	if err := firewall.Reload(); err != nil {
+		return err
+	}
+
+	return ctx.NoContent()
+}
+
+func (f *Firewall) Reset(ctx *router.Context) error {
+	if err := firewall.Reset(); err != nil {
 		return err
 	}
 
