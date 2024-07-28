@@ -162,6 +162,16 @@ func GetZones(permanent bool) (result []*Zone, err error) {
 	return
 }
 
+func RemoveZone(name string) error {
+	conn, err := getConn(true)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+
+	return conn.RemoveZone(name)
+}
+
 func toZone(zone *firewalld.Zone) *Zone {
 	icmpBlocks := make([]string, 0)
 	if zone.ICMPBlocks != nil {
