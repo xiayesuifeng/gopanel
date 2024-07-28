@@ -26,6 +26,7 @@ func (f *Firewall) Run(r router.Router) {
 	r.GET("/zone/names", f.GetZoneNames)
 	r.GET("/zone/:name", f.GetZoneByName)
 	r.PUT("/zone/:name", f.UpdateZoneByName)
+	r.DELETE("/zone/:name", f.RemoveZoneByName)
 
 	r.GET("/zone/:name/trafficRule", f.GetTrafficRule)
 	r.POST("/zone/:name/trafficRule", f.AddTrafficRule)
@@ -106,6 +107,14 @@ func (f *Firewall) UpdateZoneByName(ctx *router.Context) error {
 
 	err := firewall.UpdateZone(ctx.Param("name"), zone, permanent(ctx))
 	if err != nil {
+		return err
+	}
+
+	return ctx.NoContent()
+}
+
+func (f *Firewall) RemoveZoneByName(ctx *router.Context) error {
+	if err := firewall.RemoveZone(ctx.Param("name")); err != nil {
 		return err
 	}
 
