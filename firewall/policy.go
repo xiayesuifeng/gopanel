@@ -99,16 +99,13 @@ func UpdatePolicy(name string, policy Policy, permanent bool) error {
 	}
 	defer conn.Close()
 
-	err = conn.UpdatePolicy(toFirewalldPolicy(&policy))
-	if err != nil {
-		return err
-	}
-
 	if permanent && name != policy.Name {
-		return conn.RenamePolicy(name, policy.Name)
+		if err := conn.RenamePolicy(name, policy.Name); err != nil {
+			return err
+		}
 	}
 
-	return nil
+	return conn.UpdatePolicy(toFirewalldPolicy(&policy))
 }
 
 func toFirewalldPolicy(policy *Policy) *firewalld.Policy {
