@@ -70,15 +70,15 @@ func AddZone(zone *Zone) error {
 	})
 }
 
-// UpdateZone update zone setting, target and description field only change in permanent
-func UpdateZone(zone *Zone, permanent bool) error {
+// UpdateZone update zone setting, name, target and description field only change in permanent
+func UpdateZone(name string, zone *Zone, permanent bool) error {
 	conn, err := getConn(permanent)
 	if err != nil {
 		return err
 	}
 	defer conn.Close()
 
-	originZone, err := conn.GetZoneByName(zone.Name)
+	originZone, err := conn.GetZoneByName(name)
 	if err != nil {
 		return err
 	}
@@ -94,7 +94,16 @@ func UpdateZone(zone *Zone, permanent bool) error {
 	originZone.Interfaces = zone.Interfaces
 	originZone.Protocols = zone.Protocols
 
-	return conn.UpdateZone(originZone)
+	err = conn.UpdateZone(originZone)
+	if err != nil {
+		return err
+	}
+
+	if permanent && name != zone.Name {
+		return conn.RenameZone(name, zone.Name)
+	}
+
+	return nil
 }
 
 func GetZoneNames(permanent bool) ([]string, error) {

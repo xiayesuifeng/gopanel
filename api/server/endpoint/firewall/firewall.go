@@ -104,7 +104,7 @@ func (f *Firewall) UpdateZoneByName(ctx *router.Context) error {
 		return err
 	}
 
-	err := firewall.UpdateZone(zone, permanent(ctx))
+	err := firewall.UpdateZone(ctx.Param("name"), zone, permanent(ctx))
 	if err != nil {
 		return err
 	}
