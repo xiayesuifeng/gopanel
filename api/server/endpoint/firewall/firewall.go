@@ -2,6 +2,7 @@ package firewall
 
 import (
 	"errors"
+	"gitlab.com/xiayesuifeng/gopanel/api/server/middleware"
 	"gitlab.com/xiayesuifeng/gopanel/api/server/router"
 	"gitlab.com/xiayesuifeng/gopanel/firewall"
 )
@@ -14,6 +15,7 @@ func (f *Firewall) Name() string {
 }
 
 func (f *Firewall) Run(r router.Router) {
+	r.Use(middleware.BinaryExistMiddleware("firewalld"))
 	r.Use(permanentMiddleware)
 
 	r.GET("", f.GetConfig)
