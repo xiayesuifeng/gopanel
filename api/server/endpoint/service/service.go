@@ -3,7 +3,7 @@ package service
 import (
 	"github.com/gin-gonic/gin"
 	"gitlab.com/xiayesuifeng/gopanel/api/server/router"
-	"gitlab.com/xiayesuifeng/gopanel/service"
+	"gitlab.com/xiayesuifeng/gopanel/module/service"
 	"sort"
 )
 

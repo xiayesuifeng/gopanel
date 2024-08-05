@@ -4,7 +4,7 @@ import (
 	"errors"
 	"gitlab.com/xiayesuifeng/gopanel/api/server/middleware"
 	"gitlab.com/xiayesuifeng/gopanel/api/server/router"
-	"gitlab.com/xiayesuifeng/gopanel/firewall"
+	"gitlab.com/xiayesuifeng/gopanel/module/firewall"
 )
 
 type Firewall struct {

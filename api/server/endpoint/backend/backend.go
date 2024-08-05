@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"gitlab.com/xiayesuifeng/gopanel/api/server/router"
-	"gitlab.com/xiayesuifeng/gopanel/backend"
+	"gitlab.com/xiayesuifeng/gopanel/module/backend"
 	"log"
 	"net/http"
 )

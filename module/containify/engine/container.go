@@ -2,7 +2,7 @@ package engine
 
 import (
 	"context"
-	"gitlab.com/xiayesuifeng/gopanel/containify/engine/entity"
+	"gitlab.com/xiayesuifeng/gopanel/module/containify/engine/entity"
 )
 
 type Container interface {

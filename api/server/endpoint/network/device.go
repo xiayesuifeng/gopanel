@@ -2,7 +2,7 @@ package network
 
 import (
 	"gitlab.com/xiayesuifeng/gopanel/api/server/router"
-	"gitlab.com/xiayesuifeng/gopanel/network"
+	"gitlab.com/xiayesuifeng/gopanel/module/network"
 )
 
 func (*Network) GetDevices(ctx *router.Context) error {

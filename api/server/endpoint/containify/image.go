@@ -2,7 +2,7 @@ package containify
 
 import (
 	"gitlab.com/xiayesuifeng/gopanel/api/server/router"
-	"gitlab.com/xiayesuifeng/gopanel/containify/engine"
+	"gitlab.com/xiayesuifeng/gopanel/module/containify/engine"
 	"strings"
 )
 

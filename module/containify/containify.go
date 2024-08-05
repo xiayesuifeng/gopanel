@@ -2,7 +2,7 @@ package containify
 
 import (
 	"errors"
-	"gitlab.com/xiayesuifeng/gopanel/containify/engine"
+	"gitlab.com/xiayesuifeng/gopanel/module/containify/engine"
 )
 
 type Containify struct {

@@ -3,11 +3,11 @@ package core
 import (
 	"context"
 	"gitlab.com/xiayesuifeng/gopanel/api/server"
-	"gitlab.com/xiayesuifeng/gopanel/app"
 	"gitlab.com/xiayesuifeng/gopanel/core/config"
 	"gitlab.com/xiayesuifeng/gopanel/core/control"
 	"gitlab.com/xiayesuifeng/gopanel/core/storage"
 	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyManager"
+	"gitlab.com/xiayesuifeng/gopanel/module/app"
 	"gitlab.com/xiayesuifeng/gopanel/web"
 	"io"
 	"log"

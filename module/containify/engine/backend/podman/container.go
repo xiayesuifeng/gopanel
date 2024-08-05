@@ -6,7 +6,7 @@ import (
 	"github.com/containers/podman/v5/pkg/bindings/containers"
 	"github.com/containers/podman/v5/pkg/specgen"
 	"github.com/opencontainers/runtime-spec/specs-go"
-	"gitlab.com/xiayesuifeng/gopanel/containify/engine/entity"
+	"gitlab.com/xiayesuifeng/gopanel/module/containify/engine/entity"
 )
 
 type container struct {

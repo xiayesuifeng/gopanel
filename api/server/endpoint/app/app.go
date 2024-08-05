@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"gitlab.com/xiayesuifeng/gopanel/api/server/router"
-	"gitlab.com/xiayesuifeng/gopanel/app"
 	"gitlab.com/xiayesuifeng/gopanel/core/config"
+	"gitlab.com/xiayesuifeng/gopanel/module/app"
 	"strings"
 )
 

@@ -5,8 +5,7 @@ import (
 	image2 "github.com/containers/image/v5/image"
 	"github.com/containers/image/v5/transports/alltransports"
 	"github.com/containers/image/v5/types"
-
-	"gitlab.com/xiayesuifeng/gopanel/containify/engine/entity"
+	"gitlab.com/xiayesuifeng/gopanel/module/containify/engine/entity"
 )
 
 func InspectImage(ctx context.Context, image string) (*entity.InspectImage, error) {

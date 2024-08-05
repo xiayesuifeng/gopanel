@@ -3,7 +3,7 @@ package containify
 import (
 	"github.com/gin-gonic/gin"
 	"gitlab.com/xiayesuifeng/gopanel/api/server/router"
-	"gitlab.com/xiayesuifeng/gopanel/containify/engine/entity"
+	"gitlab.com/xiayesuifeng/gopanel/module/containify/engine/entity"
 )
 
 func (c *Containify) GetContainers(ctx *router.Context) error {
