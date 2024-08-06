@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/coreos/go-systemd/v22/dbus"
+	"gitlab.com/xiayesuifeng/gopanel/event"
 	"log"
 	"path"
 )
@@ -26,6 +27,8 @@ const (
 	IgnoreDependenciesMode = "ignore-dependencies"
 	IgnoreRequirementsMode = "ignore-requirements"
 )
+
+const eventTopic = "service"
 
 var (
 	CanceledJobError   = errors.New("systemd service unit job canceled")
@@ -116,6 +119,16 @@ func StartService(ctx context.Context, name string, mode Mode) (jobID int, err e
 	result := <-resultChan
 
 	err = getJobError(result)
+	if err == nil {
+		event.Publish(event.Event{
+			Topic: eventTopic,
+			Type:  "start",
+			Payload: map[string]interface{}{
+				"name":  name,
+				"jobID": jobID,
+			},
+		})
+	}
 
 	return
 }
@@ -167,6 +180,15 @@ func StopService(ctx context.Context, name string, mode Mode, stopTriggeredBy bo
 		}
 	}
 
+	event.Publish(event.Event{
+		Topic: eventTopic,
+		Type:  "stop",
+		Payload: map[string]interface{}{
+			"name":  name,
+			"jobID": jobID,
+		},
+	})
+
 	return
 }
 
@@ -188,6 +210,16 @@ func RestartService(ctx context.Context, name string, mode Mode) (jobID int, err
 	result := <-resultChan
 
 	err = getJobError(result)
+	if err == nil {
+		event.Publish(event.Event{
+			Topic: eventTopic,
+			Type:  "restart",
+			Payload: map[string]interface{}{
+				"name":  name,
+				"jobID": jobID,
+			},
+		})
+	}
 
 	return
 }
@@ -199,7 +231,22 @@ func EnableService(ctx context.Context, name string) (bool, []dbus.EnableUnitFil
 	}
 	defer conn.Close()
 
-	return conn.EnableUnitFilesContext(ctx, []string{name}, false, true)
+	b, files, err := conn.EnableUnitFilesContext(ctx, []string{name}, false, true)
+	if err != nil {
+		return false, nil, err
+	}
+
+	event.Publish(event.Event{
+		Topic: eventTopic,
+		Type:  "enable",
+		Payload: map[string]interface{}{
+			"name":               name,
+			"unitFileChanges":    files,
+			"carriesInstallInfo": b,
+		},
+	})
+
+	return b, files, nil
 }
 
 func DisableService(ctx context.Context, name string) ([]dbus.DisableUnitFileChange, error) {
@@ -209,7 +256,21 @@ func DisableService(ctx context.Context, name string) ([]dbus.DisableUnitFileCha
 	}
 	defer conn.Close()
 
-	return conn.DisableUnitFilesContext(ctx, []string{name}, false)
+	files, err := conn.DisableUnitFilesContext(ctx, []string{name}, false)
+	if err != nil {
+		return nil, err
+	}
+
+	event.Publish(event.Event{
+		Topic: eventTopic,
+		Type:  "disable",
+		Payload: map[string]interface{}{
+			"name":            name,
+			"unitFileChanges": files,
+		},
+	})
+
+	return files, nil
 }
 
 func getJobError(result string) (err error) {
