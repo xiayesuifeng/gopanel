@@ -131,6 +131,9 @@ func StopService(ctx context.Context, name string, mode Mode, stopTriggeredBy bo
 	defer close(resultChan)
 
 	jobID, err = conn.StopUnitContext(ctx, name, string(mode), resultChan)
+	if err != nil {
+		return
+	}
 
 	result := <-resultChan
 
