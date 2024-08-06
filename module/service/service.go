@@ -181,6 +181,9 @@ func RestartService(ctx context.Context, name string, mode Mode) (jobID int, err
 	defer close(resultChan)
 
 	jobID, err = conn.RestartUnitContext(ctx, name, string(mode), resultChan)
+	if err != nil {
+		return
+	}
 
 	result := <-resultChan
 
