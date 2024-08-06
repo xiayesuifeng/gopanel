@@ -15,7 +15,7 @@ func AuthMiddleware(ctx *router.Context) error {
 
 	token := ctx.GetHeader("Authorization")
 
-	if strings.HasPrefix(ctx.Request.RequestURI, "/api/backend") && strings.HasSuffix(ctx.Request.RequestURI, "/ws") {
+	if ctx.GetHeader("Upgrade") == "websocket" {
 		token = ctx.GetHeader("Sec-WebSocket-Protocol")
 	}
 
