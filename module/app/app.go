@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"gitlab.com/xiayesuifeng/gopanel/core/config"
+	"gitlab.com/xiayesuifeng/gopanel/event"
 	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyManager"
 	"gitlab.com/xiayesuifeng/gopanel/experiments/caddyutil/caddyvalidate"
 	"gitlab.com/xiayesuifeng/gopanel/module/backend"
@@ -12,6 +13,8 @@ import (
 	"os"
 	"strings"
 )
+
+const eventTopic = "app"
 
 type Type int
 
@@ -87,6 +90,12 @@ func AddApp(app App, validate bool) error {
 		backend.StartNewBackend(app.Name, config.Path, config.AutoReboot, strings.Split(config.Argument, " ")...)
 	}
 
+	event.Publish(event.Event{
+		Topic:   eventTopic,
+		Type:    event.CreatedType,
+		Payload: app,
+	})
+
 	return nil
 }
 
@@ -156,6 +165,12 @@ func EditApp(app App, validate bool) error {
 		backend.StartNewBackend(app.Name, config.Path, config.AutoReboot, strings.Split(config.Argument, " ")...)
 	}
 
+	event.Publish(event.Event{
+		Topic:   eventTopic,
+		Type:    event.UpdatedType,
+		Payload: app,
+	})
+
 	return nil
 }
 
@@ -165,7 +180,18 @@ func DeleteApp(name string) error {
 			return err
 		}
 
-		return os.Remove(config.Conf.AppConf + "/" + name + ".json")
+		err := os.Remove(config.Conf.AppConf + "/" + name + ".json")
+		if err != nil {
+			return err
+		}
+
+		event.Publish(event.Event{
+			Topic:   eventTopic,
+			Type:    event.DeletedType,
+			Payload: name,
+		})
+
+		return nil
 	} else {
 		return errors.New("app not found")
 	}
