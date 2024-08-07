@@ -3,9 +3,12 @@ package firewall
 import (
 	"errors"
 	"gitlab.com/xiayesuifeng/go-firewalld"
+	"gitlab.com/xiayesuifeng/gopanel/event"
 )
 
 var NotFoundErr = errors.New("not found")
+
+const eventTopic = "firewall"
 
 func GetDefaultZone() (string, error) {
 	conn, err := firewalld.New()
@@ -24,7 +27,18 @@ func SetDefaultZone(name string) error {
 	}
 	defer conn.Close()
 
-	return conn.SetDefaultZone(name)
+	err = conn.SetDefaultZone(name)
+	if err != nil {
+		return err
+	}
+
+	event.Publish(event.Event{
+		Topic:   eventTopic,
+		Type:    "defaultZoneChanged",
+		Payload: name,
+	})
+
+	return nil
 }
 
 func Reload() error {
@@ -34,7 +48,16 @@ func Reload() error {
 	}
 	defer conn.Close()
 
-	return conn.Reload()
+	err = conn.Reload()
+	if err != nil {
+		event.Publish(event.Event{
+			Topic:   eventTopic,
+			Type:    "reload",
+			Payload: nil,
+		})
+	}
+
+	return nil
 }
 
 func Reset() error {
@@ -44,7 +67,16 @@ func Reset() error {
 	}
 	defer conn.Close()
 
-	return conn.Reset()
+	err = conn.Reset()
+	if err != nil {
+		event.Publish(event.Event{
+			Topic:   eventTopic,
+			Type:    "reset",
+			Payload: nil,
+		})
+	}
+
+	return nil
 }
 
 func GetICMPTypeNames(permanent bool) ([]string, error) {

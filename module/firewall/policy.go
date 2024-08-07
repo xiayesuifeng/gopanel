@@ -4,9 +4,12 @@ import (
 	"cmp"
 	"errors"
 	"gitlab.com/xiayesuifeng/go-firewalld"
+	"gitlab.com/xiayesuifeng/gopanel/event"
 	"slices"
 	"sync"
 )
+
+const policyEventTopic = eventTopic + ".policy"
 
 type PolicyStrategy string
 
@@ -88,7 +91,18 @@ func AddPolicy(policy Policy) error {
 	}
 	defer conn.Close()
 
-	return conn.AddPolicy(toFirewalldPolicy(&policy))
+	err = conn.AddPolicy(toFirewalldPolicy(&policy))
+	if err != nil {
+		return err
+	}
+
+	event.Publish(event.Event{
+		Topic:   policyEventTopic,
+		Type:    event.CreatedType,
+		Payload: policy,
+	})
+
+	return nil
 }
 
 // UpdatePolicy update policy setting, name, short, target and description field only change in permanent
@@ -105,7 +119,18 @@ func UpdatePolicy(name string, policy Policy, permanent bool) error {
 		}
 	}
 
-	return conn.UpdatePolicy(toFirewalldPolicy(&policy))
+	err = conn.UpdatePolicy(toFirewalldPolicy(&policy))
+	if err != nil {
+		return err
+	}
+
+	event.Publish(event.Event{
+		Topic:   policyEventTopic,
+		Type:    event.UpdatedType,
+		Payload: policy,
+	})
+
+	return nil
 }
 
 func toFirewalldPolicy(policy *Policy) *firewalld.Policy {

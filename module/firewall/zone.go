@@ -3,11 +3,14 @@ package firewall
 import (
 	"cmp"
 	"errors"
+	"gitlab.com/xiayesuifeng/gopanel/event"
 	"slices"
 	"sync"
 
 	"gitlab.com/xiayesuifeng/go-firewalld"
 )
+
+const zoneEventTopic = eventTopic + ".zone"
 
 type ZoneStrategy string
 
@@ -55,7 +58,7 @@ func AddZone(zone *Zone) error {
 	}
 	defer conn.Close()
 
-	return conn.AddZone(&firewalld.Zone{
+	err = conn.AddZone(&firewalld.Zone{
 		Name:               zone.Name,
 		Description:        zone.Description,
 		Target:             string(zone.Target),
@@ -68,6 +71,17 @@ func AddZone(zone *Zone) error {
 		Interfaces:         zone.Interfaces,
 		Protocols:          zone.Protocols,
 	})
+	if err != nil {
+		return err
+	}
+
+	event.Publish(event.Event{
+		Topic:   zoneEventTopic,
+		Type:    event.CreatedType,
+		Payload: zone,
+	})
+
+	return nil
 }
 
 // UpdateZone update zone setting, name, target and description field only change in permanent
@@ -100,8 +114,16 @@ func UpdateZone(name string, zone *Zone, permanent bool) error {
 	}
 
 	if permanent && name != zone.Name {
-		return conn.RenameZone(name, zone.Name)
+		if err := conn.RenameZone(name, zone.Name); err != nil {
+			return err
+		}
 	}
+
+	event.Publish(event.Event{
+		Topic:   zoneEventTopic,
+		Type:    event.UpdatedType,
+		Payload: zone,
+	})
 
 	return nil
 }
@@ -169,7 +191,18 @@ func RemoveZone(name string) error {
 	}
 	defer conn.Close()
 
-	return conn.RemoveZone(name)
+	err = conn.RemoveZone(name)
+	if err != nil {
+		return err
+	}
+
+	event.Publish(event.Event{
+		Topic:   zoneEventTopic,
+		Type:    event.DeletedType,
+		Payload: name,
+	})
+
+	return nil
 }
 
 func toZone(zone *firewalld.Zone) *Zone {

@@ -4,9 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"gitlab.com/xiayesuifeng/go-firewalld"
+	"gitlab.com/xiayesuifeng/gopanel/event"
 	"slices"
 	"strings"
 )
+
+const trafficRuleEventTopic = eventTopic + ".trafficRule"
 
 type RuleStrategy int
 
@@ -338,7 +341,22 @@ func AddTrafficRule(zone string, rule *TrafficRule, permanent bool) error {
 		}
 	}
 
-	return conn.UpdateZone(setting)
+	err = conn.UpdateZone(setting)
+	if err != nil {
+		return err
+	}
+
+	event.Publish(event.Event{
+		Topic: trafficRuleEventTopic,
+		Type:  event.CreatedType,
+		Payload: map[string]interface{}{
+			"zone":        zone,
+			"trafficRule": rule,
+			"permanent":   permanent,
+		},
+	})
+
+	return nil
 }
 
 func RemoveTrafficRule(zone string, rule *TrafficRule, permanent bool) error {
@@ -470,7 +488,17 @@ func RemoveTrafficRule(zone string, rule *TrafficRule, permanent bool) error {
 		return NotFoundErr
 	}
 
-	return conn.UpdateZone(setting)
+	event.Publish(event.Event{
+		Topic: trafficRuleEventTopic,
+		Type:  event.DeletedType,
+		Payload: map[string]interface{}{
+			"zone":        zone,
+			"trafficRule": rule,
+			"permanent":   permanent,
+		},
+	})
+
+	return nil
 }
 
 func (t *TrafficRule) needRichRule() bool {

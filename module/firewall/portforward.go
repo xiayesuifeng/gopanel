@@ -1,6 +1,11 @@
 package firewall
 
-import "gitlab.com/xiayesuifeng/go-firewalld"
+import (
+	"gitlab.com/xiayesuifeng/go-firewalld"
+	"gitlab.com/xiayesuifeng/gopanel/event"
+)
+
+const portForwardEventTopic = eventTopic + ".portForward"
 
 type ForwardProtocol string
 
@@ -50,12 +55,27 @@ func AddPortForward(zone string, portForward *PortForward, permanent bool) error
 		return err
 	}
 
-	return conn.AddZoneForwardPort(zone, &firewalld.ForwardPort{
+	err = conn.AddZoneForwardPort(zone, &firewalld.ForwardPort{
 		Port:      portForward.Port,
 		Protocol:  string(portForward.Protocol),
 		ToPort:    portForward.ToPort,
 		ToAddress: portForward.ToAddress,
 	})
+	if err != nil {
+		return err
+	}
+
+	event.Publish(event.Event{
+		Topic: portForwardEventTopic,
+		Type:  event.CreatedType,
+		Payload: map[string]interface{}{
+			"zone":        zone,
+			"portForward": portForward,
+			"permanent":   permanent,
+		},
+	})
+
+	return nil
 }
 
 func RemovePortForward(zone string, portForward *PortForward, permanent bool) error {
@@ -64,10 +84,25 @@ func RemovePortForward(zone string, portForward *PortForward, permanent bool) er
 		return err
 	}
 
-	return conn.RemoveZoneForwardPort(zone, &firewalld.ForwardPort{
+	err = conn.RemoveZoneForwardPort(zone, &firewalld.ForwardPort{
 		Port:      portForward.Port,
 		Protocol:  string(portForward.Protocol),
 		ToPort:    portForward.ToPort,
 		ToAddress: portForward.ToAddress,
 	})
+	if err != nil {
+		return err
+	}
+
+	event.Publish(event.Event{
+		Topic: portForwardEventTopic,
+		Type:  event.DeletedType,
+		Payload: map[string]interface{}{
+			"zone":        zone,
+			"portForward": portForward,
+			"permanent":   permanent,
+		},
+	})
+
+	return nil
 }
