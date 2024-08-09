@@ -30,8 +30,9 @@ const (
 type BackendType string
 
 const (
-	NoneBackend BackendType = "none"
-	ExecBackend BackendType = "exec"
+	NoneBackend      BackendType = "none"
+	ExecBackend      BackendType = "exec"
+	containerBackend BackendType = "container"
 )
 
 type App struct {
@@ -55,6 +56,10 @@ type ExecBackendConfig struct {
 	AutoReboot       bool   `json:"autoReboot"`
 	Path             string `json:"path"`
 	Argument         string `json:"argument"`
+}
+
+type ContainerConfig struct {
+	ID string `json:"id"`
 }
 
 func AddApp(app App, validate bool) error {
