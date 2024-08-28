@@ -59,7 +59,7 @@ func (i *image) List(ctx context.Context, all bool, filters map[string][]string)
 		return nil, err
 	}
 
-	var images []*entity.Image
+	images := make([]*entity.Image, 0, len(list))
 	for _, image := range list {
 		images = append(images, &entity.Image{
 			ID:          image.ID,
