@@ -19,20 +19,6 @@ func newACMEIssuer(challenges *caddytls.ChallengesConfig) interface{} {
 	}
 }
 
-func newZeroSSLIssuer(challenges *caddytls.ChallengesConfig) interface{} {
-	return &struct {
-		Module string `json:"module"`
-		caddytls.ZeroSSLIssuer
-	}{
-		Module: "zerossl",
-		ZeroSSLIssuer: caddytls.ZeroSSLIssuer{
-			ACMEIssuer: &caddytls.ACMEIssuer{
-				Challenges: challenges,
-			},
-		},
-	}
-}
-
 func loadTLSConfig(domains []string, dnsChallenges map[string]caddytls.DNSChallengeConfig) *caddytls.TLS {
 	var policies []*caddytls.AutomationPolicy
 
@@ -48,11 +34,10 @@ func loadTLSConfig(domains []string, dnsChallenges map[string]caddytls.DNSChalle
 		challenges := &caddytls.ChallengesConfig{DNS: &challengeConfig}
 
 		acmeIssuerRaw := caddyconfig.JSON(newACMEIssuer(challenges), nil)
-		zeroSSLIssuerRaw := caddyconfig.JSON(newZeroSSLIssuer(challenges), nil)
 
 		policies = append(policies, &caddytls.AutomationPolicy{
 			SubjectsRaw: subjects,
-			IssuersRaw:  []json.RawMessage{acmeIssuerRaw, zeroSSLIssuerRaw},
+			IssuersRaw:  []json.RawMessage{acmeIssuerRaw},
 		})
 	}
 
